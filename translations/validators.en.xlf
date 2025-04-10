@@ -579,7 +579,7 @@
       </trans-unit>
       <trans-unit id="YRKYC4." resname="There is already an account with this email">
         <source>There is already an account with this email</source>
-        <target>__There is already an account with this email</target>
+        <target>There is already an account with this email</target>
       </trans-unit>
       <trans-unit id="IaE5GBl" resname="You should agree to our terms.">
         <source>You should agree to our terms.</source>
@@ -593,6 +593,7 @@
         <source>Your password should be at least {{ limit }} characters</source>
         <target>__Your password should be at least {{ limit }} characters</target>
       </trans-unit>
+
     </body>
   </file>
 </xliff>

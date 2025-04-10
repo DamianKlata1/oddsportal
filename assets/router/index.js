@@ -67,7 +67,7 @@ const routes = [
     },
     {
         path: '/',
-        name: 'arror_layout',
+        name: 'error_layout',
         component: Error.Layout,
         children: [
             {

@@ -86,8 +86,11 @@
                             this.$router.push({name: 'login'});
                         })
                         .catch(function (error) {
-                            console.log(error.response.data.title);
-                            Toast(error.response.data.detail);
+                          if (error.response.data.detail) {
+                            Toast(error.response.data.detail, 'error');
+                          } else if (error.response.data.message) {
+                            Toast(error.response.data.message, 'error');
+                          }
                         })
                         .finally(() => this.loader = false);
             }

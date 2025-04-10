@@ -85,15 +85,16 @@
         methods: {
             submit(values) {
                 this.loader = true;
-                apiPrivate().post('/api/account/edit', values)
+                apiPrivate().patch('/api/account/edit', values)
                         .then((response) => {
                             Toast(response.data.message, 'success');
-                            // this.$router.push({name: 'login'});
                         })
                         .catch(function (error) {
-                            console.log(error.response.data.title);
-                            Toast(error.response.data.detail);
-                            Toast(error.response.data.message);
+                          if (error.response.data.detail) {
+                            Toast(error.response.data.detail, 'error');
+                          } else if (error.response.data.message) {
+                            Toast(error.response.data.message, 'error');
+                          }
                         })
                         .finally(() => this.loader = false);
             }

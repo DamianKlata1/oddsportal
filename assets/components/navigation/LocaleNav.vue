@@ -5,7 +5,7 @@
         </a>
         <ul class="dropdown-menu text-small" style="">
             <li><button class="dropdown-item" @click="switchLocale('en')">English</button></li>
-            <li><button class="dropdown-item" @click="switchLocale('fr')">Français</button></li>
+            <li><button class="dropdown-item" @click="switchLocale('pl')">Polski</button></li>
         </ul>
     </div>
 </template>
@@ -14,7 +14,7 @@
         methods: {
             switchLocale(locale) {
                 this.$i18n.locale = locale;
-                localStorage.setItem('arvodia|locale', locale);
+                localStorage.setItem('oddsportal|locale', locale);
             }
         }
     }

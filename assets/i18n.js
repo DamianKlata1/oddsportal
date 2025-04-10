@@ -1,13 +1,13 @@
 import { createI18n } from 'vue-i18n';
 import EN from './locale/en.json';
-import FR from './locale/fr.json';
+import PL from './locale/pl.json';
 
 const i18n = createI18n({
-    locale: localStorage.getItem('arvodia|locale') || 'en', // set locale
+    locale: localStorage.getItem('oddsportal|locale') || 'en', // set locale
     fallbackLocale: 'en', // set fallback locale
     messages: {
         en: EN,
-        fr: FR,
+        pl: PL,
     }
 });
 

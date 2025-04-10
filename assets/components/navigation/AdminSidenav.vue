@@ -1,5 +1,7 @@
 <script setup>
     import { RouterLink } from 'vue-router'
+    import useUserStore from '/assets/stores/user.js';
+    const store = useUserStore();
 </script>
 <template>
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
@@ -14,7 +16,7 @@
         </div>
         <div class="sb-sidenav-footer">
             <div class="small">Logged in as:</div>
-            Start Bootstrap
+            {{ store.userData.email }}
         </div>
     </nav>
 </template>

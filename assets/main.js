@@ -21,23 +21,23 @@ app.use(createPinia());
 app.use(i18n);
 
 const store = useUserStore();
-if (store.getToken) {
-    apiPrivate().get('/api/account')
-            .then((response) => {
-                if (response.data && response.data.email) {
-                    store.updateData(response.data);
-                    store.setAuth(true);
-                } else {
-                    store.resetState();
-                }
-                app.use(router);
-                app.mount('#app');
-            })
-            .catch(function (error) {
-                app.use(router);
-                app.mount('#app');
-            })
-} else {
+async function initApp() {
+    if (store.getToken) {
+        try {
+            const response = await apiPrivate().get('/api/account');
+            if (response.data?.email) {
+                store.updateData(response.data);
+                store.setAuth(true);
+            } else {
+                store.resetState();
+            }
+        } catch (error) {
+            console.error("Błąd autoryzacji", error);
+        }
+    }
+
     app.use(router);
     app.mount('#app');
 }
+
+initApp();

@@ -2,42 +2,46 @@
 
 namespace App\Controller;
 
-use App\DTO\userEditDTO;
+use App\DTO\UserEditDTO;
 use App\Entity\User;
-use Doctrine\Persistence\ManagerRegistry;
+use App\Service\Interface\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ProfileController extends AbstractController {
+class ProfileController extends AbstractController
+{
+    public function __construct(
+        private readonly SerializerInterface   $serializer,
+        private readonly UserServiceInterface  $userService,
+        private readonly TokenStorageInterface $tokenStorage
+    )
+    {
+    }
 
-    #[Route('/api/account', name: 'app_account')]
+    #[Route('/api/account', name: 'api_account', methods: ['GET'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function index(SerializerInterface $serializer): Response {
-        $json = $serializer->serialize($this->getUser(), 'json', ['groups' => 'getUser']);
+    public function index(): Response
+    {
+        $json = $this->serializer->serialize($this->tokenStorage->getToken()->getUser(), 'json', ['groups' => 'getUser']);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/account/edit', name: 'app_account_edit')]
+    #[Route('/api/account/edit', name: 'api_account_edit', methods: ['PATCH'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function edit(#[MapRequestPayload] userEditDTO $userEditDTO, UserPasswordHasherInterface $passwordHasher, ManagerRegistry $doctrine): Response {
+    public function editUser(
+        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY,)] UserEditDTO $userEditDTO
+    ): Response
+    {
         /** @var User $user */
-        $user = $this->getUser();
-        if (!$passwordHasher->isPasswordValid($user, $userEditDTO->current_password)) {
-            return new JsonResponse(['detail' => 'The current password is invalid.'], Response::HTTP_FORBIDDEN);
-        }
-        if ($userEditDTO->email) {
-            $user->setEmail($userEditDTO->email);
-        }
-        if ($userEditDTO->password) {
-            $user->setPassword($passwordHasher->hashPassword($user, $userEditDTO->password));
-        }
-        $doctrine->getManager()->flush();
-        return new JsonResponse(['message' => 'user edited successfully'], Response::HTTP_OK);
+        $user = $this->tokenStorage->getToken()->getUser();
+        $this->userService->editUser($user, $userEditDTO);
+
+        return new JsonResponse(['message' => 'User edited successfully.'], Response::HTTP_OK);
     }
 }
