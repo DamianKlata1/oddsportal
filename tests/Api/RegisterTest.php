@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Tests\Controller;
+namespace App\Tests\Api;
 
 use App\Factory\UserFactory;
+use App\Repository\UserRepositoryInterface;
 use App\Tests\Base\ApiTest\ApiTestBaseCase;
 use App\Tests\Trait\UserTestConstantsTrait;
 
@@ -10,6 +11,13 @@ class RegisterTest extends ApiTestBaseCase
 {
     const REGISTER_URL = '/api/register';
     use UserTestConstantsTrait;
+    protected UserRepositoryInterface $userRepository;
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->userRepository = static::getContainer()->get(UserRepositoryInterface::class);
+    }
+
     public function testRegisterUserIsSuccessfulWithCorrectCredentials(): void
     {
         $this->client->jsonRequest('POST', self::REGISTER_URL, [
@@ -19,6 +27,9 @@ class RegisterTest extends ApiTestBaseCase
 
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('User registered successfully', $this->client->getResponse()->getContent());
+
+        $user = $this->userRepository->findOneBy(['email' => self::CORRECT_TEST_EMAIL]);
+        $this->assertNotNull($user);
     }
 
     public function testRegisterUserFailsWithInvalidEmail(): void

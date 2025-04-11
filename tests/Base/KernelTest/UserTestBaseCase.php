@@ -24,4 +24,5 @@ abstract class UserTestBaseCase extends DatabaseDependantTestCase
         $this->passwordHasher = $container->get(UserPasswordHasherInterface::class);
 
     }
+
 }

@@ -8,6 +8,7 @@ class UserEditDTO {
 
     public function __construct(
             #[Assert\Length(min: 6, max: 4096)]
+            #[Assert\NotBlank()]
             private readonly string $current_password,
             #[Assert\Email()]
             private readonly ?string $email = null,

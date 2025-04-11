@@ -31,7 +31,7 @@ final class UserFactory extends PersistentProxyObjectFactory
     {
         return [
             'email' => self::faker()->unique()->email(),
-            'isVerified' => true,
+            'isVerified' => false,
             'password' => 'password123', // This will be hashed in the initialize() method
             'roles' => ['ROLE_USER'],
         ];

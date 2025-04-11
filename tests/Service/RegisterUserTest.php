@@ -25,7 +25,7 @@ class RegisterUserTest extends UserTestBaseCase
         $this->assertSame($userDTO->getEmail(), $savedUser->getEmail());
     }
 
-    public function testRegisterUserThrowsValidationExceptionOnInvalidEmail(): void
+    public function testRegisterUserFailsWithInvalidEmail(): void
     {
         $userDTO = new NewUserDTO(self::INCORRECT_TEST_EMAIL, self::CORRECT_TEST_PASSWORD);
 
@@ -34,7 +34,7 @@ class RegisterUserTest extends UserTestBaseCase
         $this->userService->registerUser($userDTO);
     }
 
-    public function testRegisterUserThrowsValidationExceptionOnInvalidPassword(): void
+    public function testRegisterUserFailsWithInvalidPassword(): void
     {
         $userDTO = new NewUserDTO(self::CORRECT_TEST_EMAIL, self::TOO_SHORT_TEST_PASSWORD);
 
@@ -43,7 +43,7 @@ class RegisterUserTest extends UserTestBaseCase
         $this->userService->registerUser($userDTO);
     }
 
-    public function testRegisterUserThrowsValidationExceptionOnDuplicateEmail(): void
+    public function testRegisterUserFailsWithDuplicateEmail(): void
     {
         $userDTO = new NewUserDTO(self::CORRECT_TEST_EMAIL, self::CORRECT_TEST_PASSWORD);
         $this->userService->registerUser($userDTO);
@@ -53,7 +53,7 @@ class RegisterUserTest extends UserTestBaseCase
         $this->userService->registerUser($userDTO);
     }
 
-    public function testRegisterUserThrowsValidationExceptionOnEmptyEmail(): void
+    public function testRegisterUserFailsWithEmptyEmail(): void
     {
         $userDTO = new NewUserDTO('', self::CORRECT_TEST_PASSWORD);
 
@@ -62,7 +62,7 @@ class RegisterUserTest extends UserTestBaseCase
         $this->userService->registerUser($userDTO);
     }
 
-    public function testRegisterUserThrowsValidationExceptionOnEmptyPassword(): void
+    public function testRegisterUserFailsWithEmptyPassword(): void
     {
         $userDTO = new NewUserDTO(self::CORRECT_TEST_EMAIL, '');
 
