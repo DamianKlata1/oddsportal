@@ -1,15 +1,21 @@
 <script setup>
-    import { RouterView } from 'vue-router'
-    import PublicNav from '../../components/navigation/PublicNav.vue'
+import {RouterView} from 'vue-router'
+import PublicNav from '../../components/navigation/PublicNav.vue'
+import SideBarNav from '../../components/navigation/SidebarNav.vue'
 </script>
 
 <template>
-    <div class="container">
-        <PublicNav />
+  <div class="container-fluid">
+    <PublicNav/>
+    <div class="d-flex">
+      <SideBarNav/>
+      <div class="flex-grow-1 p-3">
         <main>
-            <RouterView />
+          <RouterView/>
         </main>
+      </div>
     </div>
+  </div>
 </template>
 
 <!--<style scoped src="/node_modules/bootstrap/dist/css/bootstrap.css">
