@@ -34,9 +34,9 @@
 ###< lexik/jwt-authentication-bundle ###
 
 ###> vs code###
-/.vscode
+/.vscode/
 ###< vs code###
 
 ###> phpstorm ###
-/.idea
+/.idea/
 ###< phpstorm ###
