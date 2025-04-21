@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Email;
 
-use App\Service\Interface\RegistrationEmailBuilderInterface;
+use App\Service\Interface\Email\RegistrationEmailBuilderInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Core\User\UserInterface;

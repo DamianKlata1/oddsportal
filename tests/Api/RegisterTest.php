@@ -3,7 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Factory\UserFactory;
-use App\Repository\UserRepositoryInterface;
+use App\Repository\Interface\UserRepositoryInterface;
 use App\Tests\Base\ApiTest\ApiTestBaseCase;
 use App\Tests\Trait\UserTestConstantsTrait;
 

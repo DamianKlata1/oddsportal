@@ -5,7 +5,6 @@ namespace App\Tests\Service;
 use App\DTO\UserEditDTO;
 use App\Exception\ValidationException;
 use App\Factory\UserFactory;
-use App\Repository\UserRepositoryInterface;
 use App\Tests\Base\KernelTest\UserTestBaseCase;
 
 class EditUserTest extends UserTestBaseCase

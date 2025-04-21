@@ -1,5 +1,5 @@
 <?php
-namespace App\Service\Interface;
+namespace App\Service\Interface\Email;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Security\Core\User\UserInterface;

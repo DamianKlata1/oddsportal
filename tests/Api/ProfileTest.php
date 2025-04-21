@@ -3,10 +3,11 @@
 namespace App\Tests\Api;
 
 use App\Factory\UserFactory;
-use App\Repository\UserRepositoryInterface;
+use App\Repository\Interface\UserRepositoryInterface;
 use App\Tests\Base\ApiTest\ApiTestBaseCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * @group profile
  */

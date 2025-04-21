@@ -1,0 +1,28 @@
+<?php
+
+namespace App\ExternalApi\OddsApi;
+
+use App\Exception\FetchFailedException;
+use App\ExternalApi\OddsApi\Interface\OddsApiClientInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+class OddsApiClient implements OddsApiClientInterface
+{
+    public function __construct(
+        private readonly string $oddsApiUrl,
+        private readonly string $oddsApiKey,
+        private readonly HttpClientInterface $client
+    )
+    {
+    }
+    public function fetchSportsData(): array
+    {
+        try{
+            $response = $this->client->request('GET', "{$this->oddsApiUrl}?apiKey={$this->oddsApiKey}");
+            return $response->toArray();
+        } catch (\Exception $e) {
+            throw new FetchFailedException('Error fetching data from Odds API: ' . $e->getMessage(), 502);
+        }
+    }
+
+}

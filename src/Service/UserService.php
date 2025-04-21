@@ -6,7 +6,7 @@ use App\DTO\NewUserDTO;
 use App\DTO\UserEditDTO;
 use App\Entity\User;
 use App\Exception\ValidationException;
-use App\Repository\UserRepositoryInterface;
+use App\Repository\Interface\UserRepositoryInterface;
 use App\Service\Interface\UserServiceInterface;
 use App\Service\Interface\ValidationServiceInterface;
 use Symfony\Component\HttpFoundation\Response;

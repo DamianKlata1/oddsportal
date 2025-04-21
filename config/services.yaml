@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
 
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -19,6 +20,22 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\ExternalApi\OddsApi\OddsApiClient:
+        arguments:
+            $oddsApiUrl: '%env(ODDS_API_URL)%'
+            $oddsApiKey: '%env(ODDS_API_KEY)%'
+    App\ExternalApi\ThesportsdbApi\ThesportsdbApiLeagueLogoPathResolver:
+        arguments:
+            $thesportsdbApiKey: '%env(THESPORTSDB_API_KEY)%'
+            $thesportsdbApiUrl: '%env(THESPORTSDB_API_URL)%'
+
+    App\ExternalApi\ThesportsdbApi\ThesportsdbApiRegionLogoPathResolver:
+        arguments:
+            $thesportsdbFlagsUrl: '%env(THESPORTSDB_FLAGS_URL)%'
+    App\ExternalApi\ThesportsdbApi\ThesportsdbApiSportLogoPathResolver:
+        arguments:
+            $thesportsdbIconsUrl: '%env(THESPORTSDB_ICONS_URL)%'
+
     App\EventListener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }

@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use App\DTO\NewUserDTO;
-use App\Repository\UserRepositoryInterface;
-use App\Service\Interface\EmailVerifierServiceInterface;
-use App\Service\Interface\RegistrationEmailBuilderInterface;
+use App\Repository\Interface\UserRepositoryInterface;
+use App\Service\Interface\Email\EmailVerifierServiceInterface;
+use App\Service\Interface\Email\RegistrationEmailBuilderInterface;
 use App\Service\Interface\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;

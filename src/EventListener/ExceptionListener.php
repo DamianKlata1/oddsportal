@@ -23,10 +23,9 @@ class ExceptionListener
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
             $response->headers->replace($exception->getHeaders());
-        }elseif($exception instanceof ValidationException) {
+        } elseif ($exception instanceof ValidationException) {
             $response->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        else {
+        } else {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 

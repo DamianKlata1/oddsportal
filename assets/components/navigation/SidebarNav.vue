@@ -1,40 +1,77 @@
 <template>
+  <div class=" p-3 border-end" style="width: 300px; height: 100vh; overflow-y: auto;">
+    <h5 class="mb-3">Countries</h5>
 
-    <!-- Sidebar -->
-    <div class="bg-light p-3 border-end" style="width: 250px; height: 100vh; overflow-y: auto;">
-      <h5 class="mb-3">Kraje</h5>
-      <div v-for="(country, index) in countries" :key="index">
-        <button
-            class="btn w-100 text-start mb-2"
-            :class="{'btn-outline-primary': expandedCountry !== index, 'btn-primary': expandedCountry === index}"
-            @click="toggleCountry(index)"
+    <!-- Wyszukiwarka -->
+    <input
+        v-model="searchQuery"
+        type="text"
+        class="form-control mb-3"
+        placeholder="Search..."
+    />
+
+    <div class="accordion" id="countryAccordion">
+      <div
+          class="accordion-item"
+          v-for="(region, index) in regionsStore.regions"
+          :key="region.name"
+      >
+        <h2 class="accordion-header" :id="'heading' + index">
+          <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              :data-bs-target="'#collapse' + index"
+              aria-expanded="false"
+              :aria-controls="'collapse' + index"
+          >
+            <span class="me-2">{{ region.logo }}</span> {{ region.name }}
+          </button>
+        </h2>
+        <div
+            :id="'collapse' + index"
+            class="accordion-collapse collapse"
+            :aria-labelledby="'heading' + index"
+            data-bs-parent="#countryAccordion"
         >
-          {{ country.name }}
-        </button>
-        <div v-if="expandedCountry === index" class="ms-3 mt-2">
-          <ul class="list-unstyled">
-            <li v-for="(league, lIndex) in country.leagues" :key="lIndex">
-              <a href="#" class="text-decoration-none">{{ league }}</a>
-            </li>
-          </ul>
+          <div class="accordion-body">
+            <ul class="list-unstyled mb-0">
+              <li v-for="league in region.leagues" :key="league">
+                <a href="#" class="text-decoration-none">{{ league }}</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
-
-
+  </div>
 </template>
+
 <script setup>
-import { ref } from 'vue'
+import {ref, onMounted, computed, watch} from 'vue'
+import { useSportsStore } from '/assets/stores/sports.js';
+import { useRegionsStore } from "/assets/stores/regions.js";
 
-const countries = ref([
-  { name: 'Polska 🇵🇱', leagues: ['Ekstraklasa', 'I Liga', 'II Liga'] },
-  { name: 'Anglia 🇬🇧', leagues: ['Premier League', 'Championship', 'League One'] },
-  { name: 'Niemcy 🇩🇪', leagues: ['Bundesliga', '2. Bundesliga'] },
-])
+const sportsStore = useSportsStore()
+const regionsStore = useRegionsStore()
+watch(
+    () => sportsStore.selectedSport,
+    async (sport) => {
+      if (sport) {
+        await regionsStore.fetchRegionsForSport(sport.id)
+      }
+    },
+    { immediate: true }
+)
 
-const expandedCountry = ref(null)
+const searchQuery = ref('')
 
-function toggleCountry(index) {
-  expandedCountry.value = expandedCountry.value === index ? null : index
-}
+
+// const filteredEvents = computed(() => {
+//   if (!searchQuery.value) return regions.value
+//   const query = searchQuery.value.toLowerCase()
+//   return regions.value.filter(c =>
+//       c.name.toLowerCase().includes(query)
+//   )
+// })
 </script>

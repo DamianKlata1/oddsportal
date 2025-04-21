@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Email;
 
-use App\Service\Interface\EmailVerifierServiceInterface;
+use App\Service\Interface\Email\EmailVerifierServiceInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;

@@ -26,7 +26,7 @@ class ProfileController extends AbstractController
 
     #[Route('/api/account', name: 'api_account', methods: ['GET'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
-    public function index(): Response
+    public function index(): JsonResponse
     {
         $json = $this->serializer->serialize($this->tokenStorage->getToken()->getUser(), 'json', ['groups' => 'getUser']);
         return new JsonResponse($json, Response::HTTP_OK, [], true);
@@ -36,12 +36,12 @@ class ProfileController extends AbstractController
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function editUser(
         #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY,)] UserEditDTO $userEditDTO
-    ): Response
+    ): JsonResponse
     {
         /** @var User $user */
         $user = $this->tokenStorage->getToken()->getUser();
         $this->userService->editUser($user, $userEditDTO);
 
-        return new JsonResponse(['message' => 'User edited successfully.'], Response::HTTP_OK);
+        return new JsonResponse(['message' => 'User edited successfully.'], Response::HTTP_OK, [], true);
     }
 }
