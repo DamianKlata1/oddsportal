@@ -32,3 +32,6 @@
 /config/jwt/*.pem
 /config/jwt/test/
 ###< lexik/jwt-authentication-bundle ###
+
+###> vs code###
+/.vscode

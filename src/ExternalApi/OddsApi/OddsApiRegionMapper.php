@@ -80,7 +80,7 @@ class OddsApiRegionMapper implements OddsApiRegionMapperInterface
         foreach ($this->regionKeywords as $regionName => $keywords) {
             foreach ($keywords as $keyword) {
                 // Use \b (boundary) to ensure we match whole words only
-                if (preg_match('/\b' . preg_quote(strtolower($keyword), '/') . '\b/', $text)) {
+                if (preg_match('/\b' . preg_quote(strtolower($keyword), '/') . '\b/', strtolower($text))) {
                     return $regionName;
                 }
             }
