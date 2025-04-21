@@ -35,3 +35,8 @@
 
 ###> vs code###
 /.vscode
+###< vs code###
+
+###> phpstorm ###
+/.idea
+###< phpstorm ###
