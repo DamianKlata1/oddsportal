@@ -2,7 +2,7 @@
 
 namespace App\ExternalApi\ThesportsdbApi;
 
-use App\ExternalAPI\ThesportsdbApi\Interface\RegionLogoPathResolverInterface;
+use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 
 class ThesportsdbApiRegionLogoPathResolver implements RegionLogoPathResolverInterface
 {

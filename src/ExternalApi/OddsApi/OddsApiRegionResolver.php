@@ -5,13 +5,13 @@ namespace App\ExternalApi\OddsApi;
 use App\Entity\Sport;
 use App\Entity\League;
 use App\Entity\Region;
-use App\ExternalApi\OddsApi\Interface\OddsApiRegionMapperInterface;
-use App\ExternalApi\ThesportsdbApi\Interface\RegionLogoPathResolverInterface;
+use App\ExternalApi\OddsApi\Interface\OddsApiRegionResolverInterface;
+use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 
-class OddsApiRegionMapper implements OddsApiRegionMapperInterface
+class OddsApiRegionResolver implements OddsApiRegionResolverInterface
 {
     private array $regionKeywords = [
-        'USA' => ['usa', 'mls', 'us', 'nfl', 'nba', 'american', 'mlb', 'pga', 'nhl', 'lacrosse', 'usa'],
+        'USA' => ['usa', 'mls', 'us', 'nfl', 'nba', 'american', 'mlb', 'pga', 'nhl', 'lacrosse'],
         'Australia' => ['australia', 'a-league', 'a league', 'aussie'],
         'South Korea' => ['south korea', 'k league', 'k-league', 'kbo'],
         'Japan' => ['japan', 'j league', 'j-league', 'npb'],
@@ -44,38 +44,13 @@ class OddsApiRegionMapper implements OddsApiRegionMapperInterface
         'Turkey' => ['turkey', 'turkish'],
 
     ];
-    public function __construct(
-        private readonly RegionLogoPathResolverInterface $regionLogoPathResolver,
-    ) {
-    }
-    public function mapRegionToLeague(League $league, array $sportsData): void
+
+    public function resolveRegionName(array $leagueData): string
     {
-
-
-    }
-
-    public function mapRegionsToSport(Sport $sport, array $sportsData): void
-    {
-        foreach ($sportsData as $datum) {
-            if (($datum['group'] ?? '') !== $sport->getName()) {
-                continue;
-            }
-
-            $regionName = $this->resolveRegionName($datum);
-
-            if ($regionName === 'Default Region') {
-                continue;
-            }
-
-            $region = new Region();
-            $region->setName($regionName);
-            $region->setLogoPath($this->regionLogoPathResolver->resolve($regionName));
-            $sport->addRegion($region);
+        if($leagueData['has_outrights'] === true) {
+            return 'Outrights';
         }
-    }
-    private function resolveRegionName(array $sportsData): string
-    {
-        $text = $sportsData['key'] . ' ' . $sportsData['title'] . ' ' . $sportsData['group'] . ' ' . $sportsData['description'];
+        $text = $leagueData['key'] . ' ' . $leagueData['title'] . ' ' . $leagueData['group'] . ' ' . $leagueData['description'];
 
         foreach ($this->regionKeywords as $regionName => $keywords) {
             foreach ($keywords as $keyword) {

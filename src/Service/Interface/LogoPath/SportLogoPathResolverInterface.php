@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ExternalApi\ThesportsdbApi\Interface;
+namespace App\Service\Interface\LogoPath;
 
 interface SportLogoPathResolverInterface extends LogoPathResolverInterface
 {

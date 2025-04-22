@@ -16,11 +16,8 @@ class League
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column]
-    private ?int $level = null;
-
     #[ORM\ManyToOne(inversedBy: 'leagues')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Region $region = null;
 
     public function getId(): ?int
@@ -36,18 +33,6 @@ class League
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getLevel(): ?int
-    {
-        return $this->level;
-    }
-
-    public function setLevel(int $level): static
-    {
-        $this->level = $level;
 
         return $this;
     }

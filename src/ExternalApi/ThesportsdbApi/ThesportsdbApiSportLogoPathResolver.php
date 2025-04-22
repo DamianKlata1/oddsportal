@@ -2,7 +2,8 @@
 
 namespace App\ExternalApi\ThesportsdbApi;
 
-use App\ExternalAPI\ThesportsdbApi\Interface\SportLogoPathResolverInterface;
+use App\Service\Interface\LogoPath\SportLogoPathResolverInterface;
+
 
 class ThesportsdbApiSportLogoPathResolver implements SportLogoPathResolverInterface
 {

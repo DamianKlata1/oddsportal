@@ -3,9 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Sport;
-use App\Repository\Interface\SportRepositoryInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Interface\SportRepositoryInterface;
+use App\Service\Interface\LogoPath\SportLogoPathResolverInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Sport>
@@ -17,7 +18,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SportRepository extends ServiceEntityRepository implements SportRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly SportLogoPathResolverInterface $sportLogoPathResolver
+        )
     {
         parent::__construct($registry, Sport::class);
     }
@@ -28,10 +32,18 @@ class SportRepository extends ServiceEntityRepository implements SportRepository
         $this->getEntityManager()->flush();
         return $sport;
     }
+    
 
-    public function checkIfSportsNameExists(string $name): bool
+    public function findOrCreate(string $name): Sport
     {
-        return count($this->findBy(['name' => $name])) > 0;
+        $sport = $this->findOneBy(['name' => $name]);
+        if ($sport === null) {
+            $sport = new Sport();
+            $sport->setName($name);
+            $sport->setLogoPath($this->sportLogoPathResolver->resolve($name));
+            $this->save($sport);
+        }
+        return $sport;
     }
 
 //    /**

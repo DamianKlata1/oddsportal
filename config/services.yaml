@@ -24,10 +24,6 @@ services:
         arguments:
             $oddsApiUrl: '%env(ODDS_API_URL)%'
             $oddsApiKey: '%env(ODDS_API_KEY)%'
-    App\ExternalApi\ThesportsdbApi\ThesportsdbApiLeagueLogoPathResolver:
-        arguments:
-            $thesportsdbApiKey: '%env(THESPORTSDB_API_KEY)%'
-            $thesportsdbApiUrl: '%env(THESPORTSDB_API_URL)%'
 
     App\ExternalApi\ThesportsdbApi\ThesportsdbApiRegionLogoPathResolver:
         arguments:

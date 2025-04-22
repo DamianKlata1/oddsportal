@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\League;
 use App\Repository\Interface\LeagueRepositoryInterface;
+use App\Repository\Interface\RegionRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,8 +18,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class LeagueRepository extends ServiceEntityRepository implements LeagueRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly RegionRepositoryInterface $regionRepository,
+    ) {
         parent::__construct($registry, League::class);
     }
     public function save(League $league): League
@@ -27,13 +30,19 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
         $this->getEntityManager()->flush();
         return $league;
     }
-    public function checkIfLeagueNameExists(string $name): bool
+    public function findOrCreateForRegion(string $name, int $regionId): League
     {
-        return count($this->findBy(['name' => $name])) > 0;
-
+        $league = $this->findOneBy(['name' => $name, 'region' => $regionId]);
+        if ($league === null) {
+            $league = new League();
+            $league->setName($name);
+            $league->setRegion($this->regionRepository->find($regionId));
+            $this->save($league);
+        }
+        return $league;
     }
 
-//    /**
+    //    /**
 //     * @return League[] Returns an array of League objects
 //     */
 //    public function findByExampleField($value): array
@@ -48,7 +57,7 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?League
+    //    public function findOneBySomeField($value): ?League
 //    {
 //        return $this->createQueryBuilder('l')
 //            ->andWhere('l.exampleField = :val')

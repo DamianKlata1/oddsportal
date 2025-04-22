@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Region;
-use App\Repository\Interface\RegionRepositoryInterface;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Interface\SportRepositoryInterface;
+use App\Repository\Interface\RegionRepositoryInterface;
+use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Region>
@@ -17,8 +19,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class RegionRepository extends ServiceEntityRepository implements RegionRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly RegionLogoPathResolverInterface $regionLogoPathResolver,
+        private readonly SportRepositoryInterface $sportRepository
+    ) {
         parent::__construct($registry, Region::class);
     }
     public function save(Region $region): Region
@@ -28,8 +33,19 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
 
         return $region;
     }
-
-//    /**
+    public function findOrCreateForSport(string $name, int $sportId): Region
+    {
+        $region = $this->findOneBy(['name' => $name, 'sport' => $sportId]);
+        if ($region === null) {
+            $region = new Region();
+            $region->setName($name);
+            $region->setSport($this->sportRepository->find($sportId));
+            $region->setLogoPath($this->regionLogoPathResolver->resolve($name));
+            $this->save($region);
+        }
+        return $region;
+    }
+    //    /**
 //     * @return Region[] Returns an array of Region objects
 //     */
 //    public function findByExampleField($value): array
@@ -44,7 +60,7 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Region
+    //    public function findOneBySomeField($value): ?Region
 //    {
 //        return $this->createQueryBuilder('r')
 //            ->andWhere('r.exampleField = :val')
