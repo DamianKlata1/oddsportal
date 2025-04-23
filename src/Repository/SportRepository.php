@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Sport;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\SportRepositoryInterface;
+use App\Repository\Interface\TransactionalRepositoryInterface;
 use App\Service\Interface\LogoPath\SportLogoPathResolverInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
@@ -16,8 +18,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  * @method Sport[]    findAll()
  * @method Sport[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SportRepository extends ServiceEntityRepository implements SportRepositoryInterface
+class SportRepository extends ServiceEntityRepository implements SportRepositoryInterface, TransactionalRepositoryInterface
 {
+    use TransactionManagement;
     public function __construct(
         ManagerRegistry $registry,
         private readonly SportLogoPathResolverInterface $sportLogoPathResolver
@@ -26,10 +29,12 @@ class SportRepository extends ServiceEntityRepository implements SportRepository
         parent::__construct($registry, Sport::class);
     }
 
-    public function save(Sport $sport): Sport
+    public function save(Sport $sport, bool $flush = false): Sport
     {
         $this->getEntityManager()->persist($sport);
-        $this->getEntityManager()->flush();
+        if($flush){
+            $this->getEntityManager()->flush();
+        }
         return $sport;
     }
     
@@ -41,7 +46,6 @@ class SportRepository extends ServiceEntityRepository implements SportRepository
             $sport = new Sport();
             $sport->setName($name);
             $sport->setLogoPath($this->sportLogoPathResolver->resolve($name));
-            $this->save($sport);
         }
         return $sport;
     }

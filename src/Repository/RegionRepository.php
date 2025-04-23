@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Entity\Region;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\SportRepositoryInterface;
 use App\Repository\Interface\RegionRepositoryInterface;
+use App\Repository\Interface\TransactionalRepositoryInterface;
 use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
@@ -17,8 +19,9 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  * @method Region[]    findAll()
  * @method Region[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RegionRepository extends ServiceEntityRepository implements RegionRepositoryInterface
+class RegionRepository extends ServiceEntityRepository implements RegionRepositoryInterface, TransactionalRepositoryInterface
 {
+    use TransactionManagement;
     public function __construct(
         ManagerRegistry $registry,
         private readonly RegionLogoPathResolverInterface $regionLogoPathResolver,
@@ -26,11 +29,12 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
     ) {
         parent::__construct($registry, Region::class);
     }
-    public function save(Region $region): Region
+    public function save(Region $region, bool $flush = false): Region
     {
         $this->getEntityManager()->persist($region);
-        $this->getEntityManager()->flush();
-
+        if($flush){
+            $this->getEntityManager()->flush();
+        }
         return $region;
     }
     public function findOrCreateForSport(string $name, int $sportId): Region
@@ -41,7 +45,6 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
             $region->setName($name);
             $region->setSport($this->sportRepository->find($sportId));
             $region->setLogoPath($this->regionLogoPathResolver->resolve($name));
-            $this->save($region);
         }
         return $region;
     }

@@ -3,10 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\League;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\LeagueRepositoryInterface;
 use App\Repository\Interface\RegionRepositoryInterface;
+use App\Repository\Interface\TransactionalRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<League>
@@ -16,18 +18,21 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method League[]    findAll()
  * @method League[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class LeagueRepository extends ServiceEntityRepository implements LeagueRepositoryInterface
+class LeagueRepository extends ServiceEntityRepository implements LeagueRepositoryInterface, TransactionalRepositoryInterface
 {
+    use TransactionManagement;
     public function __construct(
         ManagerRegistry $registry,
         private readonly RegionRepositoryInterface $regionRepository,
     ) {
         parent::__construct($registry, League::class);
     }
-    public function save(League $league): League
+    public function save(League $league, bool $flush = false): League
     {
         $this->getEntityManager()->persist($league);
-        $this->getEntityManager()->flush();
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
         return $league;
     }
     public function findOrCreateForRegion(string $name, int $regionId): League
@@ -37,7 +42,6 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
             $league = new League();
             $league->setName($name);
             $league->setRegion($this->regionRepository->find($regionId));
-            $this->save($league);
         }
         return $league;
     }
