@@ -34,11 +34,21 @@ class ImportSportsDataCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Importing sports data');
         $io->section('Fetching data from external API');
-        try {
-            $this->sportsDataImporter->import();
-        } catch (\Exception $e) {
-            $io->error('Error occurred while importing sports data: ' . $e->getMessage());
+
+        $importResult = $this->sportsDataImporter->import();
+        if (!$importResult->isSuccess()) {
+            $io->error('Failed to import sports data: ' . $importResult->getErrorMessage());
             return Command::FAILURE;
+        }
+        if (empty($importResult->getImported())) {
+            $io->warning('No sports data imported.');
+            return Command::SUCCESS;
+        }
+        foreach ($importResult->getImported() as $typeOfData => $data) {
+            $io->section(ucfirst($typeOfData) . ' imported:');
+            foreach ($data as $item) {
+                $io->writeln('- ' . $item);
+            }
         }
         $io->success('Sports data successfully imported.');
 

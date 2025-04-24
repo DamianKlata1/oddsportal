@@ -7,7 +7,6 @@ use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\SportRepositoryInterface;
 use App\Repository\Interface\TransactionalRepositoryInterface;
-use App\Service\Interface\LogoPath\SportLogoPathResolverInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
@@ -23,7 +22,6 @@ class SportRepository extends ServiceEntityRepository implements SportRepository
     use TransactionManagement;
     public function __construct(
         ManagerRegistry $registry,
-        private readonly SportLogoPathResolverInterface $sportLogoPathResolver
         )
     {
         parent::__construct($registry, Sport::class);
@@ -39,22 +37,12 @@ class SportRepository extends ServiceEntityRepository implements SportRepository
     }
     
 
-    public function findOrCreate(string $name): Sport
-    {
-        $sport = $this->findOneBy(['name' => $name]);
-        if ($sport === null) {
-            $sport = new Sport();
-            $sport->setName($name);
-            $sport->setLogoPath($this->sportLogoPathResolver->resolve($name));
-        }
-        return $sport;
-    }
-
-//    /**
-//     * @return Sport[] Returns an array of Sport objects
-//     */
-//    public function findByExampleField($value): array
-//    {
+    
+    //    /**
+    //     * @return Sport[] Returns an array of Sport objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
 //        return $this->createQueryBuilder('s')
 //            ->andWhere('s.exampleField = :val')
 //            ->setParameter('val', $value)
@@ -67,11 +55,22 @@ class SportRepository extends ServiceEntityRepository implements SportRepository
 
 //    public function findOneBySomeField($value): ?Sport
 //    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
+    //        return $this->createQueryBuilder('s')
+    //            ->andWhere('s.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()
 //            ->getOneOrNullResult()
 //        ;
 //    }
 }
+
+// public function findOrCreate(string $name): Sport
+// {   
+//     $sport = $this->findOneBy(['name' => $name]);
+//     if ($sport === null) {
+//         $sport = new Sport();
+//         $sport->setName($name);
+//         $sport->setLogoPath($this->sportLogoPathResolver->resolve($name));
+//     }
+//     return $sport;
+// }

@@ -5,10 +5,8 @@ namespace App\Repository;
 use App\Entity\Region;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Trait\TransactionManagement;
-use App\Repository\Interface\SportRepositoryInterface;
 use App\Repository\Interface\RegionRepositoryInterface;
 use App\Repository\Interface\TransactionalRepositoryInterface;
-use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
@@ -24,8 +22,6 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
     use TransactionManagement;
     public function __construct(
         ManagerRegistry $registry,
-        private readonly RegionLogoPathResolverInterface $regionLogoPathResolver,
-        private readonly SportRepositoryInterface $sportRepository
     ) {
         parent::__construct($registry, Region::class);
     }
@@ -37,24 +33,13 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
         }
         return $region;
     }
-    public function findOrCreateForSport(string $name, int $sportId): Region
-    {
-        $region = $this->findOneBy(['name' => $name, 'sport' => $sportId]);
-        if ($region === null) {
-            $region = new Region();
-            $region->setName($name);
-            $region->setSport($this->sportRepository->find($sportId));
-            $region->setLogoPath($this->regionLogoPathResolver->resolve($name));
-        }
-        return $region;
-    }
     //    /**
-//     * @return Region[] Returns an array of Region objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('r')
-//            ->andWhere('r.exampleField = :val')
+    //     * @return Region[] Returns an array of Region objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+        //        return $this->createQueryBuilder('r')
+        //            ->andWhere('r.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->orderBy('r.id', 'ASC')
 //            ->setMaxResults(10)
@@ -64,12 +49,23 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
 //    }
 
     //    public function findOneBySomeField($value): ?Region
-//    {
-//        return $this->createQueryBuilder('r')
+    //    {
+        //        return $this->createQueryBuilder('r')
 //            ->andWhere('r.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()
 //            ->getOneOrNullResult()
 //        ;
 //    }
+// public function findOrCreateForSport(string $name, int $sportId): Region
+// {
+//     $region = $this->findOneBy(['name' => $name, 'sport' => $sportId]);
+//     if ($region === null) {
+//         $region = new Region();
+//         $region->setName($name);
+//         $region->setSport($this->sportRepository->find($sportId));
+//         $region->setLogoPath($this->regionLogoPathResolver->resolve($name));
+//     }
+//     return $region;
+// }
 }

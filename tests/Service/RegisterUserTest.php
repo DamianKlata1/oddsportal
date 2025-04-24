@@ -14,6 +14,7 @@ class RegisterUserTest extends UserTestBaseCase
     {
         $userDTO = new NewUserDTO(self::CORRECT_TEST_EMAIL, self::CORRECT_TEST_PASSWORD);
 
+
         $user = $this->userService->registerUser($userDTO);
 
         $this->assertInstanceOf(UserInterface::class, $user);

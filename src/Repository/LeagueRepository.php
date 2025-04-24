@@ -6,7 +6,6 @@ use App\Entity\League;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\LeagueRepositoryInterface;
-use App\Repository\Interface\RegionRepositoryInterface;
 use App\Repository\Interface\TransactionalRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
@@ -23,7 +22,6 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
     use TransactionManagement;
     public function __construct(
         ManagerRegistry $registry,
-        private readonly RegionRepositoryInterface $regionRepository,
     ) {
         parent::__construct($registry, League::class);
     }
@@ -35,22 +33,12 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
         }
         return $league;
     }
-    public function findOrCreateForRegion(string $name, int $regionId): League
-    {
-        $league = $this->findOneBy(['name' => $name, 'region' => $regionId]);
-        if ($league === null) {
-            $league = new League();
-            $league->setName($name);
-            $league->setRegion($this->regionRepository->find($regionId));
-        }
-        return $league;
-    }
-
+    
     //    /**
-//     * @return League[] Returns an array of League objects
-//     */
-//    public function findByExampleField($value): array
-//    {
+    //     * @return League[] Returns an array of League objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
 //        return $this->createQueryBuilder('l')
 //            ->andWhere('l.exampleField = :val')
 //            ->setParameter('val', $value)
@@ -62,7 +50,7 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
 //    }
 
     //    public function findOneBySomeField($value): ?League
-//    {
+    //    {
 //        return $this->createQueryBuilder('l')
 //            ->andWhere('l.exampleField = :val')
 //            ->setParameter('val', $value)
@@ -71,4 +59,14 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
 //        ;
 //    }
 
+// public function findOrCreateForRegion(string $name, int $regionId): League
+// {
+//     $league = $this->findOneBy(['name' => $name, 'region' => $regionId]);
+//     if ($league === null) {
+//         $league = new League();
+//         $league->setName($name);
+//         $league->setRegion($this->regionRepository->find($regionId));
+//     }
+//     return $league;
+// }
 }
