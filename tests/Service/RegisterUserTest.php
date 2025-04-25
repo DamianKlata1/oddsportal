@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\DTO\NewUserDTO;
+use App\DTO\User\NewUserDTO;
 use App\Exception\ValidationException;
 use App\Tests\Base\KernelTest\UserTestBaseCase;
 use Symfony\Component\Security\Core\User\UserInterface;

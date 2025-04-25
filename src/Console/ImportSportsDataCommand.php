@@ -2,15 +2,17 @@
 
 namespace App\Console;
 
-use App\ExternalApi\OddsApi\Interface\OddsApiClientInterface;
-use App\Service\Interface\SportsDataImporterInterface;
-use Symfony\Component\Console\Attribute\AsCommand;
+use Exception;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Factory\Interface\DTO\SportsDataDTOFactoryInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
+use App\Service\Interface\Import\SportsDataImporterInterface;
 
 #[AsCommand(
     name: 'app:import-sports-data',
@@ -19,7 +21,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ImportSportsDataCommand extends Command
 {
     public function __construct(
+        private readonly OddsApiClientInterface $oddsApiClient,
         private readonly SportsDataImporterInterface $sportsDataImporter,
+        private readonly SportsDataDTOFactoryInterface $sportsDataDTOFactory,
     ) {
         parent::__construct();
     }
@@ -33,16 +37,17 @@ class ImportSportsDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $io->title('Importing sports data');
-        $io->section('Fetching data from external API');
 
-        $importResult = $this->sportsDataImporter->import();
+        $io->info('Fetching data from external API');
+        $data = $this->oddsApiClient->fetchSportsData();
+
+        $io->info('Validating and processing data');
+        $sportDataDTOs = $this->sportsDataDTOFactory->createFromArrayList($data);
+
+        $importResult = $this->sportsDataImporter->import($sportDataDTOs);
         if (!$importResult->isSuccess()) {
             $io->error('Failed to import sports data: ' . $importResult->getErrorMessage());
             return Command::FAILURE;
-        }
-        if (empty($importResult->getImported())) {
-            $io->warning('No sports data imported.');
-            return Command::SUCCESS;
         }
         foreach ($importResult->getImported() as $typeOfData => $data) {
             $io->section(ucfirst($typeOfData) . ' imported:');
@@ -51,7 +56,6 @@ class ImportSportsDataCommand extends Command
             }
         }
         $io->success('Sports data successfully imported.');
-
         return Command::SUCCESS;
     }
 }

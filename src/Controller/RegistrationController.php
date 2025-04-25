@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\DTO\NewUserDTO;
+use App\DTO\User\NewUserDTO;
 use App\Repository\Interface\UserRepositoryInterface;
 use App\Service\Interface\Email\EmailVerifierServiceInterface;
 use App\Service\Interface\Email\RegistrationEmailBuilderInterface;

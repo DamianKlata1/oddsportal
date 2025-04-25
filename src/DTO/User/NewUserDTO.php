@@ -1,8 +1,7 @@
 <?php
 
-namespace App\DTO;
+namespace App\DTO\User;
 
-use App\Validator\UniqueUserEmail;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class NewUserDTO {

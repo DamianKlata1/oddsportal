@@ -2,10 +2,11 @@
 
 namespace App\ExternalApi\OddsApi;
 
+use App\DTO\ExternalApi\OddsApi\OddsApiSportsDataDTO;
 use App\Entity\Sport;
 use App\Entity\League;
 use App\Entity\Region;
-use App\ExternalApi\OddsApi\Interface\OddsApiRegionResolverInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiRegionResolverInterface;
 use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 
 class OddsApiRegionResolver implements OddsApiRegionResolverInterface
@@ -45,17 +46,21 @@ class OddsApiRegionResolver implements OddsApiRegionResolverInterface
 
     ];
 
-    public function resolveRegionName(array $leagueData): string
+    public function resolveRegionName(OddsApiSportsDataDTO $sportsDataDto): string
     {
-        if($leagueData['has_outrights'] === true) {
+        if ($sportsDataDto->hasOutrights() === true) {
             return 'Outrights';
         }
-        $text = $leagueData['key'] . ' ' . $leagueData['title'] . ' ' . $leagueData['group'] . ' ' . $leagueData['description'];
+        $text = $sportsDataDto->getKey() . ' ' . $sportsDataDto->getTitle() . ' ' . $sportsDataDto->getGroup()
+            . ' ' . $sportsDataDto->getDescription();
 
         foreach ($this->regionKeywords as $regionName => $keywords) {
             foreach ($keywords as $keyword) {
                 // Use \b (boundary) to ensure we match whole words only
-                if (preg_match('/\b' . preg_quote(strtolower($keyword), '/') . '\b/', strtolower($text))) {
+                if (
+                    preg_match('/\b' . preg_quote(strtolower($keyword), '/')
+                        . '\b/', strtolower($text))
+                ) {
                     return $regionName;
                 }
             }

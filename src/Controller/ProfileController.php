@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\DTO\UserEditDTO;
+use App\DTO\User\UserEditDTO;
 use App\Entity\User;
 use App\Service\Interface\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

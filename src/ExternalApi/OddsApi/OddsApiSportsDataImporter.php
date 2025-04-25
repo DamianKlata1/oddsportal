@@ -7,16 +7,17 @@ use App\Entity\Sport;
 use App\Entity\League;
 use App\Entity\Region;
 use App\ExternalApi\OddsApi\Helper\ImportResult;
+use App\DTO\ExternalApi\OddsApi\OddsApiSportsDataDTO;
 use App\Repository\Interface\SportRepositoryInterface;
-use App\Service\Interface\SportsDataImporterInterface;
 use App\Repository\Interface\LeagueRepositoryInterface;
 use App\Repository\Interface\RegionRepositoryInterface;
-use App\ExternalApi\OddsApi\Interface\OddsApiClientInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
 use App\Service\Interface\LogoPath\SportLogoPathResolverInterface;
 use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
-use App\ExternalApi\OddsApi\Interface\OddsApiRegionResolverInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiRegionResolverInterface;
+use App\ExternalApi\OddsApi\Interface\OddsApiSportsDataImporterInterface;
 
-class OddsApiSportsDataImporter implements SportsDataImporterInterface
+class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
 {
     public function __construct(
         private readonly OddsApiClientInterface $oddsApiClient,
@@ -31,22 +32,24 @@ class OddsApiSportsDataImporter implements SportsDataImporterInterface
         private array $importedLeagues = [],
     ) {
     }
-
-    public function import(): ImportResult
+    /**
+     * @param OddsApiSportsDataDTO[] $sportsData
+     */
+    public function import(array $sportsData): ImportResult
     {
         $this->sportRepository->startTransaction();
         try {
-            $sportsData = $this->oddsApiClient->fetchSportsData();
             $groupedBySport = array_reduce($sportsData, function ($carry, $item) {
-                $carry[$item['group']][] = $item;
+                $sportName = $item->getGroup();
+                $carry[$sportName][] = $item;
                 return $carry;
             }, []);
-            foreach ($groupedBySport as $sportName => $leaguesData) {
+            foreach ($groupedBySport as $sportName => $sportDataDtos) {
                 $sport = $this->importSport($sportName);
-                foreach ($leaguesData as $leagueData) {
-                    $regionName = $this->regionResolver->resolveRegionName($leagueData);
+                foreach ($sportDataDtos as $sportDataDto) {
+                    $regionName = $this->regionResolver->resolveRegionName($sportDataDto);
                     $region = $this->importRegionForSport($regionName, $sport);
-                    $leagueName = $leagueData['title'];
+                    $leagueName = $sportDataDto->getTitle();
                     $this->importLeagueForRegion($leagueName, $region);
                 }
             }

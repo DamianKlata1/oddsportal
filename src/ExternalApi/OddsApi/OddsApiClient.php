@@ -3,7 +3,7 @@
 namespace App\ExternalApi\OddsApi;
 
 use App\Exception\FetchFailedException;
-use App\ExternalApi\OddsApi\Interface\OddsApiClientInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class OddsApiClient implements OddsApiClientInterface

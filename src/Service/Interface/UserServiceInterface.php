@@ -2,8 +2,8 @@
 
 namespace App\Service\Interface;
 
-use App\DTO\NewUserDTO;
-use App\DTO\UserEditDTO;
+use App\DTO\User\NewUserDTO;
+use App\DTO\User\UserEditDTO;
 use App\Entity\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 

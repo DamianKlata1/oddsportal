@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ExternalApi\OddsApi\Interface;
+namespace App\ExternalApi\Interface\OddsApi;
 
 interface OddsApiClientInterface
 {

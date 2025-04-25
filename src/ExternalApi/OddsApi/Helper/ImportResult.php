@@ -2,12 +2,10 @@
 
 namespace App\ExternalApi\OddsApi\Helper;
 
-class ImportResult
+use App\Service\Interface\Import\ImportResultInterface;
+
+class ImportResult implements ImportResultInterface
 {
-    public const STATUS_SUCCESS = 'success';
-    public const STATUS_FAILED = 'failed';
-
-
     public function __construct(
         private readonly string $status,
         private readonly array $imported = [],

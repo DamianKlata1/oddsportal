@@ -2,7 +2,7 @@
 
 namespace App\Tests\Service;
 
-use App\DTO\UserEditDTO;
+use App\DTO\User\UserEditDTO;
 use App\Exception\ValidationException;
 use App\Factory\UserFactory;
 use App\Tests\Base\KernelTest\UserTestBaseCase;
