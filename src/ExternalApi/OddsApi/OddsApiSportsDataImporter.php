@@ -16,6 +16,7 @@ use App\Service\Interface\LogoPath\SportLogoPathResolverInterface;
 use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiRegionResolverInterface;
 use App\ExternalApi\OddsApi\Interface\OddsApiSportsDataImporterInterface;
+use App\Service\Interface\ValidationServiceInterface;
 
 class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
 {
@@ -27,6 +28,7 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
         private readonly SportLogoPathResolverInterface $sportLogoPathResolver,
         private readonly RegionLogoPathResolverInterface $regionLogoPathResolver,
         private readonly OddsApiRegionResolverInterface $regionResolver,
+        private readonly ValidationServiceInterface $validationService,
         private array $importedSports = [],
         private array $importedRegions = [],
         private array $importedLeagues = [],
@@ -39,6 +41,7 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
     {
         $this->sportRepository->startTransaction();
         try {
+            $this->validationService->validateAll($sportsData);
             $groupedBySport = array_reduce($sportsData, function ($carry, $item) {
                 $sportName = $item->getGroup();
                 $carry[$sportName][] = $item;

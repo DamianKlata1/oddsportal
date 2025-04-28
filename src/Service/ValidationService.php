@@ -32,4 +32,10 @@ class ValidationService implements ValidationServiceInterface
             );
         }
     }
+    public function validateAll(array $objects): void
+    {
+        foreach ($objects as $object) {
+            $this->validate($object);
+        }
+    }
 }

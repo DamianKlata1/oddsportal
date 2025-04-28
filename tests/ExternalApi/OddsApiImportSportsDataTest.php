@@ -2,10 +2,12 @@
 
 namespace App\Tests\ExternalApi;
 
+use App\DTO\ExternalApi\OddsApi\OddsApiSportsDataDTO;
 use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
 use App\Factory\Interface\DTO\SportsDataDTOFactoryInterface;
 use App\Service\Interface\Import\SportsDataImporterInterface;
 use App\Tests\Base\KernelTest\DatabaseDependantTestCase;
+use User;
 
 class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
 {
@@ -21,13 +23,39 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
         $this->sportsDataDTOFactory = $container->get(SportsDataDTOFactoryInterface::class);
 
     } 
-    public function testSportDataIsImported(): void
+    public function testSportDataIsImportedCorrectly(): void
     {
-        $sportDataArray = $this->oddsApiClient->fetchSportsData();
-        $sportDataDTOs = $this->sportsDataDTOFactory->createFromArrayList($sportDataArray);
+        $sportDataArray = [
+            new OddsApiSportsDataDTO(
+                'key',
+                'group',
+                'title',
+                'description',
+                true,
+                false
+            )
+        ];
 
-        $importResult = $this->sportsDataImporter->import($sportDataDTOs);
+        $importResult = $this->sportsDataImporter->import($sportDataArray);
         
         $this->assertTrue($importResult->isSuccess());
     }
+    public function testIncorrectSportDataIsNotImported(): void
+    {
+        $sportDataArray = [
+            new OddsApiSportsDataDTO(
+                '',
+                'group',
+                'title',
+                'description',
+                true,
+                false
+            )
+        ];
+
+        $importResult = $this->sportsDataImporter->import($sportDataArray);
+        
+        $this->assertFalse($importResult->isSuccess());
+    }
+
 }
