@@ -3,15 +3,11 @@
 namespace App\ExternalApi\OddsApi;
 
 use App\DTO\ExternalApi\OddsApi\OddsApiSportsDataDTO;
-use App\Entity\Sport;
-use App\Entity\League;
-use App\Entity\Region;
 use App\ExternalApi\Interface\OddsApi\OddsApiRegionResolverInterface;
-use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 
 class OddsApiRegionResolver implements OddsApiRegionResolverInterface
 {
-    private array $regionKeywords = [
+    private const REGION_KEYWORDS = [
         'USA' => ['usa', 'mls', 'us', 'nfl', 'nba', 'american', 'mlb', 'pga', 'nhl', 'lacrosse'],
         'Australia' => ['australia', 'a-league', 'a league', 'aussie'],
         'South Korea' => ['south korea', 'k league', 'k-league', 'kbo'],
@@ -43,29 +39,42 @@ class OddsApiRegionResolver implements OddsApiRegionResolverInterface
         'Portugal' => ['portugal', 'portuguese'],
         'Scotland' => ['scotland', 'scottish'],
         'Turkey' => ['turkey', 'turkish'],
-
     ];
 
     public function resolveRegionName(OddsApiSportsDataDTO $sportsDataDto): string
     {
-        if ($sportsDataDto->hasOutrights() === true) {
+        if ($sportsDataDto->hasOutrights()) {
             return 'Outrights';
         }
-        $text = $sportsDataDto->getKey() . ' ' . $sportsDataDto->getTitle() . ' ' . $sportsDataDto->getGroup()
-            . ' ' . $sportsDataDto->getDescription();
+        $text = implode(' ', [
+            $sportsDataDto->getKey(),
+            $sportsDataDto->getTitle(),
+            $sportsDataDto->getGroup(),
+            $sportsDataDto->getDescription()
+        ]);
 
-        foreach ($this->regionKeywords as $regionName => $keywords) {
+        return $this->matchRegion($text) ?? 'Default';
+    }
+    private function matchRegion(string $text): ?string
+    {
+        foreach (self::REGION_KEYWORDS as $regionName => $keywords) {
             foreach ($keywords as $keyword) {
-                // Use \b (boundary) to ensure we match whole words only
-                if (
-                    preg_match('/\b' . preg_quote(strtolower($keyword), '/')
-                        . '\b/', strtolower($text))
-                ) {
+                if ($this->containsKeyword($text, $keyword)) {
                     return $regionName;
                 }
             }
         }
-        return 'Default Region';
+        return null;
+    }
+    private function containsKeyword(string $text, string $keyword): bool
+    {
+        return preg_match(
+            '/\b' . preg_quote(
+                strtolower($keyword),
+                '/'
+            ) . '\b/',
+            strtolower($text)
+        ) === 1;
     }
 
 }
