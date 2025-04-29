@@ -1,10 +1,14 @@
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import apiPublic from '/assets/api/apiPublic.js';
+
 
 export const useSportsStore = defineStore('sports', () => {
     const sports = ref([])
     const selectedSport = ref(null)
+    const isLoading = ref(false)
+    const errorMessage = ref(null)
 
     async function fetchSports() {
         sports.value = await getSportsFromApi()
@@ -17,14 +21,18 @@ export const useSportsStore = defineStore('sports', () => {
         selectedSport.value = sport
     }
 
-    // Mock API — zamień na prawdziwe
     async function getSportsFromApi() {
-        return [
-            {id: 1, name: 'Football', icon: 'https://www.thesportsdb.com/images/icons/sports/soccer.png'},
-            {id: 2, name: 'Basketball', icon: 'https://www.thesportsdb.com/images/icons/sports/soccer.png'},
-            {id: 3, name: 'Tennis', icon: 'https://www.thesportsdb.com/images/icons/sports/soccer.png'}
-        ]
+        isLoading.value = true
+        try {
+            const response = await apiPublic().get('/sports')
+            return response.data
+        } catch (error) {
+            errorMessage.value = error.message
+            return []
+        } finally {
+            isLoading.value = false
+        }
     }
 
-    return {sports, selectedSport, fetchSports, selectSport}
+    return {sports, fetchSports, selectSport, selectedSport, isLoading, errorMessage}
 })

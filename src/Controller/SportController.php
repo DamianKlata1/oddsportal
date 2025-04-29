@@ -25,7 +25,7 @@ class SportController extends AbstractController
     {
         $sports = $this->sportRepository->findAll();
         return new JsonResponse(
-            $this->serializer->serialize($sports, 'json'),
+            $this->serializer->serialize($sports, 'json', ['groups' => ['sport_list']]),
             Response::HTTP_OK,
             [],
             true

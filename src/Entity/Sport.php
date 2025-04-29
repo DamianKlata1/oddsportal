@@ -6,6 +6,7 @@ use App\Repository\SportRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SportRepository::class)]
 class Sport
@@ -13,12 +14,15 @@ class Sport
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['sport_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['sport_list'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['sport_list'])]
     private ?string $logoPath = null;
 
     #[ORM\OneToMany(mappedBy: 'sport', targetEntity: Region::class, orphanRemoval: true, cascade: ['persist'])]

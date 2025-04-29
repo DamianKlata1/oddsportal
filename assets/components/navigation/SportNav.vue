@@ -6,6 +6,7 @@ const store = useSportsStore()
 
 onMounted(() => {
   store.fetchSports()
+  console.log(store.sports)
 })
 
 function selectSport(sport) {
@@ -15,6 +16,7 @@ function selectSport(sport) {
 
 <template>
   <div class="d-flex gap-3 flex-wrap p-3">
+    <div v-if="store.errorMessage">{{ store.errorMessage }}</div>
     <div
         v-for="sport in store.sports"
         :key="sport.id"
@@ -24,7 +26,7 @@ function selectSport(sport) {
         style="cursor: pointer; width: 120px;"
     >
       <img
-          :src="sport.icon"
+          :src="sport.logoPath"
           alt="sport icon"
           style="height: 40px; object-fit: contain;"
       />
