@@ -15,8 +15,8 @@ use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
 use App\Service\Interface\LogoPath\SportLogoPathResolverInterface;
 use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiRegionResolverInterface;
-use App\ExternalApi\OddsApi\Interface\OddsApiSportsDataImporterInterface;
-use App\Service\Interface\ValidationServiceInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiSportsDataImporterInterface;
+use App\Service\Interface\Validation\ValidationServiceInterface;
 
 class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
 {
@@ -50,10 +50,14 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
             foreach ($groupedBySport as $sportName => $sportDataDtos) {
                 $sport = $this->importSport($sportName);
                 foreach ($sportDataDtos as $sportDataDto) {
-                    $regionName = $this->regionResolver->resolveRegionName($sportDataDto);
+                    $regionName = $this->regionResolver->resolve($sportDataDto);
                     $region = $this->importRegionForSport($regionName, $sport);
-                    $leagueName = $sportDataDto->getTitle();
-                    $this->importLeagueForRegion($leagueName, $region);
+                    $this->importLeagueForRegion(
+                        $sportDataDto->getTitle(),
+                        $region,
+                        $sportDataDto->getKey(),
+                        $sportDataDto->isActive()
+                    );
                 }
             }
             $this->sportRepository->commitTransaction();
@@ -92,15 +96,26 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
         }
         return $region;
     }
-    private function importLeagueForRegion(string $leagueName, Region $region): League
+    private function importLeagueForRegion(string $leagueName, Region $region, string $apiKey, bool $isActive): League
     {
         $league = $this->leagueRepository->findOneBy(['name' => $leagueName, 'region' => $region]);
         if ($league === null) {
             $league = new League();
             $league->setName($leagueName);
             $league->setRegion($region);
+            $league->setApiKey($apiKey);
+            $league->setActive($isActive);
             $this->leagueRepository->save($league, flush: true);
             $this->importedLeagues[] = $league->getName();
+        }
+        else{
+            // update league if it exists
+            if ($league->getApiKey() !== $apiKey) {
+                $league->setApiKey($apiKey);
+            }
+            if ($league->isActive() !== $isActive) {
+                $league->setActive($isActive);
+            }
         }
         return $league;
     }

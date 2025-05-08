@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\DTO\User\NewUserDTO;
 use App\Repository\Interface\UserRepositoryInterface;
 use App\Service\Interface\Email\EmailVerifierServiceInterface;
 use App\Service\Interface\Email\RegistrationEmailBuilderInterface;
-use App\Service\Interface\UserServiceInterface;
+use App\Service\Interface\User\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ class RegistrationController extends AbstractController
 
     /**
      */
-    #[Route('/api/register', name: 'api_register',methods: ['POST'])]
+    #[Route('/register', name: 'api_register',methods: ['POST'])]
     public function registerUser(
         #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY,)] NewUserDTO $userDTO
     ): JsonResponse
@@ -36,14 +36,14 @@ class RegistrationController extends AbstractController
         $user = $this->userService->registerUser($userDTO);
 
         $this->emailVerifier->sendEmailConfirmation(
-            'app_verify_email',
+            'api_verify_email',
             $user,
             $this->registrationEmailBuilder->buildConfirmationEmail($user));
 
         return $this->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
     }
 
-    #[Route('/verify/email', name: 'app_verify_email')]
+    #[Route('/verify/email', name: 'api_verify_email')]
     public function verifyUserEmail(Request $request): Response
     {
         $id = $request->query->get('id');

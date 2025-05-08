@@ -2,16 +2,16 @@
 
 namespace App\Console;
 
-use Exception;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Factory\Interface\DTO\SportsDataDTOFactoryInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
+use App\Repository\Interface\LeagueRepositoryInterface;
+use App\Repository\Interface\RegionRepositoryInterface;
+use App\Repository\Interface\SportRepositoryInterface;
 use App\Service\Interface\Import\SportsDataImporterInterface;
 
 #[AsCommand(
@@ -24,6 +24,9 @@ class ImportSportsDataCommand extends Command
         private readonly OddsApiClientInterface $oddsApiClient,
         private readonly SportsDataImporterInterface $sportsDataImporter,
         private readonly SportsDataDTOFactoryInterface $sportsDataDTOFactory,
+        private readonly SportRepositoryInterface   $sportRepository,
+        private readonly RegionRepositoryInterface $regionRepository,
+        private readonly LeagueRepositoryInterface $leagueRepository,
     ) {
         parent::__construct();
     }

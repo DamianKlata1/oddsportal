@@ -1,28 +1,34 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import apiPublic from '/assets/api/apiPublic.js'
 
 export const useRegionsStore = defineStore('regions', () => {
     const regions = ref([])
+    const selectedRegion = ref(null)
+    const isLoading = ref(false)
+    const errorMessage = ref(null)
+
+    function selectRegion(region) {
+        selectedRegion.value = region
+    }
 
     async function fetchRegionsForSport(sportId) {
-        // zamień na prawdziwe API
         regions.value = await getRegionsForSport(sportId)
     }
 
     async function getRegionsForSport(sportId) {
-        if (sportId === 1) {
-            return [
-                { name: 'Poland', logo: '🇵🇱', leagues: ['Ekstraklasa'] },
-                { name: 'England', logo: '🇬🇧', leagues: ['Premier League'] }
-            ]
-        }
-        if (sportId === 2) {
-            return [
-                { name: 'USA', logo: '🇺🇸', leagues: ['NBA'] }
-            ]
-        }
-        return []
+        isLoading.value = true
+                try {
+                    const response = await apiPublic().get('/api/sports/' + sportId + '/regions')
+                    console.log(response.data)
+                    return response.data
+                } catch (error) {
+                    errorMessage.value = error.message
+                    return []
+                } finally {
+                    isLoading.value = false
+                }
     }
 
-    return { regions, fetchRegionsForSport }
+    return { regions, fetchRegionsForSport, selectRegion, selectedRegion, isLoading, errorMessage }
 })

@@ -4,7 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    thesportsdb_flags_url: '%env(THESPORTSDB_FLAGS_URL)%'
+    thesportsdb_world_logo_url: '%env(THESPORTSDB_FLAGS_URL)%/world.png'
+    thesportsdb_icons_url: '%env(THESPORTSDB_ICONS_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -28,6 +30,7 @@ services:
     App\ExternalApi\ThesportsdbApi\ThesportsdbApiRegionLogoPathResolver:
         arguments:
             $thesportsdbFlagsUrl: '%env(THESPORTSDB_FLAGS_URL)%'
+            $worldLogoUrl: '%env(THESPORTSDB_FLAGS_URL)%/world.png'
     App\ExternalApi\ThesportsdbApi\ThesportsdbApiSportLogoPathResolver:
         arguments:
             $thesportsdbIconsUrl: '%env(THESPORTSDB_ICONS_URL)%'

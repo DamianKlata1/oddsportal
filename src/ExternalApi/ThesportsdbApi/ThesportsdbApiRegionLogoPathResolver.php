@@ -8,21 +8,33 @@ class ThesportsdbApiRegionLogoPathResolver implements RegionLogoPathResolverInte
 {
     public function __construct(
         private readonly string $thesportsdbFlagsUrl,
-    )
-    {
+        private readonly string $worldLogoUrl,
+    ) {
     }
-
     public function resolve(string $name): string
     {
-        $nameNormalized = $this->normalizeName($name);
-        $url = "{$this->thesportsdbFlagsUrl}/{$nameNormalized}.png";
-        return $url;
+        $normalized = $this->normalizeName($name);
+        $url = sprintf(
+            '%s/%s.png',
+            rtrim(
+                $this->thesportsdbFlagsUrl,
+                '/'
+            ),
+            $normalized
+        );
+
+        return $this->urlExists($url) ? $url : $this->worldLogoUrl;
     }
 
     private function normalizeName(string $name): string
     {
-        $eachWordUppercasedName = ucwords($name);
-        $nameWithDashes = str_replace(' ', '-', $eachWordUppercasedName);
-        return strtolower($nameWithDashes);
+        // Normalize to 'country-name' format expected by the API
+        $withDashes = str_replace(' ', '-', $name); // → "United-States"
+        return strtolower($withDashes); // → "united-states"
+    }
+    private function urlExists(string $url): bool
+    {
+        $headers = @get_headers($url, true); // Suppress warning if URL is invalid
+        return is_array($headers) && str_starts_with($headers[0], 'HTTP/1.1 200');
     }
 }

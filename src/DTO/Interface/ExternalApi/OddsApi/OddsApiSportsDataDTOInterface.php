@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO\Interface\ExternalApi;
+namespace App\DTO\Interface\ExternalApi\OddsApi;
 
 use App\DTO\Interface\SportsDataDTOInterface;
 

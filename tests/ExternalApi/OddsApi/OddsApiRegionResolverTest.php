@@ -25,7 +25,7 @@ class OddsApiRegionResolverTest extends KernelTestCase
             true,
             false
         );
-        $regionName = $this->oddsApiRegionResolver->resolveRegionName($sportsDataDto);
+        $regionName = $this->oddsApiRegionResolver->resolve($sportsDataDto);
         $this->assertEquals('Poland', $regionName);
     }
     public function testOutrightsRegionNameIsResolvedCorrectly(): void
@@ -38,7 +38,7 @@ class OddsApiRegionResolverTest extends KernelTestCase
             false,
             true
         );
-        $regionName = $this->oddsApiRegionResolver->resolveRegionName($sportsDataDto);
+        $regionName = $this->oddsApiRegionResolver->resolve($sportsDataDto);
         $this->assertEquals('Outrights', $regionName);
     }
     public function testDefaultRegionNameIsResolvedCorrectly(): void
@@ -51,7 +51,7 @@ class OddsApiRegionResolverTest extends KernelTestCase
             false,
             false
         );
-        $regionName = $this->oddsApiRegionResolver->resolveRegionName($sportsDataDto);
+        $regionName = $this->oddsApiRegionResolver->resolve($sportsDataDto);
         $this->assertEquals('Default', $regionName);
     }
 

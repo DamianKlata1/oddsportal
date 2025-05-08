@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\User;
 
 use App\DTO\User\NewUserDTO;
 use App\DTO\User\UserEditDTO;
 use App\Entity\User;
 use App\Exception\ValidationException;
 use App\Repository\Interface\UserRepositoryInterface;
-use App\Service\Interface\UserServiceInterface;
-use App\Service\Interface\ValidationServiceInterface;
+use App\Service\Interface\User\UserServiceInterface;
+use App\Service\Interface\Validation\ValidationServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;

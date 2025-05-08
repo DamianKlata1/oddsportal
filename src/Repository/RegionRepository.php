@@ -28,18 +28,29 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
     public function save(Region $region, bool $flush = false): Region
     {
         $this->getEntityManager()->persist($region);
-        if($flush){
+        if ($flush) {
             $this->getEntityManager()->flush();
         }
         return $region;
+    }
+    public function findWithActiveLeaguesBySport(int $sportId): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.leagues', 'l')
+            ->addSelect('l')
+            ->where('r.sport = :sportId')
+            ->andWhere('l.active = true')
+            ->setParameter('sportId', $sportId)
+            ->getQuery()
+            ->getResult();
     }
     //    /**
     //     * @return Region[] Returns an array of Region objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-        //        return $this->createQueryBuilder('r')
-        //            ->andWhere('r.exampleField = :val')
+    //        return $this->createQueryBuilder('r')
+    //            ->andWhere('r.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->orderBy('r.id', 'ASC')
 //            ->setMaxResults(10)
@@ -50,7 +61,7 @@ class RegionRepository extends ServiceEntityRepository implements RegionReposito
 
     //    public function findOneBySomeField($value): ?Region
     //    {
-        //        return $this->createQueryBuilder('r')
+    //        return $this->createQueryBuilder('r')
 //            ->andWhere('r.exampleField = :val')
 //            ->setParameter('val', $value)
 //            ->getQuery()

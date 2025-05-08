@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
-use App\Repository\Interface\RegionRepositoryInterface;
-use App\Repository\Interface\SportRepositoryInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Repository\Interface\SportRepositoryInterface;
+use App\Service\Interface\Region\RegionServiceInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class SportController extends AbstractController
 {
     public function __construct(
-        private SportRepositoryInterface  $sportRepository,
-        private RegionRepositoryInterface $regionRepository,
-        private SerializerInterface       $serializer
-    )
-    {
+        private SportRepositoryInterface $sportRepository,
+        private RegionServiceInterface $regionService,
+        private SerializerInterface $serializer
+    ) {
     }
 
     #[Route('/sports', name: 'api_get_sports', methods: ['GET'])]
@@ -32,15 +31,12 @@ class SportController extends AbstractController
         );
     }
 
+
     #[Route('/sports/{sportId}/regions', name: 'api_get_regions_for_sport', methods: ['GET'])]
     public function getRegionsForSport(int $sportId): JsonResponse
     {
-        $regions = $this->regionRepository->findBy(['sport' => $sportId]);
-        return new JsonResponse(
-            $this->serializer->serialize($regions, 'json'),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        $regionDtoList = $this->regionService->getRegionsWithActiveLeagues($sportId);
+
+        return $this->json($regionDtoList);
     }
 }

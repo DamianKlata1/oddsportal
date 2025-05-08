@@ -6,6 +6,8 @@ use App\Repository\RegionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: RegionRepository::class)]
 class Region
@@ -13,12 +15,15 @@ class Region
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['region_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['region_list'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['region_list'])]
     private ?string $logoPath = null;
 
     #[ORM\ManyToOne(inversedBy: 'regions')]
@@ -26,6 +31,7 @@ class Region
     private ?Sport $sport = null;
 
     #[ORM\OneToMany(mappedBy: 'region', targetEntity: League::class, orphanRemoval: true)]
+    #[Groups(['region_list'])]
     private Collection $leagues;
 
     public function __construct()

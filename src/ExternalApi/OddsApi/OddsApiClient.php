@@ -12,15 +12,17 @@ class OddsApiClient implements OddsApiClientInterface
         private readonly string $oddsApiUrl,
         private readonly string $oddsApiKey,
         private readonly HttpClientInterface $client
-    )
-    {
+    ) {
     }
     public function fetchSportsData(): array
     {
-        try{
-            $response = $this->client->request('GET', "{$this->oddsApiUrl}?apiKey={$this->oddsApiKey}");
+        try {
+            $response = $this->client->request(
+                'GET',
+                "{$this->oddsApiUrl}?apiKey={$this->oddsApiKey}&all=true"
+            );
             return $response->toArray();
-        } catch (\Exception $e) {
+        } catch (\Exception $e) {   
             throw new FetchFailedException('Error fetching data from Odds API: ' . $e->getMessage(), 502);
         }
     }

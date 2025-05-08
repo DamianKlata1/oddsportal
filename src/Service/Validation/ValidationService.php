@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Validation;
 
 use App\Exception\ValidationException;
-use App\Service\Interface\ValidationServiceInterface;
+use App\Service\Interface\Validation\ValidationServiceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

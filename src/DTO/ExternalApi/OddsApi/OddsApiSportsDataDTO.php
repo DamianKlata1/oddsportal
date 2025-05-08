@@ -3,7 +3,7 @@
 namespace App\DTO\ExternalApi\OddsApi;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use App\DTO\Interface\ExternalApi\OddsApiSportsDataDTOInterface;
+use App\DTO\Interface\ExternalApi\OddsApi\OddsApiSportsDataDTOInterface;
 
 
 class OddsApiSportsDataDTO implements OddsApiSportsDataDTOInterface
@@ -18,7 +18,6 @@ class OddsApiSportsDataDTO implements OddsApiSportsDataDTOInterface
         #[Assert\NotBlank()]
         private readonly string $description,
         #[Assert\Type('bool')]
-        #[Assert\IsTrue()]
         private readonly bool $active,
         #[Assert\Type('bool')]
         private readonly bool $hasOutrights

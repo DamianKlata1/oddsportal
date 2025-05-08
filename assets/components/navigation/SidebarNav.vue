@@ -25,7 +25,7 @@
               aria-expanded="false"
               :aria-controls="'collapse' + index"
           >
-            <span class="me-2">{{ region.logo }}</span> {{ region.name }}
+            <span class="me-2"><img :src="region.logoPath" alt="region logo"></span> {{ region.name }}
           </button>
         </h2>
         <div
@@ -37,7 +37,8 @@
           <div class="accordion-body">
             <ul class="list-unstyled mb-0">
               <li v-for="league in region.leagues" :key="league">
-                <a href="#" class="text-decoration-none">{{ league }}</a>
+                <span class="me-2"><img :src="region.logoPath" alt="league logo"></span>
+                <a href="#" class="text-decoration-none">{{ league.name }}</a>
               </li>
             </ul>
           </div>

@@ -8,7 +8,7 @@ import SportNav from "../../components/navigation/SportNav.vue";
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="container">
     <PublicNav/>
     <SportNav/>
     <div class="d-flex">
@@ -22,11 +22,11 @@ import SportNav from "../../components/navigation/SportNav.vue";
   </div>
 </template>
 
-<!--<style scoped src="/node_modules/bootstrap/dist/css/bootstrap.css">
+<!-- <style scoped src="/node_modules/bootstrap/dist/css/bootstrap.css">
     /*@import "/node_modules/bootstrap/scss/bootstrap.scss";*/
 </style>-->
-<!--<style scoped lang="scss">
+<!-- <style scoped lang="scss">
     .main-wrapper::v-deep(.bootstrap-scope) {
         @import "/node_modules/bootstrap/scss/bootstrap.scss";
-    }
-</style>-->
+    } 
+</style> -->

@@ -17,9 +17,10 @@ const routes = [
                 component: Public.HomeView
             },
             {
-                path: 'about',
-                name: 'about',
-                component: Public.AboutView
+                path: 'league/:leagueId/events',
+                name: 'league_events',
+                component: Public.LeagueEvents,
+                props: true,
             }
         ]
     },

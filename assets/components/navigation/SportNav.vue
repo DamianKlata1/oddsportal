@@ -6,7 +6,6 @@ const store = useSportsStore()
 
 onMounted(() => {
   store.fetchSports()
-  console.log(store.sports)
 })
 
 function selectSport(sport) {
@@ -22,7 +21,7 @@ function selectSport(sport) {
         :key="sport.id"
         @click="selectSport(sport)"
         class="card text-center p-2"
-        :class="{ 'border-primary': store.selectedSport?.id === sport.id }"
+        :class="{ 'border-success': store.selectedSport?.id === sport.id }"
         style="cursor: pointer; width: 120px;"
     >
       <img

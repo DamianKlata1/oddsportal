@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Interface;
+namespace App\Service\Interface\Validation;
 
 interface ValidationServiceInterface
 {

@@ -3,7 +3,7 @@
 namespace App\Tests\Base\KernelTest;
 
 use App\Repository\Interface\UserRepositoryInterface;
-use App\Service\Interface\UserServiceInterface;
+use App\Service\Interface\User\UserServiceInterface;
 use App\Tests\Trait\UserTestConstantsTrait;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 

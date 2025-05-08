@@ -1,33 +1,34 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
-use App\Repository\Interface\RegionRepositoryInterface;
+use App\Repository\Interface\LeagueRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class RegionController extends AbstractController
+class LeagueController extends AbstractController
 {
     public function __construct(
-        private RegionRepositoryInterface $regionRepository,
+        private LeagueRepositoryInterface $leagueRepository,
         private SerializerInterface       $serializer
     )
     {
     }
 
-    #[Route('/regions', name: 'api_get_regions')]
-    public function getRegions(): Response
+    #[Route('/leagues', name: 'api_get_leagues')]
+    public function getLeagues(): JsonResponse
     {
-        $regions = $this->regionRepository->findAll();
+        $leagues = $this->leagueRepository->findAll();
 
         return new JsonResponse(
-            $this->serializer->serialize($regions, 'json'),
+            $this->serializer->serialize($leagues, 'json'),
             Response::HTTP_OK,
             [],
             true
         );
+
     }
 }

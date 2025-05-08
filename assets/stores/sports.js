@@ -24,7 +24,7 @@ export const useSportsStore = defineStore('sports', () => {
     async function getSportsFromApi() {
         isLoading.value = true
         try {
-            const response = await apiPublic().get('/sports')
+            const response = await apiPublic().get('/api/sports')
             return response.data
         } catch (error) {
             errorMessage.value = error.message

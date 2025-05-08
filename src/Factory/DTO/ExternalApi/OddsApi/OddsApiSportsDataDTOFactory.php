@@ -5,7 +5,7 @@ namespace App\Factory\DTO\ExternalApi\OddsApi;
 use App\Exception\InvalidSportsDataException;
 use App\DTO\ExternalApi\OddsApi\OddsApiSportsDataDTO;
 use App\Factory\Interface\DTO\SportsDataDTOFactoryInterface;
-use App\Service\Interface\ValidationServiceInterface;
+use App\Service\Interface\Validation\ValidationServiceInterface;
 
 class OddsApiSportsDataDTOFactory implements SportsDataDTOFactoryInterface
 {
