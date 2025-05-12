@@ -20,7 +20,6 @@ export const useRegionsStore = defineStore('regions', () => {
         isLoading.value = true
                 try {
                     const response = await apiPublic().get('/api/sports/' + sportId + '/regions')
-                    console.log(response.data)
                     return response.data
                 } catch (error) {
                     errorMessage.value = error.message

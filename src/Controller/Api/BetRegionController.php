@@ -17,7 +17,7 @@ class BetRegionController extends AbstractController
     ) {
     }
 
-    #[Route('/bet-regions', name: 'api_bet_regions')]
+    #[Route('/bet-regions', name: 'api_bet_regions', methods: ['GET'])]
      public function getBetRegions(): JsonResponse
     {
         $betRegions = $this->betRegionRepository->findAll();

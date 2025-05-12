@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\EventRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
@@ -17,6 +20,23 @@ class Event
     #[ORM\JoinColumn(nullable: false)]
     private ?League $league = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $homeTeam = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $awayTeam = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    private ?\DateTimeImmutable $commenceTime = null;
+
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Outcome::class, orphanRemoval: true)]
+    private Collection $outcomes;
+
+    public function __construct()
+    {
+        $this->outcomes = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -30,6 +50,72 @@ class Event
     public function setLeague(?League $league): static
     {
         $this->league = $league;
+
+        return $this;
+    }
+
+    public function getHomeTeam(): ?string
+    {
+        return $this->homeTeam;
+    }
+
+    public function setHomeTeam(?string $homeTeam): static
+    {
+        $this->homeTeam = $homeTeam;
+
+        return $this;
+    }
+
+    public function getAwayTeam(): ?string
+    {
+        return $this->awayTeam;
+    }
+
+    public function setAwayTeam(?string $awayTeam): static
+    {
+        $this->awayTeam = $awayTeam;
+
+        return $this;
+    }
+
+    public function getCommenceTime(): ?\DateTimeImmutable
+    {
+        return $this->commenceTime;
+    }
+
+    public function setCommenceTime(\DateTimeImmutable $commenceTime): static
+    {
+        $this->commenceTime = $commenceTime;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Outcome>
+     */
+    public function getOutcomes(): Collection
+    {
+        return $this->outcomes;
+    }
+
+    public function addOutcome(Outcome $outcome): static
+    {
+        if (!$this->outcomes->contains($outcome)) {
+            $this->outcomes->add($outcome);
+            $outcome->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOutcome(Outcome $outcome): static
+    {
+        if ($this->outcomes->removeElement($outcome)) {
+            // set the owning side to null (unless already changed)
+            if ($outcome->getEvent() === $this) {
+                $outcome->setEvent(null);
+            }
+        }
 
         return $this;
     }

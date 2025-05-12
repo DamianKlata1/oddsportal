@@ -18,7 +18,7 @@ class RegionController extends AbstractController
     {
     }
 
-    #[Route('/regions', name: 'api_get_regions')]
+    #[Route('/regions', name: 'api_get_regions', methods: ['GET'])]
     public function getRegions(): Response
     {
         $regions = $this->regionRepository->findAll();

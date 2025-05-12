@@ -36,8 +36,6 @@ class RegionWithLeaguesDTO
     {
         return $this->logoPath;
     }
-
-
     /**
      * @return LeagueDTO[]
      */

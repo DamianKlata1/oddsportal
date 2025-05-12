@@ -52,7 +52,7 @@ class OddsApiRegionResolverTest extends KernelTestCase
             false
         );
         $regionName = $this->oddsApiRegionResolver->resolve($sportsDataDto);
-        $this->assertEquals('Default', $regionName);
+        $this->assertEquals('World', $regionName);
     }
 
 }

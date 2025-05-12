@@ -21,11 +21,12 @@ class Bookmaker
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: BetRegion::class, inversedBy: 'bookmakers')]
-    private Collection $betRegion;
+    private Collection $betRegions;
+
 
     public function __construct()
     {
-        $this->betRegion = new ArrayCollection();
+        $this->betRegions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -48,15 +49,15 @@ class Bookmaker
     /**
      * @return Collection<int, BetRegion>
      */
-    public function getBetRegion(): Collection
+    public function getBetRegions(): Collection
     {
-        return $this->betRegion;
+        return $this->betRegions;
     }
 
     public function addBetRegion(BetRegion $betRegion): static
     {
-        if (!$this->betRegion->contains($betRegion)) {
-            $this->betRegion->add($betRegion);
+        if (!$this->betRegions->contains($betRegion)) {
+            $this->betRegions->add($betRegion);
         }
 
         return $this;
@@ -64,7 +65,7 @@ class Bookmaker
 
     public function removeBetRegion(BetRegion $betRegion): static
     {
-        $this->betRegion->removeElement($betRegion);
+        $this->betRegions->removeElement($betRegion);
 
         return $this;
     }

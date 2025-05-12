@@ -34,8 +34,18 @@ class EventRepository extends ServiceEntityRepository implements EventRepository
 
         return $event;
     }
+    public function findWithOutcomesByLeague(int $leagueId): array
+    {
+        return $this->createQueryBuilder('e')
+            ->leftJoin('e.outcomes', 'o')
+            ->addSelect('o')
+            ->where('e.league = :leagueId')
+            ->setParameter('leagueId', $leagueId)
+            ->getQuery()
+            ->getResult();
+    }
 
-//    /**
+    //    /**
 //     * @return Event[] Returns an array of Event objects
 //     */
 //    public function findByExampleField($value): array
@@ -50,7 +60,7 @@ class EventRepository extends ServiceEntityRepository implements EventRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Event
+    //    public function findOneBySomeField($value): ?Event
 //    {
 //        return $this->createQueryBuilder('e')
 //            ->andWhere('e.exampleField = :val')

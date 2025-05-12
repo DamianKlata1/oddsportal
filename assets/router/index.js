@@ -17,7 +17,7 @@ const routes = [
                 component: Public.HomeView
             },
             {
-                path: 'league/:leagueId/events',
+                path: 'events/:leagueId',
                 name: 'league_events',
                 component: Public.LeagueEvents,
                 props: true,

@@ -20,7 +20,7 @@ class BetRegion
     #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: Bookmaker::class, mappedBy: 'betRegion')]
+    #[ORM\ManyToMany(targetEntity: Bookmaker::class, mappedBy: 'betRegions')]
     private Collection $bookmakers;
 
     #[ORM\Column(length: 255, nullable: true)]

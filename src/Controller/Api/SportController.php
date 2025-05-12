@@ -35,6 +35,11 @@ class SportController extends AbstractController
     #[Route('/sports/{sportId}/regions', name: 'api_get_regions_for_sport', methods: ['GET'])]
     public function getRegionsForSport(int $sportId): JsonResponse
     {
+        $sport = $this->sportRepository->find($sportId);
+        if (!$sport) {
+            return $this->json(['error' => 'Sport not found'], Response::HTTP_NOT_FOUND);
+        }
+
         $regionDtoList = $this->regionService->getRegionsWithActiveLeagues($sportId);
 
         return $this->json($regionDtoList);

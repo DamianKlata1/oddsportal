@@ -1,47 +1,42 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import apiPublic from '/assets/api/apiPublic.js'
+import { useLeagueEventsStore } from '/assets/stores/leagueEvents.js'
 
 const route = useRoute()
-const leagueId = ref(route.params.leagueId)
-const events = ref([])
-const isLoading = ref(false)
-const errorMessage = ref(null)
+const leagueEventsStore = useLeagueEventsStore()
 
 onMounted(() => {
-  fetchLeagueEvents()
+  leagueEventsStore.fetchLeagueEvents(route.params.leagueId)
 })
 
 watch(() => route.params.leagueId, (newLeagueId) => {
-  leagueId.value = newLeagueId
-  fetchLeagueEvents()
+  leagueEventsStore.fetchLeagueEvents(newLeagueId)
 })
 
-async function fetchLeagueEvents() {
-  isLoading.value = true
-  errorMessage.value = null
-  try {
-    const response = await apiPublic().get(`/leagues/${leagueId.value}/events`)
-    events.value = response.data
-  } catch (error) {
-    errorMessage.value = error.message
-  } finally {
-    isLoading.value = false
-  }
-}
 </script>
 
 <template>
-  <div>
-    <h3>Events for League {{ leagueId }}</h3>
-    <div v-if="isLoading">Loading...</div>
-    <div v-if="errorMessage" class="text-danger">{{ errorMessage }}</div>
-    <ul v-if="events.length > 0" class="list-group">
-      <li v-for="event in events" :key="event.id" class="list-group-item">
-        {{ event.name }} - {{ event.date }}
-      </li>
-    </ul>
-    <div v-else-if="!isLoading && events.length === 0">No events found for this league.</div>
+  <div v-if="leagueEventsStore.leagueEvents.length > 0" class="mt-3">
+    <h5>Events:</h5>
+    <div v-for="event in leagueEventsStore.leagueEvents" :key="event.id" class="mb-3 border p-2 rounded bg-light">
+      <div><strong>{{ event.homeTeam }} vs {{ event.awayTeam }}</strong></div>
+      <div>Date: {{ event.date }}</div>
+      <div class="mt-2">
+        <div><strong>Best Odds:</strong></div>
+        <div class="d-flex justify-content-between">
+          <div>
+            🏠 {{ event.bestOdds.home.odds.value }} ({{ event.bestOdds.home.bookmaker.name }})
+          </div>
+          <div>
+            🤝 {{ event.bestOdds.draw.odds.value }} ({{ event.bestOdds.draw.bookmaker.name }})
+          </div>
+          <div>
+            🛫 {{ event.bestOdds.away.odds.value }} ({{ event.bestOdds.away.bookmaker.name }})
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+  <div v-else>No events found for this league.</div>
 </template>

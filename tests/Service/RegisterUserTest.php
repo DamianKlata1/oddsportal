@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Entity\User;
 use App\DTO\User\NewUserDTO;
 use App\Exception\ValidationException;
 use App\Tests\Base\KernelTest\UserTestBaseCase;
@@ -14,7 +15,9 @@ class RegisterUserTest extends UserTestBaseCase
     {
         $userDTO = new NewUserDTO(self::CORRECT_TEST_EMAIL, self::CORRECT_TEST_PASSWORD);
 
-
+        /**
+         * @var User $user
+         */
         $user = $this->userService->registerUser($userDTO);
 
         $this->assertInstanceOf(UserInterface::class, $user);
