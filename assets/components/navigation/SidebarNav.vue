@@ -19,7 +19,7 @@
             <ul class="list-unstyled mb-0">
               <li v-for="league in region.leagues" :key="league">
                 <span class="me-2"><img :src="region.logoPath" alt="league logo"></span>
-                <a href="#" class="text-decoration-none text-success" @click.prevent="goToLeagueEvents(1)">
+                <a href="#" class="text-decoration-none text-success" @click.prevent="goToLeagueEvents(league.id)">
                   {{
                     league.name
                   }}</a>
@@ -36,6 +36,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useSportsStore } from '/assets/stores/sports.js';
 import { useRegionsStore } from "/assets/stores/regions.js";
+import { useBetRegionsStore } from "/assets/stores/betRegions.js";
 import { useRouter } from 'vue-router';
 
 const router = useRouter()

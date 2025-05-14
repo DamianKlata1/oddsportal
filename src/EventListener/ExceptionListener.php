@@ -3,10 +3,11 @@
 namespace App\EventListener;
 
 use App\Exception\ValidationException;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Exception\FetchFailedException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 #[AsEventListener]
@@ -25,6 +26,8 @@ class ExceptionListener
             $response->headers->replace($exception->getHeaders());
         } elseif ($exception instanceof ValidationException) {
             $response->setStatusCode(Response::HTTP_UNPROCESSABLE_ENTITY);
+        }elseif($exception instanceof FetchFailedException) {
+            $response->setStatusCode(Response::HTTP_BAD_GATEWAY);
         } else {
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }

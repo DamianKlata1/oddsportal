@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\DTO\Outcome\OutcomeDTO;
 use App\Entity\Outcome;
 use App\Enum\MarketType;
 use App\Enum\PriceFormat;
@@ -11,7 +12,9 @@ use App\Factory\OutcomeFactory;
 use App\Factory\BetRegionFactory;
 use App\Factory\BookmakerFactory;
 use App\DTO\Outcome\OutcomeFiltersDTO;
+use App\Factory\OddsDataImportSyncFactory;
 use App\Repository\Interface\EventRepositoryInterface;
+use App\Repository\Interface\OddsDataImportSyncRepositoryInterface;
 use App\Service\Interface\Event\EventServiceInterface;
 use App\Repository\Interface\OutcomeRepositoryInterface;
 use App\Tests\Base\KernelTest\DatabaseDependantTestCase;
@@ -25,6 +28,7 @@ class EventServiceTest extends DatabaseDependantTestCase
     protected OutcomeFactory $outcomeFactory;
     protected EventFactory $eventFactory;
     protected OutcomeRepositoryInterface $outcomeRepository;
+    protected OddsDataImportSyncFactory $oddsDataImportSyncFactory;
     public function setUp(): void
     {
         parent::setUp();
@@ -36,38 +40,39 @@ class EventServiceTest extends DatabaseDependantTestCase
         $this->outcomeFactory = $container->get(OutcomeFactory::class);
         $this->eventFactory = $container->get(EventFactory::class);
         $this->outcomeRepository = $container->get(OutcomeRepositoryInterface::class);
-
+        $this->oddsDataImportSyncFactory = $container->get(OddsDataImportSyncFactory::class);
+        
     }
-    public function testGetEventsForLeague(): void
+    public function testGetEventsForLeagueReturnsEventsWithBestOutcomesForGivenLeague(): void
     {
         $league = $this->leagueFactory->createOne();
         $betRegion = $this->betRegionFactory->createOne();
 
-        $bookmaker1 = $this->bookmakerFactory->createOne([
-            'name' => 'Bookmaker 1',
-            'betRegions' => [$betRegion],
+        $oddsDataImportSync = $this->oddsDataImportSyncFactory->createOne([
+            'league' => $league,
+            'betRegion' => $betRegion,
+            'lastImportedAt' => (new \DateTimeImmutable())->modify('-4 minutes'),
         ]);
 
-        $bookmaker2 = $this->bookmakerFactory->createOne([
-            'name' => 'Bookmaker 2',
-            'betRegions' => [$betRegion],
-        ]);
+        $bookmaker1 = $this->createBookmakerWithRegion('Bookmaker 1', $betRegion);
+        $bookmaker2 = $this->createBookmakerWithRegion('Bookmaker 2', $betRegion);
 
         $event = $this->eventFactory->createOne([
             'homeTeam' => 'Home',
             'awayTeam' => 'Away',
             'commenceTime' => new \DateTimeImmutable(),
             'league' => $league,
+            'apiId' => 'event_api_id'
         ]);
 
         // Outcome'y z dwoma bukmacherami, do jednego eventu
         $outcomesData = [
-            ['Home', 1.5, $bookmaker1, new \DateTimeImmutable()],
-            ['Draw', 2.0, $bookmaker1, new \DateTimeImmutable()],
-            ['Away', 1.8, $bookmaker1, new \DateTimeImmutable()],
-            ['Home', 1.6, $bookmaker2, new \DateTimeImmutable()],
-            ['Draw', 2.1, $bookmaker2, new \DateTimeImmutable()],
-            ['Away', 1.9, $bookmaker2, new \DateTimeImmutable()],
+            ['Home', 1.5, $bookmaker1, (new \DateTimeImmutable())->modify('+1 day')],
+            ['Draw', 2.0, $bookmaker1, (new \DateTimeImmutable())->modify('+1 day')],
+            ['Away', 1.8, $bookmaker1, (new \DateTimeImmutable())->modify('+1 day')],
+            ['Home', 1.6, $bookmaker2, (new \DateTimeImmutable())->modify('+1 day')],
+            ['Draw', 2.1, $bookmaker2, (new \DateTimeImmutable())->modify('+1 day')],
+            ['Away', 1.9, $bookmaker2, (new \DateTimeImmutable())->modify('+1 day')],
         ];
 
         foreach ($outcomesData as [$name, $price, $bookmaker, $lastUpdate]) {
@@ -89,6 +94,7 @@ class EventServiceTest extends DatabaseDependantTestCase
 
         $eventDTOs = $this->eventService->getEventsForLeague($league->getId(), $outcomeFiltersDTO);
 
+
         $this->assertNotEmpty($eventDTOs);
         $this->assertCount(1, $eventDTOs);
 
@@ -96,8 +102,26 @@ class EventServiceTest extends DatabaseDependantTestCase
             $this->assertSame('Home', $eventDTO->getHomeTeam());
             $this->assertSame('Away', $eventDTO->getAwayTeam());
             $this->assertNotEmpty($eventDTO->getBestOutcomes());
-            
+        
+            $bestOutcomes = $eventDTO->getBestOutcomes();
+            $this->assertCount(3, $bestOutcomes);
+            /** @var OutcomeDTO $outcome */
+            foreach ($bestOutcomes as $outcome) {
+                match ($outcome->getName()) {
+                    'Home' => $this->assertSame('1.6', $outcome->getPrice()),
+                    'Draw' => $this->assertSame('2.1', $outcome->getPrice()),
+                    'Away' => $this->assertSame('1.9', $outcome->getPrice()),
+                    default => $this->fail("Unexpected outcome name: " . $outcome->getName())
+                };
+            }
         }
 
+    }
+    private function createBookmakerWithRegion(string $name, $betRegion)
+    {
+        return $this->bookmakerFactory->createOne([
+            'name' => $name,
+            'betRegions' => [$betRegion],
+        ]);
     }
 }

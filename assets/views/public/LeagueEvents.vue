@@ -2,17 +2,41 @@
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLeagueEventsStore } from '/assets/stores/leagueEvents.js'
+import { useBetRegionsStore } from '/assets/stores/betRegions.js'
 
 const route = useRoute()
 const leagueEventsStore = useLeagueEventsStore()
+const betRegionsStore = useBetRegionsStore()
 
-onMounted(() => {
-  leagueEventsStore.fetchLeagueEvents(route.params.leagueId)
+onMounted(async () => {
+  await tryFetchEvents()
 })
 
-watch(() => route.params.leagueId, (newLeagueId) => {
-  leagueEventsStore.fetchLeagueEvents(newLeagueId)
-})
+ const tryFetchEvents = async () => {
+  const leagueId = route.params.leagueId
+  const selectedRegion = betRegionsStore.selectedBetRegion.name
+  console.log(selectedRegion)
+
+  if (leagueId && selectedRegion) {
+    leagueEventsStore.fetchLeagueEvents(leagueId, selectedRegion)
+  }
+}
+
+// Watch league ID
+watch(
+  () => route.params.leagueId,
+  () => {
+    tryFetchEvents()
+  }
+)
+
+// Watch selected bet region
+watch(
+  () => betRegionsStore.selectedBetRegion,
+  () => {
+    tryFetchEvents()
+  }
+)
 
 </script>
 
@@ -21,18 +45,12 @@ watch(() => route.params.leagueId, (newLeagueId) => {
     <h5>Events:</h5>
     <div v-for="event in leagueEventsStore.leagueEvents" :key="event.id" class="mb-3 border p-2 rounded bg-light">
       <div><strong>{{ event.homeTeam }} vs {{ event.awayTeam }}</strong></div>
-      <div>Date: {{ event.date }}</div>
+      <div>Date: {{ event.commenceTime }}</div>
       <div class="mt-2">
         <div><strong>Best Odds:</strong></div>
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between" v-for="outcome in event.bestOutcomes" >
           <div>
-            🏠 {{ event.bestOdds.home.odds.value }} ({{ event.bestOdds.home.bookmaker.name }})
-          </div>
-          <div>
-            🤝 {{ event.bestOdds.draw.odds.value }} ({{ event.bestOdds.draw.bookmaker.name }})
-          </div>
-          <div>
-            🛫 {{ event.bestOdds.away.odds.value }} ({{ event.bestOdds.away.bookmaker.name }})
+            🏠 {{ outcome.name }} ({{ outcome.price }}) [{{ outcome.bookmaker.name }}]
           </div>
         </div>
       </div>

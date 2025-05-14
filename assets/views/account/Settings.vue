@@ -1,6 +1,7 @@
 <script setup>
     import { Form, Field, ErrorMessage } from 'vee-validate';
     import * as yup from 'yup';
+    import {RouterLink} from 'vue-router';
 
     const schema = yup.object({
         email: yup.string().email(),
@@ -10,7 +11,6 @@
                 .string()
                 .oneOf([yup.ref('password')], 'Passwords do not match'),
     });
-    import {RouterLink} from 'vue-router';
 </script>
 <template>
     <div class="container">
@@ -85,6 +85,7 @@
         methods: {
             submit(values) {
                 this.loader = true;
+                console.log(values)
                 apiPrivate().patch('/api/account/edit', values)
                         .then((response) => {
                             Toast(response.data.message, 'success');

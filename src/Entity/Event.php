@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
 {
@@ -31,6 +32,9 @@ class Event
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: Outcome::class, orphanRemoval: true)]
     private Collection $outcomes;
+
+    #[ORM\Column(length: 255)]
+    private ?string $apiId = null;
 
     public function __construct()
     {
@@ -116,6 +120,18 @@ class Event
                 $outcome->setEvent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getApiId(): ?string
+    {
+        return $this->apiId;
+    }
+
+    public function setApiId(string $apiId): static
+    {
+        $this->apiId = $apiId;
 
         return $this;
     }

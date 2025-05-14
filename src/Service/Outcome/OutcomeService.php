@@ -21,19 +21,12 @@ class OutcomeService implements OutcomeServiceInterface
     }
     public function getBestOutcomes(Collection $outcomes, PriceFormat $format = PriceFormat::DECIMAL): array
     {
-        $outcomesGroupedByName = $outcomes->reduce(
-            function (array $carry, Outcome $outcome) {
-                $carry[$outcome->getName()][] = $outcome;
-                return $carry;
-            },
-            []
-        );
+        $outcomesGroupedByName = $this->groupOutcomesByName($outcomes);
         $bestOutcomes = [];
         foreach ($outcomesGroupedByName as $name => $outcomes) {
-            /**
-             * @var Outcome $bestOutcome
-             */
-            $bestOutcome = max($outcomes, fn($a, $b) => $a->getPrice() <=> $b->getPrice());
+
+            $bestOutcome = $this->calculateBestOutcome($outcomes);
+
             $bestOutcomes[] = new OutcomeDTO(
                 id: $bestOutcome->getId(),
                 name: $name,
@@ -53,6 +46,31 @@ class OutcomeService implements OutcomeServiceInterface
                 && $outcome->getMarket() === $market->toString()
                 && $outcome->getBookmaker()->getBetRegions()->contains($region);
         });
+    }
+    private function groupOutcomesByName(Collection $outcomes): Collection
+    {
+        return $outcomes->reduce(
+            function (ArrayCollection $carry, Outcome $outcome) {
+                if (!$carry->containsKey($outcome->getName())) {
+                    $carry->set($outcome->getName(), new ArrayCollection());
+                }
+                $carry->get($outcome->getName())->add($outcome);
+                return $carry;
+            },
+            new ArrayCollection()
+        );
+    }
+
+    private function calculateBestOutcome(Collection $outcomes): ?Outcome
+    {
+        return $outcomes->reduce(
+            function (?Outcome $carry, Outcome $item) {
+                if ($carry === null || $item->getPrice() > $carry->getPrice()) {
+                    return $item;
+                }
+                return $carry;
+            }
+        );
     }
 
 

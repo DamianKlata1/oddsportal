@@ -20,7 +20,7 @@ class Bookmaker
     #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: BetRegion::class, inversedBy: 'bookmakers')]
+    #[ORM\ManyToMany(targetEntity: BetRegion::class, inversedBy: 'bookmakers', cascade: ['persist'])]
     private Collection $betRegions;
 
 

@@ -7,6 +7,7 @@ use App\Repository\BetRegionRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[UniqueEntity(fields: ['name'], message: 'There is already a region with this name.')]
 #[ORM\Entity(repositoryClass: BetRegionRepository::class)]
@@ -18,12 +19,14 @@ class BetRegion
     private ?int $id = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['bet_region_list'])]
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: Bookmaker::class, mappedBy: 'betRegions')]
     private Collection $bookmakers;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['bet_region_list'])]
     private ?string $logoPath = null;
 
     public function __construct()

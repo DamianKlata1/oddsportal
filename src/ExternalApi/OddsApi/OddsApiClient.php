@@ -26,5 +26,17 @@ class OddsApiClient implements OddsApiClientInterface
             throw new FetchFailedException('Error fetching data from Odds API: ' . $e->getMessage(), 502);
         }
     }
+    public function fetchOddsDataForLeague(string $leagueKey, string $region ): array
+    {
+        try {
+            $response = $this->client->request(
+                'GET',
+                "{$this->oddsApiUrl}/{$leagueKey}/odds/?apiKey={$this->oddsApiKey}&regions={$region}&markets=h2h"
+            );
+            return $response->toArray();
+        } catch (\Exception $e) {
+            throw new FetchFailedException('Error fetching data from Odds API: ' . $e->getMessage(), 502);
+        }
+    }
 
 }

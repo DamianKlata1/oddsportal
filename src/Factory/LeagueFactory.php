@@ -32,9 +32,10 @@ final class LeagueFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'active' => self::faker()->boolean(),
+            'active' => true,
             'name' => self::faker()->text(255),
             'region' => RegionFactory::new(),
+            'apiKey' => self::faker()->text(255),
         ];
     }
 

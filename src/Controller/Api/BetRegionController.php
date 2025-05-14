@@ -22,7 +22,7 @@ class BetRegionController extends AbstractController
     {
         $betRegions = $this->betRegionRepository->findAll();
         return new JsonResponse(
-            $this->serializer->serialize($betRegions, 'json'),
+            $this->serializer->serialize($betRegions, 'json', ['groups' => 'bet_region_list']),
             Response::HTTP_OK,
             [],
             true

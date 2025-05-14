@@ -11,6 +11,7 @@ use App\Repository\Interface\EventRepositoryInterface;
 use App\Service\Interface\Event\EventServiceInterface;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 
 class EventController extends AbstractController
 {
@@ -34,11 +35,10 @@ class EventController extends AbstractController
     #[Route('events/{leagueId}', name: 'api_get_league_events', methods: ['GET'])]
     public function getEventsForLeague(
         int $leagueId,
-        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] OutcomeFiltersDTO $outcomeFiltersDTO,
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] OutcomeFiltersDTO $outcomeFiltersDTO,
     ): JsonResponse 
     {
         $events = $this->eventService->getEventsForLeague($leagueId, $outcomeFiltersDTO);
-
         return new JsonResponse(
             $this->serializer->serialize($events, 'json'),
             Response::HTTP_OK,

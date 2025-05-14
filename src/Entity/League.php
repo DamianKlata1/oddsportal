@@ -34,7 +34,6 @@ class League
 
     #[ORM\Column]
     private ?bool $active = null;
-    
 
     public function __construct()
     {
@@ -120,6 +119,19 @@ class League
     public function setActive(bool $active): static
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+
+    public function getLastOddsDataUpdateAt(): ?\DateTimeImmutable
+    {
+        return $this->lastOddsDataUpdateAt;
+    }
+
+    public function setLastOddsDataUpdateAt(?\DateTimeImmutable $lastOddsDataUpdateAt): static
+    {
+        $this->lastOddsDataUpdateAt = $lastOddsDataUpdateAt;
 
         return $this;
     }

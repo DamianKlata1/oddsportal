@@ -33,6 +33,7 @@ final class BetRegionFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => 'eu',
+            'logoPath' => 'test_logo.png',
         ];
     }
 

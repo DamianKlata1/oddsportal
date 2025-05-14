@@ -20,7 +20,7 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
     protected SportRepositoryInterface $sportRepository;
     protected RegionRepositoryInterface $regionRepository;
     protected LeagueRepositoryInterface $leagueRepository;
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $container = static::getContainer();
@@ -30,7 +30,7 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
         $this->sportRepository = $container->get(SportRepositoryInterface::class);
         $this->regionRepository = $container->get(RegionRepositoryInterface::class);
         $this->leagueRepository = $container->get(LeagueRepositoryInterface::class);
-    } 
+    }
     public function testSportsDataIsImportedCorrectly(): void
     {
         $sportDataArray = [
@@ -45,7 +45,7 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
         ];
 
         $importResult = $this->sportsDataImporter->import($sportDataArray);
-        
+
         $sport = $this->sportRepository->findOneBy(['name' => 'sport name']);
         $region = $this->regionRepository->findOneBy(['name' => 'World']);
         $league = $this->leagueRepository->findOneBy(['name' => 'league name']);
@@ -58,7 +58,45 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
         $this->assertEquals('World', $region->getName());
         $this->assertEquals('league name', $league->getName());
         $this->assertEquals('default_region_sport_name_league_name', $league->getApiKey());
-        $this->assertTrue( $league->isActive());
+        $this->assertTrue($league->isActive());
+    }
+    public function testSportsDataImportWithExistingSport(): void
+    {
+        $sportDataArray = [
+            new OddsApiSportsDataDTO(
+                'default_region_sport_name_league_name',
+                'sport name',
+                'league name',
+                'description',
+                true,
+                false
+            ),
+            new OddsApiSportsDataDTO(
+                'default_region_sport_name_league_name2',
+                'sport name',
+                'league name 2',
+                'description',
+                true,
+                false
+            )
+        ];
+
+        $this->sportsDataImporter->import($sportDataArray);
+        $sport = $this->sportRepository->findOneBy(['name' => 'sport name']);
+        $region = $this->regionRepository->findOneBy(['name' => 'World']);
+        $league = $this->leagueRepository->findOneBy(['name' => 'league name']);
+        $league2 = $this->leagueRepository->findOneBy(['name' => 'league name 2']);
+
+        $this->assertNotNull($sport);
+        $this->assertNotNull($region);
+        $this->assertNotNull($league);
+        $this->assertEquals('sport name', $sport->getName());
+        $this->assertEquals('World', $region->getName());
+        $this->assertEquals('league name', $league->getName());
+        $this->assertEquals('default_region_sport_name_league_name', $league->getApiKey());
+        $this->assertEquals('default_region_sport_name_league_name2', $league2->getApiKey());
+        $this->assertEquals($region->getId(), $league->getRegion()->getId());
+        $this->assertEquals($region->getId(), $league2->getRegion()->getId());
     }
     public function testSportsDataImportUpdatesApiKeyCorrectly(): void
     {
@@ -74,8 +112,8 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
         ];
         $this->sportsDataImporter->import($sportDataArray);
         $league = $this->leagueRepository->findOneBy(['name' => 'league name']);
-
-        $this->assertTrue( $league->isActive());
+        
+        $this->assertTrue($league->isActive());
         $sportDataArrayUpdated = [
             new OddsApiSportsDataDTO(
                 'default_region_sport_name_league_name',
@@ -90,7 +128,7 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
 
         $leagueUpdated = $this->leagueRepository->findOneBy(['name' => 'league name']);
 
-        $this->assertFalse( $leagueUpdated->isActive());
+        $this->assertFalse($leagueUpdated->isActive());
     }
     public function testSportsDataImportFailsWithInvalidDto(): void
     {
@@ -109,7 +147,7 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
         $sport = $this->sportRepository->findOneBy(['name' => 'sport name']);
         $region = $this->regionRepository->findOneBy(['name' => 'Default']);
         $league = $this->leagueRepository->findOneBy(['name' => 'league name']);
-        
+
         $this->assertFalse($importResult->isSuccess());
         $this->assertNull($league);
         $this->assertNull($sport);

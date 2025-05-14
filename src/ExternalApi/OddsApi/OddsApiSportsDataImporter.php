@@ -107,9 +107,7 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
             $league->setActive($isActive);
             $this->leagueRepository->save($league, flush: true);
             $this->importedLeagues[] = $league->getName();
-        }
-        else{
-            // update league if it exists
+        } else {
             if ($league->getApiKey() !== $apiKey) {
                 $league->setApiKey($apiKey);
             }

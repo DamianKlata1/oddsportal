@@ -34,6 +34,16 @@ class BookmakerRepository extends ServiceEntityRepository implements BookmakerRe
 
         return $bookmaker;
     }
+    public function findOrCreate(string $name): Bookmaker
+    {
+        $bookmaker = $this->findOneBy(['name' => $name]);
+        if (!$bookmaker) {
+            $bookmaker = new Bookmaker();
+            $bookmaker->setName($name);
+            $this->save($bookmaker, true);
+        }
+        return $bookmaker;
+    }
 
 //    /**
 //     * @return Bookmaker[] Returns an array of Bookmaker objects

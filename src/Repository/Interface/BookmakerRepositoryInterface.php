@@ -8,5 +8,7 @@ use Doctrine\Persistence\ObjectRepository;
 interface BookmakerRepositoryInterface extends TransactionalRepositoryInterface, ObjectRepository
 {
     public function save(Bookmaker $bookmaker, bool $flush = false): Bookmaker;
+    public function findOrCreate(string $name): Bookmaker;
+
 
 }
