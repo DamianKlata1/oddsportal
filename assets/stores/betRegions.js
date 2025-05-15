@@ -10,9 +10,6 @@ export const useBetRegionsStore = defineStore('betRegions', () => {
 
     async function fetchBetRegions() {
         betRegions.value = await getBetRegions()
-        if (betRegions.value.length > 0) {
-            selectedBetRegion.value = betRegions.value[0]
-        }
     }
 
     async function getBetRegions() {
@@ -28,4 +25,8 @@ export const useBetRegionsStore = defineStore('betRegions', () => {
                 }
     }
     return { betRegions, fetchBetRegions, selectedBetRegion, isLoading, errorMessage }
+}, {
+    persist: {
+        paths: ['selectedBetRegion'], // only persist the data, not loading/error
+    }
 })

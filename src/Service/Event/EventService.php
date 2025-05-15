@@ -40,9 +40,8 @@ class EventService implements EventServiceInterface
         
         $league = $this->leagueRepository->find($leagueId);
         $betRegion = $this->betRegionRepository->findOneBy(['name' => $outcomeFiltersDTO->getBetRegion()]);
-        if($this->oddsDataImportSyncManager->isSyncRequired($league,$betRegion, 5)) {
+        if($this->oddsDataImportSyncManager->isSyncRequired($league,$betRegion)) {
             $eventsData = $this->oddsApiClient->fetchOddsDataForLeague($league->getApiKey(), $betRegion->getName());
-            
             $importResult = $this->oddsDataImporter->import($eventsData, $league, $betRegion);
             if (!$importResult->isSuccess()) {
                 throw new ImportFailedException(

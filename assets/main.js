@@ -9,6 +9,7 @@ import * as bootstrap from 'bootstrap';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { i18n }from './i18n.js';
 import App from './App.vue';
 import router from './router';
@@ -17,7 +18,10 @@ import useUserStore from '/assets/stores/user.js';
 
 const app = createApp(App);
 
-app.use(createPinia());
+const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
+app.use(pinia);
 app.use(i18n);
 
 const store = useUserStore();

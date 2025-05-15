@@ -31,4 +31,8 @@ export const useLeagueEventsStore = defineStore('leagueEvents', () => {
     }
 
     return { leagueEvents, fetchLeagueEvents, isLoading, errorMessage }
+}, {
+    persist: {
+        paths: ['leagueEvents'], // only persist the data, not loading/error
+    }
 })

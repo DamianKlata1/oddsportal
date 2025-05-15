@@ -12,9 +12,6 @@ export const useSportsStore = defineStore('sports', () => {
 
     async function fetchSports() {
         sports.value = await getSportsFromApi()
-        if (sports.value.length > 0) {
-            selectedSport.value = sports.value[0]
-        }
     }
 
     function selectSport(sport) {
@@ -35,4 +32,8 @@ export const useSportsStore = defineStore('sports', () => {
     }
 
     return {sports, fetchSports, selectSport, selectedSport, isLoading, errorMessage}
+}, {
+    persist: {
+        paths: ['selectedSport'], // only persist the data, not loading/error
+    }
 })

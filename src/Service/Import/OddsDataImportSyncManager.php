@@ -10,12 +10,13 @@ use App\Service\Interface\Import\OddsDataImportSyncManagerInterface;
 
 class OddsDataImportSyncManager implements OddsDataImportSyncManagerInterface
 {
+
     public function __construct(
         private readonly OddsDataImportSyncRepositoryInterface $oddsDataImportSyncRepository,
     ) {
     }
 
-    public function isSyncRequired(League $league, BetRegion $betRegion, int $thresholdInMinutes): bool
+    public function isSyncRequired(League $league, BetRegion $betRegion, int $thresholdInMinutes = self::SYNC_THRESHOLD_MINUTES): bool
     {
         $status = $this->oddsDataImportSyncRepository->findOneBy(['league' => $league, 'betRegion' => $betRegion]);
         if (!$status) {
@@ -34,9 +35,10 @@ class OddsDataImportSyncManager implements OddsDataImportSyncManagerInterface
             $status = new OddsDataImportSync();
             $status->setLeague($league);
             $status->setBetRegion($betRegion);
-            $status->setLastImportedAt($now);
-            $this->oddsDataImportSyncRepository->save($status,true);
         }
+        $status->setLastImportedAt($now);
+
+        $this->oddsDataImportSyncRepository->save($status, true);
     }
 
 }
