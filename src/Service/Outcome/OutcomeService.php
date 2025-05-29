@@ -26,7 +26,6 @@ class OutcomeService implements OutcomeServiceInterface
         foreach ($outcomesGroupedByName as $name => $outcomes) {
 
             $bestOutcome = $this->calculateBestOutcome($outcomes);
-
             $bestOutcomes[] = new OutcomeDTO(
                 id: $bestOutcome->getId(),
                 name: $name,
@@ -39,14 +38,15 @@ class OutcomeService implements OutcomeServiceInterface
         }
         return $bestOutcomes;
     }
-    public function filterOutcomesByMarketAndRegion(Collection $outcomes, MarketType $market, BetRegion $region): Collection
+    public function filterOutcomesByMarketsAndRegion(Collection $outcomes, array $markets, BetRegion $region): Collection
     {
-        return $outcomes->filter(function ($outcome) use ($market, $region) {
+        return $outcomes->filter(function ($outcome) use ($markets, $region) {
             return $outcome instanceof Outcome
-                && $outcome->getMarket() === $market->toString()
+                && in_array(MarketType::fromString($outcome->getMarket()), $markets, true)
                 && $outcome->getBookmaker()->getBetRegions()->contains($region);
         });
     }
+    
     private function groupOutcomesByName(Collection $outcomes): Collection
     {
         return $outcomes->reduce(

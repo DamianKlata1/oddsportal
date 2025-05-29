@@ -98,6 +98,48 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
         $this->assertEquals($region->getId(), $league->getRegion()->getId());
         $this->assertEquals($region->getId(), $league2->getRegion()->getId());
     }
+    public function testSportDataImportWithExistingRegion(): void
+    {
+        $sportDataArray = [
+            new OddsApiSportsDataDTO(
+                'default_region_sport_name_league_name',
+                'sport name',
+                'league name',
+                'description',
+                true,
+                false
+            ),
+            new OddsApiSportsDataDTO(
+                'default_region_sport_name_league_name2',
+                'sport name 2',
+                'league name 2',
+                'description',
+                true,
+                false
+            )
+        ];
+
+        $this->sportsDataImporter->import($sportDataArray);
+        $sport = $this->sportRepository->findOneBy(['name' => 'sport name']);
+        $sport2 = $this->sportRepository->findOneBy(['name' => 'sport name 2']);
+        $region = $this->regionRepository->findOneBy(['name' => 'World', 'sport' => $sport]);
+        $region2 = $this->regionRepository->findOneBy(['name' => 'World', 'sport' => $sport2]);
+        $league = $this->leagueRepository->findOneBy(['name' => 'league name']);
+        $league2 = $this->leagueRepository->findOneBy(['name' => 'league name 2']);
+
+
+        $this->assertNotNull($sport);
+        $this->assertNotNull($sport2);
+        $this->assertNotNull($region);
+        $this->assertNotNull($region2);
+        $this->assertFalse($region->getId() === $region2->getId());
+        $this->assertNotNull($league);
+        $this->assertEquals('sport name', $sport->getName());
+        $this->assertEquals('World', $region->getName());
+        $this->assertEquals('league name', $league->getName());
+        $this->assertEquals($region->getId(), $league->getRegion()->getId());
+        $this->assertEquals($region2->getId(), $league2->getRegion()->getId());
+    }
     public function testSportsDataImportUpdatesApiKeyCorrectly(): void
     {
         $sportDataArray = [

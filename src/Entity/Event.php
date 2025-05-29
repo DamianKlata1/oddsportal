@@ -27,10 +27,10 @@ class Event
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $awayTeam = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $commenceTime = null;
 
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Outcome::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Outcome::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $outcomes;
 
     #[ORM\Column(length: 255)]

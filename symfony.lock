@@ -1,4 +1,7 @@
 {
+    "babdev/pagerfanta-bundle": {
+        "version": "v4.5.0"
+    },
     "dama/doctrine-test-bundle": {
         "version": "8.2",
         "recipe": {
@@ -97,6 +100,9 @@
         "files": [
             "config/packages/lexik_jwt_authentication.yaml"
         ]
+    },
+    "liip/test-fixtures-bundle": {
+        "version": "3.3.0"
     },
     "nelmio/alice": {
         "version": "3.14",

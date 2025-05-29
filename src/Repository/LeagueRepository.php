@@ -33,6 +33,14 @@ class LeagueRepository extends ServiceEntityRepository implements LeagueReposito
         }
         return $league;
     }
+    public function remove(League $league, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($league);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
     
     //    /**
     //     * @return League[] Returns an array of League objects

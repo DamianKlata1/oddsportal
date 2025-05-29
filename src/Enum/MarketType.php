@@ -8,6 +8,8 @@ enum MarketType: string
     case SPREADS = 'spreads';
     case TOTALS = 'totals';
     case OUTRIGHTS = 'outrights';
+    case H2h_LAY = 'h2h_lay';
+    case OUTRIGHTS_LAY = 'outrights_lay';
 
     public static function fromString(string $value): MarketType
     {
@@ -16,6 +18,8 @@ enum MarketType: string
             'spreads' => self::SPREADS,
             'totals' => self::TOTALS,
             'outrights' => self::OUTRIGHTS,
+            'h2h_lay' => self::H2h_LAY,
+            'outrights_lay' => self::OUTRIGHTS_LAY,
             default => throw new \InvalidArgumentException('Invalid market type'),
         };
     }
@@ -26,6 +30,12 @@ enum MarketType: string
             self::SPREADS => 'spreads',
             self::TOTALS => 'totals',
             self::OUTRIGHTS => 'outrights',
+            self::H2h_LAY => 'h2h_lay',
+            self::OUTRIGHTS_LAY => 'outrights_lay',
         };
+    }
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
     }
 }

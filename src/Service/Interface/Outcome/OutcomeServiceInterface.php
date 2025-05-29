@@ -18,9 +18,10 @@ interface OutcomeServiceInterface
     public function getBestOutcomes(Collection $outcomes, PriceFormat $format): array;
     /**
      * @param Collection<int, Outcome> $outcomes
+     * @param MarketType[] $markets
      * @return Collection<int, Outcome>
      */
-    public function filterOutcomesByMarketAndRegion(Collection $outcomes, MarketType $market, BetRegion $region): Collection;
+    public function filterOutcomesByMarketsAndRegion(Collection $outcomes, array $markets, BetRegion $region): Collection;
 
 
 }

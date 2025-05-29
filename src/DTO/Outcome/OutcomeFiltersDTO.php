@@ -8,18 +8,12 @@ class OutcomeFiltersDTO
     public function __construct(
         #[Assert\NotBlank()]
         #[Assert\Type('string')]
-        private readonly string $market,
-        #[Assert\NotBlank()]
-        #[Assert\Type('string')]
         private readonly string $betRegion,
         #[Assert\NotBlank()]
         #[Assert\Type('string')]
         private readonly string $priceFormat,
+
     ) {
-    }
-    public function getMarket(): string
-    {
-        return $this->market;
     }
     public function getBetRegion(): string
     {

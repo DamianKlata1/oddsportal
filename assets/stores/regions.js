@@ -30,8 +30,4 @@ export const useRegionsStore = defineStore('regions', () => {
     }
 
     return { regions, fetchRegionsForSport, selectRegion, selectedRegion, isLoading, errorMessage }
-}, {
-    persist: {
-        paths: ['selectedRegion'], // only persist the data, not loading/error
-    }
-})
+}, )

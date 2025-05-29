@@ -60,6 +60,7 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
                     );
                 }
             }
+            $this->sportRepository->flush();
             $this->sportRepository->commitTransaction();
             return ImportResult::success([
                 'sports' => $this->importedSports,

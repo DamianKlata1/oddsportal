@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted} from 'vue'
 import { useBetRegionsStore } from '/assets/stores/betRegions.js'
 
 const store = useBetRegionsStore()

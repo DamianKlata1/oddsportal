@@ -11,19 +11,21 @@ use App\Service\Interface\Import\OddsDataImportSyncManagerInterface;
 class OddsDataImportSyncManager implements OddsDataImportSyncManagerInterface
 {
 
+    private const SYNC_THRESHOLD_SECONDS = 3600; // 1 hour
     public function __construct(
         private readonly OddsDataImportSyncRepositoryInterface $oddsDataImportSyncRepository,
     ) {
     }
 
-    public function isSyncRequired(League $league, BetRegion $betRegion, int $thresholdInMinutes = self::SYNC_THRESHOLD_MINUTES): bool
+    public function isSyncRequired(League $league, BetRegion $betRegion): bool
     {
+ 
         $status = $this->oddsDataImportSyncRepository->findOneBy(['league' => $league, 'betRegion' => $betRegion]);
         if (!$status) {
             return true; // no status =  first import
         }
         $now = new \DateTimeImmutable();
-        return $status->getLastImportedAt()->modify("+{$thresholdInMinutes} minutes") < $now;
+        return $status->getLastImportedAt()->modify(sprintf('+%d seconds', self::SYNC_THRESHOLD_SECONDS)) < $now;
     }
 
     public function updateSyncStatus(League $league, BetRegion $betRegion): void

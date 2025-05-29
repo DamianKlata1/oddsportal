@@ -41,11 +41,11 @@ class OddsApiOddsDataImporter implements OddsApiOddsDataImporterInterface
                     $eventData['commence_time']
                 );
                 foreach ($eventData['bookmakers'] as $bookmakerData) {
-                    
+
                     $bookmaker = $this->importBookmaker($bookmakerData['title'], $betRegion);
                     foreach ($bookmakerData['markets'] as $marketData) {
                         foreach ($marketData['outcomes'] as $outcomeData) {
-                            
+
                             $outcome = $this->importOutcome(
                                 $outcomeData['name'],
                                 $outcomeData['price'],
@@ -59,11 +59,10 @@ class OddsApiOddsDataImporter implements OddsApiOddsDataImporterInterface
                 }
             }
             $this->eventRepository->flush();
-            
+
             $this->eventRepository->commitTransaction();
             return ImportResult::success(
                 [
-                    'message' => 'Data imported successfully',
                     'events' => $eventsData,
                 ]
             );
@@ -75,8 +74,9 @@ class OddsApiOddsDataImporter implements OddsApiOddsDataImporterInterface
         }
 
     }
-    private function importEvent(League $league, string $apiId, string $homeTeam, string $awayTeam, string $commenceTime): Event
+    private function importEvent(League $league, string $apiId, ?string $homeTeam, ?string $awayTeam, string $commenceTime): Event
     {
+
         $event = $this->eventRepository->findOneBy(['apiId' => $apiId]);
         if ($event === null) {
             $event = new Event();
@@ -85,9 +85,9 @@ class OddsApiOddsDataImporter implements OddsApiOddsDataImporterInterface
             $event->setAwayTeam($awayTeam);
             $event->setCommenceTime(new \DateTimeImmutable($commenceTime));
             $event->setLeague($league);
-            
+
             $this->eventRepository->save($event);
-            
+
         }
         return $event;
     }
@@ -99,7 +99,7 @@ class OddsApiOddsDataImporter implements OddsApiOddsDataImporterInterface
             $bookmaker->setName($bookmakerName);
             $bookmaker->addBetRegion($betRegion);
             //true so i dont get unique entity exception
-            $this->bookmakerRepository->save($bookmaker,true);
+            $this->bookmakerRepository->save($bookmaker, true);
         }
         return $bookmaker;
     }
@@ -123,27 +123,18 @@ class OddsApiOddsDataImporter implements OddsApiOddsDataImporterInterface
             $outcome->setPrice($price);
             $outcome->setMarket($market);
             $outcome->setBookmaker($bookmaker);
-            $outcome->setEvent($event);
-            $outcome->setLastUpdate(new \DateTimeImmutable($lastUpdate));
 
+            $event->addOutcome($outcome);
+            $outcome->setLastUpdate(new \DateTimeImmutable($lastUpdate));
             $this->outcomeRepository->save($outcome);
 
         } else {
             $incomingDate = new \DateTimeImmutable($lastUpdate);
-            $shouldUpdate = false;
-
             if ($outcome->getPrice() !== $price) {
                 $outcome->setPrice($price);
-                $shouldUpdate = true;
             }
-
             if ($outcome->getLastUpdate() === null || $outcome->getLastUpdate()->getTimestamp() !== $incomingDate->getTimestamp()) {
                 $outcome->setLastUpdate($incomingDate);
-                $shouldUpdate = true;
-            }
-
-            if ($shouldUpdate) {
-                $this->outcomeRepository->save($outcome);
             }
         }
         return $outcome;

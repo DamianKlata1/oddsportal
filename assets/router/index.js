@@ -16,12 +16,6 @@ const routes = [
                 name: 'home',
                 component: Public.HomeView
             },
-            {
-                path: 'league/:leagueId/events/',
-                name: 'league_events',
-                component: Public.LeagueEvents,
-                props: true,
-            }
         ]
     },
     {

@@ -29,7 +29,7 @@ abstract class AbstractRegionResolver
         'Brazil' => ['brazil', 'brasileirao'],
         'Chile' => ['chile', 'chilean'],
         'China' => ['china', 'chinese'],
-        'South America' => ['CONMEBOL', 'south american'],
+        'South America' => ['CONMEBOL', 'south american', 'south america'],
         'Denmark' => ['denmark', 'danish'],
         'England' => ['england', 'english', 'efl', 'fa cup'],
         'France' => ['france', 'french'],

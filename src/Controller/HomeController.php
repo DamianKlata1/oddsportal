@@ -17,7 +17,6 @@ class HomeController extends AbstractController
     #[Route('/{path<.*>}', name: 'app_home', priority: -20)]
     public function index(): Response
     {
-        //        dd($this->client->fetchSportsData());
         return $this->render('home/index.html.twig');
     }
 }

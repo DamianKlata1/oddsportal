@@ -22,7 +22,6 @@ class RegionController extends AbstractController
     public function getRegions(): Response
     {
         $regions = $this->regionRepository->findAll();
-
         return new JsonResponse(
             $this->serializer->serialize($regions, 'json'),
             Response::HTTP_OK,

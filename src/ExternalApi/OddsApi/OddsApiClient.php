@@ -2,9 +2,11 @@
 
 namespace App\ExternalApi\OddsApi;
 
+use App\Entity\League;
+use App\Enum\MarketType;
 use App\Exception\FetchFailedException;
-use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
 
 class OddsApiClient implements OddsApiClientInterface
 {
@@ -22,16 +24,16 @@ class OddsApiClient implements OddsApiClientInterface
                 "{$this->oddsApiUrl}?apiKey={$this->oddsApiKey}&all=true"
             );
             return $response->toArray();
-        } catch (\Exception $e) {   
+        } catch (\Exception $e) {
             throw new FetchFailedException('Error fetching data from Odds API: ' . $e->getMessage(), 502);
         }
     }
-    public function fetchOddsDataForLeague(string $leagueKey, string $region ): array
+    public function fetchOddsDataForLeague(string $leagueApiKey, string $betRegion, MarketType $marketType = MarketType::H2H): array
     {
         try {
             $response = $this->client->request(
                 'GET',
-                "{$this->oddsApiUrl}/{$leagueKey}/odds/?apiKey={$this->oddsApiKey}&regions={$region}&markets=h2h"
+                "{$this->oddsApiUrl}/{$leagueApiKey}/odds/?apiKey={$this->oddsApiKey}&regions={$betRegion}&markets={$marketType->toString()}"
             );
             return $response->toArray();
         } catch (\Exception $e) {

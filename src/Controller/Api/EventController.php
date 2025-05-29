@@ -2,7 +2,9 @@
 
 namespace App\Controller\Api;
 
+use App\DTO\Event\EventFiltersDTO;
 use App\DTO\Outcome\OutcomeFiltersDTO;
+use App\DTO\Pagination\PaginationDTO;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,24 +23,14 @@ class EventController extends AbstractController
         private readonly SerializerInterface $serializer
     ) {
     }
-    #[Route('/events', name: 'api_events', methods: ['GET'])]
-    public function getEvents(): JsonResponse
-    {
-        $events = $this->eventRepository->findAll();
-        return new JsonResponse(
-            $this->serializer->serialize($events, 'json'),
-            Response::HTTP_OK,
-            [],
-            true
-        );
-    }
-    #[Route('events/{leagueId}', name: 'api_get_league_events', methods: ['GET'])]
-    public function getEventsForLeague(
-        int $leagueId,
+    #[Route('events', name: 'api_get_events', methods: ['GET'])]
+    public function getEvents(
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] EventFiltersDTO $eventFiltersDTO,
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] OutcomeFiltersDTO $outcomeFiltersDTO,
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] PaginationDTO $paginationDTO
     ): JsonResponse 
     {
-        $events = $this->eventService->getEventsForLeague($leagueId, $outcomeFiltersDTO);
+        $events = $this->eventService->getEvents( $eventFiltersDTO, $outcomeFiltersDTO,$paginationDTO);
         return new JsonResponse(
             $this->serializer->serialize($events, 'json'),
             Response::HTTP_OK,

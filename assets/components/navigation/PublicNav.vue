@@ -4,6 +4,7 @@ import LocaleNav from './LocaleNav.vue';
 import AccountNav from './AccountNav.vue';
 import useUserStore from '/assets/stores/user.js';
 import RegionSelector from '../RegionSelector.vue';
+import FormatSelector from '../FormatSelector.vue';
 const store = useUserStore();
 </script>
 <template>
@@ -20,6 +21,8 @@ const store = useUserStore();
                 <RouterLink class="nav-link" to="/about">About</RouterLink>
             </li>
         </ul>
+        <FormatSelector />
+
         <RegionSelector />
 
         <div class="col-md-2 text-end" v-show="!store.isAuth">

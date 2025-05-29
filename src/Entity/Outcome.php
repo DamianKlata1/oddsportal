@@ -31,7 +31,7 @@ class Outcome
     #[ORM\JoinColumn(nullable: false)]
     private ?Bookmaker $bookmaker = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $lastUpdate = null;
 
     public function getId(): ?int
