@@ -27,8 +27,12 @@ export const useEventsStore = defineStore('events', () => {
 
     try {
       const params = new URLSearchParams();
-      params.append('betRegion', betRegion);
-      params.append('priceFormat', priceFormat);
+      if (betRegion) {
+        params.append('betRegion', betRegion);
+      }
+      if (priceFormat) {
+        params.append('priceFormat', priceFormat);
+      }
       params.append('page', page);
       params.append('limit', limit);
 
@@ -56,6 +60,6 @@ export const useEventsStore = defineStore('events', () => {
   return { events, fetchEvents, isLoading, errorMessage }
 }, {
   persist: {
-    paths: ['events'],
+    paths: [''],
   }
 })

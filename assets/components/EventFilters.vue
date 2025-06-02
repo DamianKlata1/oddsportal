@@ -7,9 +7,8 @@ const filtersStore = useEventFiltersStore()
 
 
 onMounted(() => {
-  filtersStore.searchName = ''
-  filtersStore.selectedDateKeyword = ''
-  filtersStore.fetchDateKeywords()
+
+  
 })
 
 </script>

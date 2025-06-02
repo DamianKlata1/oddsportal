@@ -18,7 +18,7 @@ onMounted(() => {
       data-bs-toggle="dropdown"
       aria-expanded="false"
     >
-     {{store.selectedFormat }}
+     {{ store.selectedFormat || $t('select_format') }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="oddsFormatDropdown">
       <li

@@ -8,10 +8,10 @@ class OutcomeFiltersDTO
     public function __construct(
         #[Assert\NotBlank()]
         #[Assert\Type('string')]
-        private readonly string $betRegion,
+        private readonly string $betRegion = 'eu',
         #[Assert\NotBlank()]
         #[Assert\Type('string')]
-        private readonly string $priceFormat,
+        private readonly string $priceFormat = 'decimal',
 
     ) {
     }

@@ -3,6 +3,7 @@
     "home_page": "This is a home page",
     "about_page": "This is an about page",
     "select_region": "Select Region",
+    "select_format": "Select Format",
     "show_all": "Show All",
     "show_less": "Show Less"
 }

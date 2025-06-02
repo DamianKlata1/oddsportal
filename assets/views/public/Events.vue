@@ -1,30 +1,18 @@
 <script setup>
-import { onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, watch, ref, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useEventsStore } from '/assets/stores/events.js'
 import { useBetRegionsStore } from '/assets/stores/betRegions.js'
 import { useOddsFormatStore } from '/assets/stores/oddsFormat'
 import { usePaginationStore } from '/assets/stores/pagination'
 import { useEventFiltersStore } from '/assets/stores/eventFilters.js'
-import BasePagination from '/assets/components/Pagination.vue'
-import { formatInTimeZone } from 'date-fns-tz'
-import debounce from 'lodash/debounce'
 import { useLeagueStore } from '../../stores/league'
-import { ref } from 'vue'
+import { formatDateTime } from '/assets/helpers/formatters.js'
+import BasePagination from '/assets/components/Pagination.vue'
+import debounce from 'lodash/debounce'
 
-
-
-
-const formatDateTime = (isoTime) => {
-  if (!isoTime) return '—'
-  try {
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-    return formatInTimeZone(isoTime, timeZone, 'yyyy-MM-dd HH:mm')
-  } catch (error) {
-    console.error('Date formatting error:', error)
-    return isoTime
-  }
-}
+const route = useRoute()
+const router = useRouter()
 
 const eventsStore = useEventsStore()
 const eventFiltersStore = useEventFiltersStore()
@@ -32,6 +20,49 @@ const betRegionsStore = useBetRegionsStore()
 const oddsFormatStore = useOddsFormatStore()
 const paginationStore = usePaginationStore()
 const leagueStore = useLeagueStore()
+
+const isApplyingUrlToStores = ref(false); // Flag to manage initialization/URL sync
+
+const buildQueryParams = () => {
+  const query = {};
+  if (leagueStore.selectedLeague?.id) {
+    query.league = leagueStore.selectedLeague.id;
+  }
+  if (eventFiltersStore.searchName) {
+    query.search = eventFiltersStore.searchName;
+  }
+  if (eventFiltersStore.selectedDateKeyword) {
+    query.date = eventFiltersStore.selectedDateKeyword;
+  }
+  if (paginationStore.currentPage > 1) {
+    query.page = paginationStore.currentPage;
+  }
+  return query;
+};
+
+// --- URL Update Functions ---
+const pushUrlQuery = () => {
+  if (isApplyingUrlToStores.value) return; // Don't push if we are currently applying URL to stores
+  const newQuery = buildQueryParams();
+  // Only push if query actually changes to avoid redundant history entries
+  if (JSON.stringify(newQuery) !== JSON.stringify(route.query)) {
+    router.push({ query: newQuery }).catch(err => {
+      if (err.name !== 'NavigationDuplicated') console.error('Router push error:', err);
+    });
+  }
+};
+
+const replaceUrlQuery = () => { // For canonicalization or non-history updates
+  const newQuery = buildQueryParams();
+  if (JSON.stringify(newQuery) !== JSON.stringify(route.query)) {
+    router.replace({ query: newQuery }).catch(err => {
+      if (err.name !== 'NavigationDuplicated') console.error('Router replace error:', err);
+    });
+  }
+};
+
+
+
 
 const tryFetchEvents = async () => {
   const leagueId = leagueStore.selectedLeague?.id ?? null
@@ -55,8 +86,6 @@ const tryFetchEvents = async () => {
 
 const debouncedFetchEvents = debounce(tryFetchEvents, 500) //0,5s debounce delay
 
-
-
 watch(
   [
     () => betRegionsStore.selectedBetRegion,
@@ -65,29 +94,81 @@ watch(
     () => eventFiltersStore.selectedDateKeyword
   ],
   () => {
-    paginationStore.resetPage()
+    if (isApplyingUrlToStores.value) return;
     debouncedFetchEvents()
+    pushUrlQuery();
+  }
+)
+// Watch for URL changes (e.g., browser back/forward)
+watch(
+  () => route.query,
+  (newQuery) => {
+    // Only re-apply if the new query is different from what the stores would currently produce.
+    // This prevents an infinite loop if a pushUrlQuery just happened.
+    const currentGeneratedQuery = buildQueryParams();
+    if (JSON.stringify(newQuery) !== JSON.stringify(currentGeneratedQuery)) {
+      // console.log('URL changed externally, applying to stores:', newQuery);
+      applyQueryToStores(newQuery);
+    }
+  },
+  { deep: true } // Important for watching changes within the query object
+);
+watch(
+  () => leagueStore.selectedLeague?.id,
+  (newLeagueId, oldLeagueId) => {
+    if (newLeagueId !== oldLeagueId) {
+      if (isApplyingUrlToStores.value) return;
+      tryFetchEvents()
+      pushUrlQuery()
+    }
   }
 )
 
-watch(
-  () => leagueStore.selectedLeague?.id,
-  () => {
-    paginationStore.resetPage()
-    eventFiltersStore.clearFilters()
-    tryFetchEvents()
-  },
-  { immediate: true }
-)
-
-watch(() => paginationStore.currentPage, () => {
-  tryFetchEvents()
+watch(() => paginationStore.currentPage, (newPage, oldPage) => {
+  if (isApplyingUrlToStores.value) return;
+  if (newPage !== oldPage) {
+    tryFetchEvents();
+    pushUrlQuery();
+  }
 })
 
-onMounted(() => {
-  tryFetchEvents()
-})
+// --- Function to Apply URL Query to Stores ---
+const applyQueryToStores = async (querySource) => {
+  isApplyingUrlToStores.value = true;
 
+  // 1. Fetch prerequisite lookup data if necessary
+  if (eventFiltersStore.dateKeywordOptions.length <= 1) await eventFiltersStore.fetchDateKeywords(); // <=1 for default "Any date"
+
+  // 2. Set store values from querySource
+  const urlLeagueId = querySource.league ? parseInt(querySource.league, 10) : null;
+  if (leagueStore.selectedLeague?.id !== urlLeagueId) {
+    leagueStore.selectLeague(urlLeagueId ? { id: urlLeagueId } : null); // Adapt if selectLeague expects full object or fetches by ID
+  }
+
+  eventFiltersStore.searchName = querySource.search || '';
+  const dateOption = eventFiltersStore.dateKeywordOptions.find(opt => opt.value === querySource.date);
+
+  
+  eventFiltersStore.selectedDateKeyword = dateOption ? querySource.date : '';
+  const urlPage = querySource.page ? parseInt(querySource.page, 10) : 1;
+  if (paginationStore.currentPage !== urlPage) {
+      paginationStore.setPage(urlPage); // setPage won't trigger its own watcher if value is same
+  }
+
+  // Use nextTick to ensure all state updates from above are processed before clearing the flag
+  await nextTick();
+  isApplyingUrlToStores.value = false;
+
+  // 3. Canonicalize URL and fetch
+  replaceUrlQuery(); // Ensure URL matches the applied state (e.g., if invalid params were corrected)
+  tryFetchEvents();   // Fetch data based on the new state
+};
+
+
+
+onMounted(async () => {
+  await applyQueryToStores(route.query);
+});
 
 const visibleOutcomesCount = ref({})
 
@@ -103,7 +184,6 @@ const showMoreOutcomes = (eventId) => {
 const showLessOutcomes = (eventId) => {
   visibleOutcomesCount.value[eventId] = Math.max(5, visibleOutcomesCount.value[eventId] - 5)
 }
-console.log(visibleOutcomesCount.value)
 </script>
 
 <template>
@@ -154,7 +234,7 @@ console.log(visibleOutcomesCount.value)
               <div class="mt-auto">
                 <h6 class="mt-3">Best Odds:</h6>
                 <div v-if="event.bestOutcomes && event.bestOutcomes.length > 0">
-                  <div v-if="!visibleOutcomesCount[event.id]" >
+                  <div v-if="!visibleOutcomesCount[event.id]">
                     {{ initVisibleOutcomes(event.id) }}
                   </div>
 

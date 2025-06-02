@@ -8,9 +8,11 @@ export const useSportsStore = defineStore('sports', () => {
     const sports = ref([])
     const selectedSport = ref(null)
     const isLoading = ref(false)
+    const isLoaded = ref(false)
     const errorMessage = ref(null)
 
     async function fetchSports() {
+        if (isLoaded.value) return
         sports.value = await getSportsFromApi()
     }
 
@@ -22,6 +24,7 @@ export const useSportsStore = defineStore('sports', () => {
         isLoading.value = true
         try {
             const response = await apiPublic().get('/api/sports')
+            isLoaded.value = true
             return response.data
         } catch (error) {
             errorMessage.value = error.message
