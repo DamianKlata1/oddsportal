@@ -7,9 +7,13 @@ use App\Enum\MarketType;
 use App\Entity\BetRegion;
 use App\Enum\PriceFormat;
 use App\DTO\Outcome\OutcomeDTO;
+use App\Entity\Interface\OutcomeInterface;
 use Doctrine\Common\Collections\Collection;
-
-interface OutcomeServiceInterface
+use App\Service\Interface\Entity\EntityServiceInterface;
+/**
+ * @extends EntityServiceInterface<OutcomeInterface>
+ */
+interface OutcomeServiceInterface extends EntityServiceInterface
 {
     /**
      * @param Collection<int, Outcome> $outcomes

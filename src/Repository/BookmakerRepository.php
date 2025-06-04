@@ -3,10 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Bookmaker;
-use App\Repository\Interface\BookmakerRepositoryInterface;
-use App\Repository\Trait\TransactionManagement;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Repository\Trait\PersistenceTrait;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\TransactionManagement;
+use App\Repository\Interface\BookmakerRepositoryInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Bookmaker>
@@ -16,36 +17,17 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Bookmaker[]    findAll()
  * @method Bookmaker[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class BookmakerRepository extends ServiceEntityRepository implements BookmakerRepositoryInterface
+class BookmakerRepository extends ServiceEntityRepository implements BookmakerRepositoryInterface 
 {
     use TransactionManagement;
+    use PersistenceTrait;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Bookmaker::class);
     }
 
-    public function save(Bookmaker $bookmaker, bool $flush = false): Bookmaker
-    {
-        $this->getEntityManager()->persist($bookmaker);
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-
-        return $bookmaker;
-    }
-    public function findOrCreate(string $name): Bookmaker
-    {
-        $bookmaker = $this->findOneBy(['name' => $name]);
-        if (!$bookmaker) {
-            $bookmaker = new Bookmaker();
-            $bookmaker->setName($name);
-            $this->save($bookmaker, true);
-        }
-        return $bookmaker;
-    }
-
-//    /**
+    //    /**
 //     * @return Bookmaker[] Returns an array of Bookmaker objects
 //     */
 //    public function findByExampleField($value): array
@@ -60,7 +42,7 @@ class BookmakerRepository extends ServiceEntityRepository implements BookmakerRe
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Bookmaker
+    //    public function findOneBySomeField($value): ?Bookmaker
 //    {
 //        return $this->createQueryBuilder('b')
 //            ->andWhere('b.exampleField = :val')

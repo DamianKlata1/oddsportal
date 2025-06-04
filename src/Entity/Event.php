@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\EventRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EventRepository;
+use App\Entity\Interface\EventInterface;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
-class Event
+class Event implements EventInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

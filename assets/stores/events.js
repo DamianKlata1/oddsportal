@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import apiPublic from '/assets/api/apiPublic.js'
-import { usePaginationStore } from '/assets/stores/pagination'
+import { usePaginationStore } from '/assets/stores/pagination.js'
 
 
 export const useEventsStore = defineStore('events', () => {

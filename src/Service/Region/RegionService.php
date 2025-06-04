@@ -6,9 +6,10 @@ namespace App\Service\Region;
 use App\DTO\League\LeagueDTO;
 use App\DTO\Region\RegionWithLeaguesDTO;
 use App\Repository\Interface\RegionRepositoryInterface;
+use App\Service\Entity\AbstractEntityService;
 use App\Service\Interface\Region\RegionServiceInterface;
 
-class RegionService implements RegionServiceInterface
+class RegionService extends AbstractEntityService implements RegionServiceInterface
 {
     public function __construct(
         private readonly RegionRepositoryInterface $regionRepository,

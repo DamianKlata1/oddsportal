@@ -2,13 +2,13 @@
 
 namespace App\Repository\Interface;
 
-use Doctrine\Persistence\ObjectRepository;
+use App\Entity\User;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-
-interface UserRepositoryInterface extends ObjectRepository
+/**
+ * @extends RepositoryInterface<User>
+ */
+interface UserRepositoryInterface extends RepositoryInterface, TransactionalRepositoryInterface
 {
-    public function save(UserInterface $user): UserInterface;
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void;
     public function isEmailExists(string $email): bool;
 

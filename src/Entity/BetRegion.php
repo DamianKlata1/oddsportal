@@ -5,13 +5,14 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BetRegionRepository;
 use Doctrine\Common\Collections\Collection;
+use App\Entity\Interface\BetRegionInterface;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[UniqueEntity(fields: ['name'], message: 'There is already a region with this name.')]
 #[ORM\Entity(repositoryClass: BetRegionRepository::class)]
-class BetRegion
+class BetRegion implements BetRegionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

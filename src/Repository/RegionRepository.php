@@ -4,9 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Region;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\PersistenceTrait;
 use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\RegionRepositoryInterface;
-use App\Repository\Interface\TransactionalRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
@@ -17,22 +17,16 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  * @method Region[]    findAll()
  * @method Region[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RegionRepository extends ServiceEntityRepository implements RegionRepositoryInterface, TransactionalRepositoryInterface
+class RegionRepository extends ServiceEntityRepository implements RegionRepositoryInterface
 {
     use TransactionManagement;
+    use PersistenceTrait;
     public function __construct(
         ManagerRegistry $registry,
     ) {
         parent::__construct($registry, Region::class);
     }
-    public function save(Region $region, bool $flush = false): Region
-    {
-        $this->getEntityManager()->persist($region);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-        return $region;
-    }
+
     public function findWithActiveLeaguesBySport(int $sportId): array
     {
         return $this->createQueryBuilder('r')

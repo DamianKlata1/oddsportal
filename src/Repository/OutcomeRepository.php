@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Outcome;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\PersistenceTrait;
+use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\OutcomeRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Outcome>
@@ -17,20 +19,13 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OutcomeRepository extends ServiceEntityRepository implements OutcomeRepositoryInterface
 {
+    use TransactionManagement;
+    use PersistenceTrait;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Outcome::class);
     }
-    public function save(Outcome $outcome, bool $flush = false): Outcome
-    {
-        $this->getEntityManager()->persist($outcome);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-        return $outcome;
-    }
-
+ 
 //    /**
 //     * @return Outcome[] Returns an array of Outcome objects
 //     */

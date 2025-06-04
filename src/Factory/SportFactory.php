@@ -33,6 +33,7 @@ final class SportFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->text(255),
+            'logoPath' => self::faker()->text(255),
         ];
     }
 

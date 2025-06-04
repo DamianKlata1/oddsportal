@@ -5,12 +5,13 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BookmakerRepository;
 use Doctrine\Common\Collections\Collection;
+use App\Entity\Interface\BookmakerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[UniqueEntity(fields: ['name'], message: 'There is already a bookmaker with this name.')]
 #[ORM\Entity(repositoryClass: BookmakerRepository::class)]
-class Bookmaker
+class Bookmaker implements BookmakerInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\BetRegion;
+use App\Repository\Trait\PersistenceTrait;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\BetRegionRepositoryInterface;
@@ -19,23 +20,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 class BetRegionRepository extends ServiceEntityRepository implements BetRegionRepositoryInterface
 {
     use TransactionManagement;
-
+    use PersistenceTrait;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BetRegion::class);
     }
-    public function save(BetRegion $betRegion, bool $flush = false): BetRegion
-    {
-        $this->getEntityManager()->persist($betRegion);
+   
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-
-        return $betRegion;
-    }
-
-//    /**
+    //    /**
 //     * @return BetRegion[] Returns an array of BetRegion objects
 //     */
 //    public function findByExampleField($value): array
@@ -50,7 +42,7 @@ class BetRegionRepository extends ServiceEntityRepository implements BetRegionRe
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?BetRegion
+    //    public function findOneBySomeField($value): ?BetRegion
 //    {
 //        return $this->createQueryBuilder('b')
 //            ->andWhere('b.exampleField = :val')

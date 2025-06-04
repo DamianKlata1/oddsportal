@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\OddsDataImportSyncRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\OddsDataImportSyncRepository;
+use App\Entity\Interface\OddsDataImportSyncInterface;
 
 #[ORM\Entity(repositoryClass: OddsDataImportSyncRepository::class)]
-class OddsDataImportSync
+class OddsDataImportSync implements OddsDataImportSyncInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

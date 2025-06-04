@@ -19,7 +19,12 @@ export const useLeagueStore = defineStore('league', () => {
             selectedLeague.value = null
         }
     }
-    return { selectedLeague, selectLeague, selectById }
+    const isFavorite = (league) => {
+        // const allLeagues = useRegionsStore().regions.flatMap(region => region.leagues || [])
+        // return allLeagues.some(l => l.id === league.id && l.isFavorite)
+        return false;
+    }
+    return { selectedLeague, selectLeague, selectById, isFavorite }
 },
 {
     persist: {

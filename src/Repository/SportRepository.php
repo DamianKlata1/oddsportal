@@ -4,9 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Sport;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\PersistenceTrait;
 use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\SportRepositoryInterface;
-use App\Repository\Interface\TransactionalRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
@@ -17,9 +17,10 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  * @method Sport[]    findAll()
  * @method Sport[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SportRepository extends ServiceEntityRepository implements SportRepositoryInterface, TransactionalRepositoryInterface
+class SportRepository extends ServiceEntityRepository implements SportRepositoryInterface
 {
     use TransactionManagement;
+    use PersistenceTrait;
     public function __construct(
         ManagerRegistry $registry,
         )
@@ -27,15 +28,7 @@ class SportRepository extends ServiceEntityRepository implements SportRepository
         parent::__construct($registry, Sport::class);
     }
 
-    public function save(Sport $sport, bool $flush = false): Sport
-    {
-        $this->getEntityManager()->persist($sport);
-        if($flush){
-            $this->getEntityManager()->flush();
-        }
-        return $sport;
-    }
-    
+
 
     
     //    /**

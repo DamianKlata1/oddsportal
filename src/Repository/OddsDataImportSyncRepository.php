@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\OddsDataImportSync;
+use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\PersistenceTrait;
+use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\OddsDataImportSyncRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<OddsDataImportSync>
@@ -17,20 +19,15 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class OddsDataImportSyncRepository extends ServiceEntityRepository implements OddsDataImportSyncRepositoryInterface
 {
+
+    use TransactionManagement;
+    use PersistenceTrait;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, OddsDataImportSync::class);
     }
-    public function save(OddsDataImportSync $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
 
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-//    /**
+    //    /**
 //     * @return OddsDataImportSync[] Returns an array of OddsDataImportSync objects
 //     */
 //    public function findByExampleField($value): array
@@ -45,7 +42,7 @@ class OddsDataImportSyncRepository extends ServiceEntityRepository implements Od
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?OddsDataImportSync
+    //    public function findOneBySomeField($value): ?OddsDataImportSync
 //    {
 //        return $this->createQueryBuilder('o')
 //            ->andWhere('o.exampleField = :val')

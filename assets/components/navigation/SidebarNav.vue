@@ -51,7 +51,6 @@ const filteredRegions = computed(() => {
   <div class=" p-3 border-end" style="width: 300px; height: 100vh; overflow-y: auto;">
     <h5 class="mb-3">Countries</h5>
 
-    <!-- Wyszukiwarka -->
     <input v-model="searchQuery" type="text" class="form-control mb-3" placeholder="Search..." />
 
     <div class="accordion" id="countryAccordion">
@@ -68,11 +67,12 @@ const filteredRegions = computed(() => {
             <ul class="list-unstyled mb-0">
               <li v-for="league in region.leagues" :key="league">
                 <span class="me-2"><img :src="region.logoPath" alt="league logo"></span>
-                <a href="#" class="text-decoration-none text-success"
-                  @click.prevent="leagueStore.selectLeague(league)">
+                <a href="#" class="text-decoration-none text-success me-2" @click.prevent="leagueStore.selectLeague(league)">
                   {{
                     league.name
                   }}</a>
+                <i class="bi" :class="leagueStore.isFavorite(league) ? 'bi-star-fill text-warning' : 'bi-star'"
+                  role="button" @click="leagueStore.toggleFavoriteLeague(league)" />
               </li>
             </ul>
           </div>

@@ -4,9 +4,9 @@ namespace App\Repository;
 
 use App\Entity\League;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\Trait\PersistenceTrait;
 use App\Repository\Trait\TransactionManagement;
 use App\Repository\Interface\LeagueRepositoryInterface;
-use App\Repository\Interface\TransactionalRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
@@ -17,29 +17,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
  * @method League[]    findAll()
  * @method League[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class LeagueRepository extends ServiceEntityRepository implements LeagueRepositoryInterface, TransactionalRepositoryInterface
+class LeagueRepository extends ServiceEntityRepository implements LeagueRepositoryInterface
 {
     use TransactionManagement;
+    use PersistenceTrait;
     public function __construct(
         ManagerRegistry $registry,
     ) {
         parent::__construct($registry, League::class);
-    }
-    public function save(League $league, bool $flush = false): League
-    {
-        $this->getEntityManager()->persist($league);
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-        return $league;
-    }
-    public function remove(League $league, bool $flush = false): void
-    {
-        $this->getEntityManager()->remove($league);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
     }
     
     //    /**

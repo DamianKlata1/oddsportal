@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\OutcomeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\OutcomeRepository;
+use App\Entity\Interface\OutcomeInterface;
 
 #[ORM\Entity(repositoryClass: OutcomeRepository::class)]
-class Outcome
+class Outcome implements OutcomeInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

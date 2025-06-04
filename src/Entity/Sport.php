@@ -2,14 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\SportRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\SportRepository;
+use App\Entity\Interface\SportInterface;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: SportRepository::class)]
-class Sport
+class Sport implements SportInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

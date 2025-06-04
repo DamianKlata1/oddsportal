@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\RegionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\RegionRepository;
+use App\Entity\Interface\RegionInterface;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ORM\Entity(repositoryClass: RegionRepository::class)]
-class Region
+class Region implements RegionInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

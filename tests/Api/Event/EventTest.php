@@ -77,7 +77,8 @@ class EventTest extends ApiTestBaseCase
             ]);
         }
         $this->assertNotNull($this->eventRepository->find($event->getId()));
-        $this->client->request('GET', '/api/events/league/' . $league->getId(), [
+        $this->client->request('GET', '/api/events', [
+            'leagueId' => $league->getId(),
             'market' => MarketType::H2H->toString(),
             'betRegion' => $betRegion->getName(),
             'priceFormat' => PriceFormat::DECIMAL->toString(),

@@ -3,20 +3,24 @@
 namespace App\Service\BetRegion;
 
 use App\Entity\BetRegion;
-use App\Service\Interface\BetRegion\BetRegionServiceInterface;
-use App\Repository\Interface\BetRegionRepositoryInterface;
-use App\Service\Interface\Import\ImportResultInterface;
+use App\Entity\Interface\BetRegionInterface;
+use App\Exception\ResourceNotFoundException;
 use App\ExternalApi\OddsApi\Helper\ImportResult;
-use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
+use App\Service\Entity\AbstractEntityService;
+use App\Service\Interface\Import\ImportResultInterface;
+use App\Repository\Interface\BetRegionRepositoryInterface;
+use App\Service\Interface\BetRegion\BetRegionServiceInterface;
 use App\Service\Interface\RegionResolver\RegionResolverInterface;
+use App\Service\Interface\LogoPath\RegionLogoPathResolverInterface;
 
-class BetRegionService implements BetRegionServiceInterface
+class BetRegionService extends AbstractEntityService implements BetRegionServiceInterface
 {
     public function __construct(
         private readonly BetRegionRepositoryInterface $betRegionRepository,
         private readonly RegionResolverInterface $regionResolver,
         private readonly RegionLogoPathResolverInterface $logoPathResolver,
     ) {
+        parent::__construct($betRegionRepository);
     }
 
     public function loadBetRegions(array $betRegions): ImportResultInterface

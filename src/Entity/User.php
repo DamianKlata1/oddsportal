@@ -2,17 +2,20 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\UserRepository;
+use App\Entity\Interface\EntityInterface as AppEntityInterface; 
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email.')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface {
+class User implements UserInterface, PasswordAuthenticatedUserInterface, AppEntityInterface {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -34,6 +37,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
 
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
+
+    #[ORM\ManyToMany(targetEntity: League::class)]
+    private Collection $favoriteLeagues;
+
+    public function __construct()
+    {
+        $this->favoriteLeagues = new ArrayCollection();
+    }
 
     public function getId(): ?int {
         return $this->id;
@@ -102,6 +113,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
 
     public function setIsVerified(bool $isVerified): static {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, League>
+     */
+    public function getFavoriteLeagues(): Collection
+    {
+        return $this->favoriteLeagues;
+    }
+
+    public function addFavoriteLeague(League $favoriteLeague): static
+    {
+        if (!$this->favoriteLeagues->contains($favoriteLeague)) {
+            $this->favoriteLeagues->add($favoriteLeague);
+        }
+
+        return $this;
+    }
+
+    public function removeFavoriteLeague(League $favoriteLeague): static
+    {
+        $this->favoriteLeagues->removeElement($favoriteLeague);
 
         return $this;
     }

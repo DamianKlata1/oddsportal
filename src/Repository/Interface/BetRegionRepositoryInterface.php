@@ -3,10 +3,12 @@
 namespace App\Repository\Interface;
 
 use App\Entity\BetRegion;
-use Doctrine\Persistence\ObjectRepository;
+use App\Repository\Interface\RepositoryInterface;
 
-interface BetRegionRepositoryInterface extends TransactionalRepositoryInterface, ObjectRepository
+/**
+ * @extends RepositoryInterface<BetRegion>
+ */
+interface BetRegionRepositoryInterface extends RepositoryInterface, TransactionalRepositoryInterface
 {
-    public function save(BetRegion $betRegion, bool $flush = false): BetRegion;
-
+ 
 }

@@ -9,11 +9,12 @@ use App\Enum\PriceFormat;
 use App\DTO\Outcome\OutcomeDTO;
 use App\DTO\Bookmaker\BookmakerDTO;
 use Doctrine\Common\Collections\Collection;
+use App\Service\Entity\AbstractEntityService;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Service\Interface\Outcome\OutcomeServiceInterface;
 use App\Service\Interface\Outcome\PriceFormatConverterInterface;
 
-class OutcomeService implements OutcomeServiceInterface
+class OutcomeService extends AbstractEntityService implements OutcomeServiceInterface
 {
     public function __construct(
         private readonly PriceFormatConverterInterface $priceFormatConverter,

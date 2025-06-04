@@ -78,14 +78,14 @@ class EventServiceTest extends DatabaseDependantTestCase
         }
 
         $outcomeFiltersDTO = new OutcomeFiltersDTO(
-            MarketType::H2H->toString(),
             $betRegion->getName(),
             PriceFormat::DECIMAL->toString()
         );
 
-        $eventListDTO = $this->eventService->getEventsForLeague(
-            $league->getId(),
-            new EventFiltersDTO(),
+        $eventListDTO = $this->eventService->getEvents(
+            new EventFiltersDTO(
+                leagueId: $league->getId(),
+            ),
             $outcomeFiltersDTO,
             new PaginationDTO(1,10)
         );

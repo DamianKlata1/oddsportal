@@ -14,7 +14,7 @@ export const usePaginationStore = defineStore('pagination', () => {
   }
 
   function setPage(page) {
-    if (page >= 1 && page <= totalPages.value) {
+    if (page >= 1) {
       currentPage.value = page
     }
   }

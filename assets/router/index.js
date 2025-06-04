@@ -10,11 +10,12 @@ const routes = [
         path: '/',
         name: 'public_layout',
         component: Public.Layout,
+        redirect: {name: 'events'},
         children: [
             {
-                path: '',
-                name: 'home',
-                component: Public.HomeView
+                path: '/events',
+                name: 'events',
+                component: Public.EventView
             },
         ]
     },

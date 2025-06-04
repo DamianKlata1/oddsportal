@@ -3,10 +3,11 @@
 namespace App\Repository\Interface;
 
 use App\Entity\Outcome;
-use Doctrine\Persistence\ObjectRepository;
-
-interface OutcomeRepositoryInterface extends ObjectRepository
+use App\Repository\Interface\RepositoryInterface;
+/**
+ * @extends RepositoryInterface<Outcome>
+ */
+interface OutcomeRepositoryInterface extends RepositoryInterface, TransactionalRepositoryInterface
 {
-    public function save(Outcome $outcome, bool $flush = false): Outcome;
 
 }

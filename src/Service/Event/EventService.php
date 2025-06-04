@@ -4,6 +4,7 @@ namespace App\Service\Event;
 
 use App\DTO\Sport\SportDTO;
 use App\Entity\League;
+use App\Service\Entity\AbstractEntityService;
 use DateTimeImmutable;
 use App\Enum\MarketType;
 use App\Entity\BetRegion;
@@ -25,27 +26,28 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Repository\Interface\EventRepositoryInterface;
 use App\Service\Interface\Event\EventServiceInterface;
 use Pagerfanta\Exception\NotValidCurrentPageException;
-use App\Repository\Interface\LeagueRepositoryInterface;
 use App\Service\Interface\Helper\DeleteResultInterface;
-use App\Repository\Interface\BetRegionRepositoryInterface;
 use App\Service\Interface\Outcome\OutcomeServiceInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Service\Interface\Import\OddsDataImportSyncManagerInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiOddsDataImporterInterface;
+use App\Service\Interface\BetRegion\BetRegionServiceInterface;
+use App\Service\Interface\League\LeagueServiceInterface;
 
-class EventService implements EventServiceInterface
+class EventService extends AbstractEntityService implements EventServiceInterface
 {
 
     public function __construct(
         private readonly EventRepositoryInterface $eventRepository,
-        private readonly BetRegionRepositoryInterface $betRegionRepository,
+        private readonly BetRegionServiceInterface $betRegionService,
+        private readonly LeagueServiceInterface $leagueService,
         private readonly OutcomeServiceInterface $outcomeService,
         private readonly OddsDataImportSyncManagerInterface $oddsDataImportSyncManager,
-        private readonly LeagueRepositoryInterface $leagueRepository,
         private readonly OddsApiOddsDataImporterInterface $oddsDataImporter,
         private readonly OddsApiClientInterface $oddsApiClient,
     ) {
+        parent::__construct($eventRepository);
     }
 
     /**
@@ -60,9 +62,9 @@ class EventService implements EventServiceInterface
      */
     public function getEvents(EventFiltersDTO $eventFiltersDTO, OutcomeFiltersDTO $outcomeFiltersDTO, PaginationDTO $paginationDTO): EventListResponseDTO
     {
-        $league = $eventFiltersDTO->getLeagueId() ? $this->getLeague($eventFiltersDTO->getLeagueId()) : null;
+        $league = $eventFiltersDTO->getLeagueId() ? $this->leagueService->findOrFail($eventFiltersDTO->getLeagueId()) : null;
 
-        $betRegion = $this->getBetRegion($outcomeFiltersDTO->getBetRegion());
+        $betRegion = $this->betRegionService->findOrFailBy(['name' => $outcomeFiltersDTO->getBetRegion()]);
 
         $priceFormat = PriceFormat::fromString($outcomeFiltersDTO->getPriceFormat());
 
@@ -260,22 +262,5 @@ class EventService implements EventServiceInterface
         }
 
         return ['start' => $windowStart, 'end' => $windowEnd];
-    }
-
-    private function getLeague(int $leagueId): League
-    {
-        $league = $this->leagueRepository->find($leagueId);
-        if (!$league) {
-            throw new NotFoundHttpException("League with ID {$leagueId} not found.");
-        }
-        return $league;
-    }
-    private function getBetRegion(string $betRegionName): BetRegion
-    {
-        $betRegion = $this->betRegionRepository->findOneBy(['name' => $betRegionName]);
-        if (!$betRegion) {
-            throw new NotFoundHttpException("BetRegion with name '{$betRegionName}' not found.");
-        }
-        return $betRegion;
     }
 }

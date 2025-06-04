@@ -6,10 +6,11 @@ import { useBetRegionsStore } from '/assets/stores/betRegions.js'
 import { useOddsFormatStore } from '/assets/stores/oddsFormat'
 import { usePaginationStore } from '/assets/stores/pagination'
 import { useEventFiltersStore } from '/assets/stores/eventFilters.js'
-import { useLeagueStore } from '../../stores/league'
+import { useLeagueStore } from '/assets/stores/league'
 import { formatDateTime } from '/assets/helpers/formatters.js'
 import BasePagination from '/assets/components/Pagination.vue'
 import debounce from 'lodash/debounce'
+import isEqual from 'lodash/isEqual'
 
 const route = useRoute()
 const router = useRouter()
@@ -21,12 +22,13 @@ const oddsFormatStore = useOddsFormatStore()
 const paginationStore = usePaginationStore()
 const leagueStore = useLeagueStore()
 
-const isApplyingUrlToStores = ref(false); // Flag to manage initialization/URL sync
+const isApplyingUrlToStores = ref(false); 
+const shouldFetchOnPageChange = ref(true)
 
 const buildQueryParams = () => {
   const query = {};
   if (leagueStore.selectedLeague?.id) {
-    query.league = leagueStore.selectedLeague.id;
+    query.league = String(leagueStore.selectedLeague.id);
   }
   if (eventFiltersStore.searchName) {
     query.search = eventFiltersStore.searchName;
@@ -35,26 +37,26 @@ const buildQueryParams = () => {
     query.date = eventFiltersStore.selectedDateKeyword;
   }
   if (paginationStore.currentPage > 1) {
-    query.page = paginationStore.currentPage;
+    query.page = String(paginationStore.currentPage);
   }
   return query;
 };
 
 // --- URL Update Functions ---
 const pushUrlQuery = () => {
-  if (isApplyingUrlToStores.value) return; // Don't push if we are currently applying URL to stores
+  if (isApplyingUrlToStores.value) return; 
   const newQuery = buildQueryParams();
-  // Only push if query actually changes to avoid redundant history entries
-  if (JSON.stringify(newQuery) !== JSON.stringify(route.query)) {
+  // console.log('Pushing URL query:', newQuery,'to', route.query);
+  if (!isEqual(newQuery, route.query)) {
     router.push({ query: newQuery }).catch(err => {
       if (err.name !== 'NavigationDuplicated') console.error('Router push error:', err);
     });
   }
 };
 
-const replaceUrlQuery = () => { // For canonicalization or non-history updates
+const replaceUrlQuery = () => { 
   const newQuery = buildQueryParams();
-  if (JSON.stringify(newQuery) !== JSON.stringify(route.query)) {
+  if (!isEqual(newQuery, route.query)) {
     router.replace({ query: newQuery }).catch(err => {
       if (err.name !== 'NavigationDuplicated') console.error('Router replace error:', err);
     });
@@ -85,39 +87,43 @@ const tryFetchEvents = async () => {
 
 
 const debouncedFetchEvents = debounce(tryFetchEvents, 500) //0,5s debounce delay
+const debouncedPushUrlQuery = debounce(pushUrlQuery, 500) //0,5s debounce delay
 
 watch(
   [
     () => betRegionsStore.selectedBetRegion,
     () => oddsFormatStore.selectedFormat,
+    () => eventFiltersStore.selectedDateKeyword,
     () => eventFiltersStore.searchName,
-    () => eventFiltersStore.selectedDateKeyword
   ],
   () => {
     if (isApplyingUrlToStores.value) return;
+    shouldFetchOnPageChange.value = false
+    paginationStore.resetPage(); 
     debouncedFetchEvents()
-    pushUrlQuery();
+    debouncedPushUrlQuery()
   }
 )
-// Watch for URL changes (e.g., browser back/forward)
+
 watch(
   () => route.query,
   (newQuery) => {
-    // Only re-apply if the new query is different from what the stores would currently produce.
-    // This prevents an infinite loop if a pushUrlQuery just happened.
     const currentGeneratedQuery = buildQueryParams();
-    if (JSON.stringify(newQuery) !== JSON.stringify(currentGeneratedQuery)) {
+    
+    if (!isEqual(newQuery, currentGeneratedQuery)) {
       // console.log('URL changed externally, applying to stores:', newQuery);
       applyQueryToStores(newQuery);
     }
   },
-  { deep: true } // Important for watching changes within the query object
+  { deep: true } 
 );
 watch(
   () => leagueStore.selectedLeague?.id,
   (newLeagueId, oldLeagueId) => {
     if (newLeagueId !== oldLeagueId) {
       if (isApplyingUrlToStores.value) return;
+      shouldFetchOnPageChange.value = false
+      paginationStore.resetPage(); 
       tryFetchEvents()
       pushUrlQuery()
     }
@@ -127,22 +133,19 @@ watch(
 watch(() => paginationStore.currentPage, (newPage, oldPage) => {
   if (isApplyingUrlToStores.value) return;
   if (newPage !== oldPage) {
-    tryFetchEvents();
+    if(shouldFetchOnPageChange.value) tryFetchEvents();
     pushUrlQuery();
   }
 })
 
-// --- Function to Apply URL Query to Stores ---
 const applyQueryToStores = async (querySource) => {
   isApplyingUrlToStores.value = true;
 
-  // 1. Fetch prerequisite lookup data if necessary
-  if (eventFiltersStore.dateKeywordOptions.length <= 1) await eventFiltersStore.fetchDateKeywords(); // <=1 for default "Any date"
+  if (eventFiltersStore.dateKeywordOptions.length <= 1) await eventFiltersStore.fetchDateKeywords(); 
 
-  // 2. Set store values from querySource
   const urlLeagueId = querySource.league ? parseInt(querySource.league, 10) : null;
   if (leagueStore.selectedLeague?.id !== urlLeagueId) {
-    leagueStore.selectLeague(urlLeagueId ? { id: urlLeagueId } : null); // Adapt if selectLeague expects full object or fetches by ID
+    leagueStore.selectById(urlLeagueId);
   }
 
   eventFiltersStore.searchName = querySource.search || '';

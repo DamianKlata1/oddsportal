@@ -3,10 +3,12 @@
 namespace App\Repository\Interface;
 
 use App\Entity\OddsDataImportSync;
-use Doctrine\Persistence\ObjectRepository;
+use App\Repository\Interface\RepositoryInterface;
 
-interface OddsDataImportSyncRepositoryInterface extends ObjectRepository
+/**
+ * @extends RepositoryInterface<OddsDataImportSync>
+ */
+interface OddsDataImportSyncRepositoryInterface extends RepositoryInterface, TransactionalRepositoryInterface
 {
-    public function save(OddsDataImportSync $entity, bool $flush = false): void;
 
 }
