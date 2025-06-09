@@ -11,8 +11,7 @@ export const useEventFiltersStore = defineStore('eventFilters', () => {
   const searchName = ref('')
   const selectedDateKeyword = ref('')
   const dateKeywords = ref([])
-
-  // Options with label for frontend display
+  
   const dateKeywordOptions = computed(() => [
     { value: '', label: 'Any date' },
     ...dateKeywords.value.map(value => ({

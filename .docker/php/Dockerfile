@@ -34,6 +34,8 @@ RUN docker-php-ext-install \
 # Instalacja Xdebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
+
+
 COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 # Set timezone
 RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} > /etc/timezone \

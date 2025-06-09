@@ -13,9 +13,6 @@ interface UserServiceInterface extends EntityServiceInterface
 {
     public function editUser(UserInterface $user, UserEditDTO $userEditDTO): UserInterface;
     public function registerUser(NewUserDTO $userDTO): UserInterface;
-    public function getFavoriteLeagues(UserInterface $user): array;
-    public function addFavoriteLeague(UserInterface $user, int $leagueId): void;
-    public function removeFavoriteLeague(UserInterface $user, int $leagueId): void;
 
 
 }

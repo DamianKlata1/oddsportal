@@ -106,6 +106,7 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
             $league->setRegion($region);
             $league->setApiKey($apiKey);
             $league->setActive($isActive);
+            $league->setLogoPath($region->getLogoPath());
             $this->leagueRepository->save($league, flush: true);
             $this->importedLeagues[] = $league->getName();
         } else {
@@ -114,6 +115,9 @@ class OddsApiSportsDataImporter implements OddsApiSportsDataImporterInterface
             }
             if ($league->isActive() !== $isActive) {
                 $league->setActive($isActive);
+            }
+            if($league->getLogoPath() !== $region->getLogoPath()) {
+                $league->setLogoPath($region->getLogoPath());
             }
         }
         return $league;

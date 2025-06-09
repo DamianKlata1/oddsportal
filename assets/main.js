@@ -28,7 +28,7 @@ const store = useUserStore();
 async function initApp() {
     if (store.getToken) {
         try {
-            const response = await apiPrivate().get('/api/account');
+            const response = await apiPrivate().get('/api/profile');
             if (response.data?.email) {
                 store.updateData(response.data);
                 store.setAuth(true);

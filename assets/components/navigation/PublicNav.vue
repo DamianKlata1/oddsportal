@@ -9,25 +9,25 @@ const store = useUserStore();
 </script>
 <template>
     <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom align-items-center">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-2 link-body-emphasis text-decoration-none">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-2 link-body-emphasis text-decoration-none text-success">
             <span class="fs-4">{{ $t('name') }}</span>
         </a>
 
-        <ul class="nav nav-pills me-auto">
+        <!-- <ul class="nav nav-pills me-auto">
             <li class="nav-item">
                 <RouterLink linkActiveClass="active" class="nav-link" to="/">Home</RouterLink>
             </li>
             <li class="nav-item">
                 <RouterLink class="nav-link" to="/about">About</RouterLink>
             </li>
-        </ul>
-        <FormatSelector />
+        </ul> -->
+        <FormatSelector class ="me-2" />
 
         <RegionSelector />
 
         <div class="col-md-2 text-end" v-show="!store.isAuth">
-            <RouterLink class="btn btn-outline-success me-2" to="/login">Login</RouterLink>
-            <RouterLink class="btn btn-outline-success me-2" to="/register">Register</RouterLink>
+            <RouterLink class="btn btn-outline-success me-2" to="/login">{{ $t('login') }}</RouterLink>
+            <RouterLink class="btn btn-outline-success me-2" to="/register">{{ $t('register' )}}</RouterLink>
         </div>
         <AccountNav />
         <LocaleNav />

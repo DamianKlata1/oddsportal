@@ -201,6 +201,7 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
                 league: new LeagueDTO(
                     id: $event->getLeague()->getId(),
                     name: $event->getLeague()->getName(),
+                    logoPath: $event->getLeague()->getLogoPath()
                 ),
                 region: new RegionDTO(
                     id: $event->getLeague()->getRegion()->getId(),

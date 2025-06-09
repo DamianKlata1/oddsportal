@@ -57,12 +57,6 @@ class UserService extends AbstractEntityService implements UserServiceInterface
     public function registerUser(NewUserDTO $userDTO): UserInterface
     {
         $this->validationService->validate($userDTO);
-        if ($this->userRepository->isEmailExists($userDTO->getEmail())) {
-            throw new ValidationException(
-                'There is already an account with this email.',
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
         $user = new User();
         $user->setEmail($userDTO->getEmail());
         $user->setPassword(
@@ -72,66 +66,9 @@ class UserService extends AbstractEntityService implements UserServiceInterface
             )
         );
         $user->setRoles(['ROLE_USER']);
-
+        $this->validationService->validate($user);
+        
         return $this->userRepository->save($user, flush: true);
     }
-    /**
-     * 
-     * @param User $user
-     * @return LeagueDTO[]
-     */
-    public function getFavoriteLeagues(UserInterface $user): array
-    {
-        $leaguesDTO = [];
-        foreach ($user->getFavoriteLeagues() as $league) {
-            if ($league->isActive()) {
-                $leaguesDTO[] = new LeagueDTO(
-                    id: $league->getId(),
-                    name: $league->getName()
-                );
-            }
-        }
-        return $leaguesDTO;
-    }
-    /**
-     * @param User $user
-     * @throws \App\Exception\ValidationException
-     */
-    public function addFavoriteLeague(UserInterface $user, int $leagueId): void
-    {
-        /** @var League */
-        $league = $this->leagueService->findOrFail($leagueId);
-
-        if ($user->getFavoriteLeagues()->contains($league)) {
-            throw new ValidationException(sprintf(
-                "League %s is already in user %s's favorite leagues",
-                $league->getName(),
-                $user->getEmail()
-            ), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        $user->addFavoriteLeague($league);
-        $this->userRepository->save($user, flush: true);
-    }
-    /**
-     * Summary of removeFavoriteLeague
-     * @param User $user
-     * @throws \App\Exception\ValidationException
-     */
-    public function removeFavoriteLeague(UserInterface $user, int $leagueId): void
-    {        
-        /** @var League */
-        $league = $this->leagueService->findOrFail($leagueId);
-        if (!$user->getFavoriteLeagues()->contains($league)) {
-            throw new ValidationException(sprintf(
-                "League %s is not in user %s's favorite leagues",
-                $league->getName(),
-                $user->getEmail()
-            ), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        $user->removeFavoriteLeague($league);
-        $this->userRepository->save($user, flush: true);
-    }
-
-
 
 }

@@ -2,22 +2,24 @@
 
 namespace App\Tests\Api;
 
+use App\Entity\User;
 use App\Factory\UserFactory;
-use App\Repository\Interface\UserRepositoryInterface;
 use App\Tests\Base\ApiTest\ApiTestBaseCase;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Repository\Interface\UserRepositoryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * @group profile
  */
 class ProfileTest extends ApiTestBaseCase
 {
-    const PROFILE_URL = '/api/account';
-    const EDIT_USER_URL = '/api/account/edit';
+    const PROFILE_URL = '/api/profile';
+    const EDIT_USER_URL = '/api/profile';
     private UserRepositoryInterface $userRepository;
     private UserPasswordHasherInterface $passwordHasher;
     private string $plainPassword;
+    /** @var User */
     private UserInterface $userFromRepository;
     protected function setUp(): void
     {
@@ -30,7 +32,6 @@ class ProfileTest extends ApiTestBaseCase
         $userFromFactory = UserFactory::createOne(
             ['email' => self::CORRECT_TEST_EMAIL, 'password' => $this->plainPassword]
         )->_real();
-
         $this->userFromRepository = $this->userRepository->find($userFromFactory->getId());
     }
 

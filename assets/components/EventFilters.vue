@@ -1,5 +1,5 @@
 <script setup>
-import { ref,onMounted } from 'vue' // 'watch' is no longer needed here for triggering fetches
+import { ref, onMounted } from 'vue' // 'watch' is no longer needed here for triggering fetches
 import { useEventFiltersStore } from '/assets/stores/eventFilters'
 
 const filtersStore = useEventFiltersStore()
@@ -8,7 +8,7 @@ const filtersStore = useEventFiltersStore()
 
 onMounted(() => {
 
-  
+
 })
 
 </script>
@@ -20,13 +20,8 @@ onMounted(() => {
   </div>
   <div v-else class="row mb-4 g-3 align-items-center">
     <div class="col-md-5">
-      <input
-        id="searchNameInput"
-        type="text"
-        class="form-control"
-        v-model="filtersStore.searchName"
-        placeholder="Search by team name..."
-      />
+      <input id="searchNameInput" type="text" class="form-control" v-model="filtersStore.searchName"
+        :placeholder="`${$t('search_by_team_name')}...`" />
     </div>
     <div class="col-md-5">
       <select id="dateFilterSelect" class="form-select" v-model="filtersStore.selectedDateKeyword">
@@ -37,7 +32,7 @@ onMounted(() => {
     </div>
     <div class="col-md-2">
       <button class="btn btn-outline-secondary w-100" @click="filtersStore.clearFilters">
-        Clear Filters
+        {{ $t('clear_filters') }}
       </button>
     </div>
   </div>

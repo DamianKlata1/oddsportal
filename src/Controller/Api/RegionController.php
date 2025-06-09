@@ -2,18 +2,19 @@
 
 namespace App\Controller\Api;
 
-use App\Repository\Interface\RegionRepositoryInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\SerializerInterface;
+use App\Repository\Interface\RegionRepositoryInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RegionController extends AbstractController
 {
     public function __construct(
-        private RegionRepositoryInterface $regionRepository,
-        private SerializerInterface       $serializer
+        private readonly RegionRepositoryInterface $regionRepository,
+        private readonly RequestStack     $requestStack
     )
     {
     }
@@ -22,11 +23,16 @@ class RegionController extends AbstractController
     public function getRegions(): Response
     {
         $regions = $this->regionRepository->findAll();
-        return new JsonResponse(
-            $this->serializer->serialize($regions, 'json'),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        $response = $this->json($regions);
+        
+        $response->setPublic();
+        $response->setSharedMaxAge(3600);
+        $response->setMaxAge(3600);
+        $response->setEtag(md5($response->getContent()));
+        if ($response->isNotModified($this->requestStack->getCurrentRequest())) {
+            return $response;
+        }
+
+        return $response;   
     }
 }

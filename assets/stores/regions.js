@@ -14,20 +14,22 @@ export const useRegionsStore = defineStore('regions', () => {
 
     async function fetchRegionsForSport(sportId) {
         regions.value = await getRegionsForSport(sportId)
+       
     }
 
     async function getRegionsForSport(sportId) {
         isLoading.value = true
-                try {
-                    const response = await apiPublic().get('/api/sports/' + sportId + '/regions')
-                    return response.data
-                } catch (error) {
-                    errorMessage.value = error.message
-                    return []
-                } finally {
-                    isLoading.value = false
-                }
+        try {
+            const response = await apiPublic().get('/api/sports/' + sportId + '/regions')
+            return response.data
+        } catch (error) {
+            errorMessage.value = error.message
+            return []
+        } finally {
+            isLoading.value = false
+        }
     }
 
+
     return { regions, fetchRegionsForSport, selectRegion, selectedRegion, isLoading, errorMessage }
-}, )
+},)

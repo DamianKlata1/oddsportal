@@ -18,27 +18,25 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private readonly EmailVerifierServiceInterface     $emailVerifier,
-                                private readonly UserServiceInterface              $userService,
-                                private readonly RegistrationEmailBuilderInterface $registrationEmailBuilder,
-                                private readonly TranslatorInterface               $translator,
-                                private readonly UserRepositoryInterface           $userRepository)
-    {
+    public function __construct(
+        private readonly EmailVerifierServiceInterface $emailVerifier,
+        private readonly UserServiceInterface $userService,
+        private readonly RegistrationEmailBuilderInterface $registrationEmailBuilder,
+        private readonly TranslatorInterface $translator,
+        private readonly UserRepositoryInterface $userRepository
+    ) {
     }
-
-    /**
-     */
-    #[Route('/register', name: 'api_register',methods: ['POST'])]
+    #[Route('/register', name: 'api_register', methods: ['POST'])]
     public function registerUser(
-        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY,)] NewUserDTO $userDTO
-    ): JsonResponse
-    {
+        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] NewUserDTO $userDTO
+    ): JsonResponse {
         $user = $this->userService->registerUser($userDTO);
 
         $this->emailVerifier->sendEmailConfirmation(
             'api_verify_email',
             $user,
-            $this->registrationEmailBuilder->buildConfirmationEmail($user));
+            $this->registrationEmailBuilder->buildConfirmationEmail($user)
+        );
 
         return $this->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
     }

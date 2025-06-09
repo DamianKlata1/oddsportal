@@ -3,8 +3,6 @@ import {RouterView} from 'vue-router'
 import PublicNav from '../../components/navigation/PublicNav.vue'
 import SideBarNav from '../../components/navigation/SidebarNav.vue'
 import SportNav from "../../components/navigation/SportNav.vue";
-import EventFilters from '../../components/EventFilters.vue';
-import Events from '../../components/Events.vue'
 
 
 </script>

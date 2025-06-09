@@ -6,7 +6,7 @@ import { useBetRegionsStore } from '/assets/stores/betRegions.js'
 import { useOddsFormatStore } from '/assets/stores/oddsFormat'
 import { usePaginationStore } from '/assets/stores/pagination'
 import { useEventFiltersStore } from '/assets/stores/eventFilters.js'
-import { useLeagueStore } from '/assets/stores/league'
+import { useLeaguesStore } from '/assets/stores/leagues'
 import { formatDateTime } from '/assets/helpers/formatters.js'
 import BasePagination from '/assets/components/Pagination.vue'
 import debounce from 'lodash/debounce'
@@ -20,15 +20,15 @@ const eventFiltersStore = useEventFiltersStore()
 const betRegionsStore = useBetRegionsStore()
 const oddsFormatStore = useOddsFormatStore()
 const paginationStore = usePaginationStore()
-const leagueStore = useLeagueStore()
+const leaguesStore = useLeaguesStore()
 
 const isApplyingUrlToStores = ref(false); 
 const shouldFetchOnPageChange = ref(true)
 
 const buildQueryParams = () => {
   const query = {};
-  if (leagueStore.selectedLeague?.id) {
-    query.league = String(leagueStore.selectedLeague.id);
+  if (leaguesStore.selectedLeague?.id) {
+    query.league = String(leaguesStore.selectedLeague.id);
   }
   if (eventFiltersStore.searchName) {
     query.search = eventFiltersStore.searchName;
@@ -67,7 +67,7 @@ const replaceUrlQuery = () => {
 
 
 const tryFetchEvents = async () => {
-  const leagueId = leagueStore.selectedLeague?.id ?? null
+  const leagueId = leaguesStore.selectedLeague?.id ?? null
   const selectedRegion = betRegionsStore.selectedBetRegion?.name
   const selectedFormat = oddsFormatStore.selectedFormat
   const currentPage = paginationStore.currentPage
@@ -104,7 +104,6 @@ watch(
     debouncedPushUrlQuery()
   }
 )
-
 watch(
   () => route.query,
   (newQuery) => {
@@ -118,7 +117,7 @@ watch(
   { deep: true } 
 );
 watch(
-  () => leagueStore.selectedLeague?.id,
+  () => leaguesStore.selectedLeague?.id,
   (newLeagueId, oldLeagueId) => {
     if (newLeagueId !== oldLeagueId) {
       if (isApplyingUrlToStores.value) return;
@@ -144,8 +143,8 @@ const applyQueryToStores = async (querySource) => {
   if (eventFiltersStore.dateKeywordOptions.length <= 1) await eventFiltersStore.fetchDateKeywords(); 
 
   const urlLeagueId = querySource.league ? parseInt(querySource.league, 10) : null;
-  if (leagueStore.selectedLeague?.id !== urlLeagueId) {
-    leagueStore.selectById(urlLeagueId);
+  if (leaguesStore.selectedLeague?.id !== urlLeagueId) {
+    leaguesStore.selectById(urlLeagueId);
   }
 
   eventFiltersStore.searchName = querySource.search || '';
@@ -155,19 +154,16 @@ const applyQueryToStores = async (querySource) => {
   eventFiltersStore.selectedDateKeyword = dateOption ? querySource.date : '';
   const urlPage = querySource.page ? parseInt(querySource.page, 10) : 1;
   if (paginationStore.currentPage !== urlPage) {
-      paginationStore.setPage(urlPage); // setPage won't trigger its own watcher if value is same
+      paginationStore.setPage(urlPage); 
   }
 
   // Use nextTick to ensure all state updates from above are processed before clearing the flag
   await nextTick();
   isApplyingUrlToStores.value = false;
 
-  // 3. Canonicalize URL and fetch
-  replaceUrlQuery(); // Ensure URL matches the applied state (e.g., if invalid params were corrected)
-  tryFetchEvents();   // Fetch data based on the new state
+  replaceUrlQuery();
+  tryFetchEvents();
 };
-
-
 
 onMounted(async () => {
   await applyQueryToStores(route.query);
@@ -192,10 +188,10 @@ const showLessOutcomes = (eventId) => {
 <template>
   <div class="container my-4">
     <h4 class="mb-4">{{eventFiltersStore.dateKeywordOptions.find(option => option.value ===
-      eventFiltersStore.selectedDateKeyword)?.label}} {{ leagueStore.selectedLeague?.name || '' }} Events</h4>
+      eventFiltersStore.selectedDateKeyword)?.label}} {{ leaguesStore.selectedLeague?.name || '' }} Events</h4>
     <div v-if="eventsStore.isLoading" class="text-center py-5">
       <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+        <span class="visually-hidden">{{ $t('loading') }}</span>
       </div>
     </div>
     <div v-else-if="eventsStore.events.length > 0">
@@ -235,7 +231,7 @@ const showLessOutcomes = (eventId) => {
               </div>
 
               <div class="mt-auto">
-                <h6 class="mt-3">Best Odds:</h6>
+                <h6 class="mt-3">{{ $t('best_odds') }}:</h6>
                 <div v-if="event.bestOutcomes && event.bestOutcomes.length > 0">
                   <div v-if="!visibleOutcomesCount[event.id]">
                     {{ initVisibleOutcomes(event.id) }}
@@ -248,26 +244,23 @@ const showLessOutcomes = (eventId) => {
                       <span class="text-success">{{ outcome.price }}</span>
                       <small class="text-muted">({{ outcome.bookmaker.name }})</small>
                       <br />
-                      <small class="text-muted">Updated: {{ formatDateTime(outcome.lastUpdate) }}</small>
+                      <small class="text-muted">{{ $t('updated') }}: {{ formatDateTime(outcome.lastUpdate) }}</small>
                     </li>
                   </ul>
 
                   <div class="mt-2 d-flex gap-2">
                     <button v-if="event.bestOutcomes.length > visibleOutcomesCount[event.id]"
                       class="btn btn-sm btn-outline-primary" @click="showMoreOutcomes(event.id)">
-                      Show more
+                      {{ $t('show_more') }}
                     </button>
                     <button v-if="visibleOutcomesCount[event.id] > 5" class="btn btn-sm btn-outline-secondary"
                       @click="showLessOutcomes(event.id)">
-                      Show less
+                      {{ $t('show_less') }}
                     </button>
                   </div>
                 </div>
                 <div v-else class="text-muted fst-italic">
-                  No odds available for this event.
-                </div>
-                <div v-else class="text-muted fst-italic">
-                  No odds available for this event.
+                 {{ $t('no_odds_available_for_this_event') }}
                 </div>
               </div>
             </div>
@@ -278,7 +271,7 @@ const showLessOutcomes = (eventId) => {
     </div>
     <div v-else class="text-center text-muted py-5">
       <i class="bi bi-emoji-frown fs-1 d-block mb-3"></i>
-      No events found for this league or matching your filters.
+      {{ $t('no_events_found') }}
     </div>
   </div>
 </template>

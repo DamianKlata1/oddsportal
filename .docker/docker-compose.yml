@@ -49,6 +49,12 @@ services:
             - "1080:1080"
         networks:
             - symfony_app
+    redis:
+        image: redis:7.0.0
+        ports:
+            - 6379:6379
+        networks:
+            - symfony_app
 volumes:
     symfony_app_var:
     symfony_app_vendor:

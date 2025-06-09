@@ -3,7 +3,6 @@
 namespace App\Controller\Api;
 
 use App\DTO\User\UserEditDTO;
-use App\Entity\User;
 use App\Service\Interface\User\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,30 +10,27 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Serializer\SerializerInterface;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 class ProfileController extends AbstractController
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
         private readonly UserServiceInterface $userService,
     ) {
     }
 
-    #[Route('/account', name: 'api_account', methods: ['GET'])]
-    public function index(): JsonResponse
+    #[Route('/profile', name: 'api_profile', methods: ['GET'])]
+    public function getProfile(): JsonResponse
     {
-        $json = $this->serializer->serialize($this->getUser(), 'json', ['groups' => 'getUser']);
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        return $this->json($this->getUser(), Response::HTTP_OK, [], ['groups' => 'getUser']);
     }
 
-    #[Route('/account/edit', name: 'api_account_edit', methods: ['PATCH'])]
-    public function editUser(
+    #[Route('/profile', name: 'api_profile_edit', methods: ['PATCH'])]
+    public function editProfile(
         #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] UserEditDTO $userEditDTO
     ): JsonResponse {
         $this->userService->editUser($this->getUser(), $userEditDTO);
 
-        return $this->json(['message' => 'User edited successfully.'], Response::HTTP_OK);
+        return $this->json(['message' => 'User edited successfully.'], status: Response::HTTP_OK);
     }
 }

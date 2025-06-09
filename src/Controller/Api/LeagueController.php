@@ -5,17 +5,15 @@ namespace App\Controller\Api;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
-use App\Service\Interface\Event\EventServiceInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use App\Repository\Interface\LeagueRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class LeagueController extends AbstractController
 {
     public function __construct(
-        private LeagueRepositoryInterface $leagueRepository,
-        private EventServiceInterface $eventService,
-        private SerializerInterface $serializer
+        private readonly LeagueRepositoryInterface $leagueRepository,
+        private readonly RequestStack $requestStack
     ) {
     }
 
@@ -23,14 +21,17 @@ class LeagueController extends AbstractController
     public function getLeagues(): JsonResponse
     {
         $leagues = $this->leagueRepository->findAll();
+        $response = $this->json($leagues, Response::HTTP_OK);
 
-        return new JsonResponse(
-            $this->serializer->serialize($leagues, 'json'),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        $response->setPublic();
+        $response->setSharedMaxAge(3600);
+        $response->setMaxAge(3600);
+        $response->setEtag(md5($response->getContent()));
 
+        if ($response->isNotModified($this->requestStack->getCurrentRequest())) {
+            return $response;
+        }
+        return $response;
     }
 
 }

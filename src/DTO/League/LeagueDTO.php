@@ -12,7 +12,10 @@ class LeagueDTO
         private int $id,
         #[Assert\NotBlank()]
         #[Assert\Type(type: 'string')]
-        private string $name
+        private string $name,
+        #[Assert\NotBlank()]
+        #[Assert\Type(type: 'string')]
+        private string $logoPath
     ) {
 
     }
@@ -26,5 +29,8 @@ class LeagueDTO
     {
         return $this->name;
     }
-
+    public function getLogoPath(): string
+    {
+        return $this->logoPath;
+    }
 }

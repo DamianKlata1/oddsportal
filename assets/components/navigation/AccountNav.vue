@@ -11,10 +11,10 @@
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
                    data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li><RouterLink class="dropdown-item" to="/admin">admin</RouterLink></li>
-            <li><RouterLink class="dropdown-item" to="/settings">Settings</RouterLink></li>
+            <li><RouterLink v-if="store.isGranted('admin')" class="dropdown-item" to="/admin">admin</RouterLink></li>
+            <li><RouterLink class="dropdown-item" to="/settings">{{ $t('settings') }}</RouterLink></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a @click="logoutAction(store)" class="dropdown-item" href="#">Logout</a></li>
+            <li><a @click="logoutAction(store)" class="dropdown-item" href="#">{{ $t('logout') }}</a></li>
         </ul>
         </li>
         </ul>

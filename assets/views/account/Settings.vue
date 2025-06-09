@@ -1,62 +1,76 @@
 <script setup>
-    import { Form, Field, ErrorMessage } from 'vee-validate';
-    import * as yup from 'yup';
-    import {RouterLink} from 'vue-router';
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
+import { RouterLink } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from '/assets/config/validationRules.js';
 
-    const schema = yup.object({
-        email: yup.string().email(),
-        current_password: yup.string().required().min(6).max(4096),
-        password: yup.string().min(6).max(4096),
-        passwordConfirmation: yup
-                .string()
-                .oneOf([yup.ref('password')], 'Passwords do not match'),
-    });
+const { t } = useI18n();
+
+const schema = yup.object({
+    email: yup
+        .string(t('email_must_be_a_string'))
+        .email(t('email_invalid')),
+    current_password: yup
+        .string(t('password_must_be_a_string'))
+        .required(t('password_required'))
+        .min(PASSWORD_MIN_LENGTH, t('password_too_short', { min: PASSWORD_MIN_LENGTH }))
+        .max(PASSWORD_MAX_LENGTH, t('password_too_long', { max: PASSWORD_MAX_LENGTH })),
+    password: yup
+        .string(t('password_must_be_a_string'))
+        .min(PASSWORD_MIN_LENGTH, t('password_too_short', { min: PASSWORD_MIN_LENGTH }))
+        .max(PASSWORD_MAX_LENGTH, t('password_too_long', { max: PASSWORD_MAX_LENGTH })),
+    passwordConfirmation: yup
+        .string(t('password_must_be_a_string'))
+        .oneOf([yup.ref('password')], t('passwords_do_not_match')),
+});
 </script>
 <template>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-7">
                 <div class="card shadow-lg border-0 rounded-lg mt-5">
-                    <div class="card-header"><h3 class="text-center font-weight-light my-4">Settings</h3></div>
+                    <div class="card-header">
+                        <h3 class="text-center font-weight-light my-4">{{ $t('settings') }}</h3>
+                    </div>
                     <div class="card-body">
-                        <Form @submit="submit" :validation-schema="schema" method="post"> 
+                        <Form @submit="submit" :validation-schema="schema" method="post">
                             <div class="form-floating mb-3">
-                                <Field class="form-control" id="currentPassword" name="current_password" type="password" />
-                                <label for="currentPassword">Current password:</label>
-                                <ErrorMessage name="current_password" class="text-danger"/>
+                                <Field class="form-control" id="currentPassword" name="current_password"
+                                    type="password" />
+                                <label for="currentPassword">{{ $t('current_password') }}:</label>
+                                <ErrorMessage name="current_password" class="text-danger" />
                             </div>
                             <div class="form-floating mb-3">
                                 <Field class="form-control" id="inputEmail" type="email" name="email" />
-                                <label for="inputEmail">Email address</label>
+                                <label for="inputEmail">{{ $t('email_address') }}</label>
                                 <ErrorMessage name="email" class="text-danger" />
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <Field class="form-control" id="inputPassword" name="password" type="password" />
-                                        <label for="inputPassword">Password</label>
-                                        <ErrorMessage name="password" class="text-danger"/>
+                                        <Field class="form-control" id="inputPassword" name="password"
+                                            type="password" />
+                                        <label for="inputPassword">{{ $t('password') }}</label>
+                                        <ErrorMessage name="password" class="text-danger" />
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating mb-3 mb-md-0">
-                                        <Field
-                                            class="form-control"
-                                            id="passwordConfirmation"
-                                            name="passwordConfirmation"
-                                            type="password"
-                                            />
-                                        <label for="passwordConfirmation">Confirm Password</label>
-                                        <ErrorMessage name="passwordConfirmation" class="text-danger"/>
+                                        <Field class="form-control" id="passwordConfirmation"
+                                            name="passwordConfirmation" type="password" />
+                                        <label for="passwordConfirmation">{{ $t('confirm_password') }}</label>
+                                        <ErrorMessage name="passwordConfirmation" class="text-danger" />
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-4 mb-0">
                                 <div class="d-grid">
-                                    <button v-show="!loader" class="btn btn-primary btn-block" type="submit" >Edit Account</button>
+                                    <button v-show="!loader" class="btn btn-primary btn-block" type="submit">{{ $t('edit_account' )}}</button>
                                     <button v-show="loader" class="btn btn-primary btn-block" type="submit" disabled>
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        <span class="ms-1">Loading...</span>
+                                        <span class="spinner-border spinner-border-sm" role="status"
+                                            aria-hidden="true"></span>
+                                        <span class="ms-1">{{ t('loading') }}</span>
                                     </button>
                                 </div>
                             </div>
@@ -64,7 +78,7 @@
                     </div>
                     <div class="card-footer text-center py-3">
                         <div class="small">
-                            <RouterLink to="/">Home</RouterLink>
+                            <RouterLink to="/">{{ $t('name') }}</RouterLink>
                         </div>
                     </div>
                 </div>
@@ -73,34 +87,33 @@
     </div>
 </template>
 <script>
-    import apiPrivate from '/assets/api/apiPrivate.js';
-    import Toast from '/assets/tools/Toast.js';
-    export default  {
-        data() {
-            let loader = false;
-            return{
-                loader
-            }
-        },
-        methods: {
-            submit(values) {
-                this.loader = true;
-                console.log(values)
-                apiPrivate().patch('/api/account/edit', values)
-                        .then((response) => {
-                            Toast(response.data.message, 'success');
-                        })
-                        .catch(function (error) {
-                          if (error.response.data.detail) {
-                            Toast(error.response.data.detail, 'error');
-                          } else if (error.response.data.message) {
-                            Toast(error.response.data.message, 'error');
-                          }
-                        })
-                        .finally(() => this.loader = false);
-            }
+import apiPrivate from '/assets/api/apiPrivate.js';
+import Toast from '/assets/tools/Toast.js';
+export default {
+    data() {
+        let loader = false;
+        return {
+            loader
+        }
+    },
+    methods: {
+        submit(values) {
+            this.loader = true;
+            console.log(values)
+            apiPrivate().patch('/api/profile', values)
+                .then((response) => {
+                    Toast(response.data.message, 'success');
+                })
+                .catch(function (error) {
+                    if (error.response.data.detail) {
+                        Toast(error.response.data.detail, 'error');
+                    } else if (error.response.data.message) {
+                        Toast(error.response.data.message, 'error');
+                    }
+                })
+                .finally(() => this.loader = false);
         }
     }
+}
 </script>
-<style>
-</style>
+<style></style>

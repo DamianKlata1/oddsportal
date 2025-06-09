@@ -8,19 +8,15 @@ use App\DTO\Pagination\PaginationDTO;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\SerializerInterface;
 use App\Repository\Interface\EventRepositoryInterface;
 use App\Service\Interface\Event\EventServiceInterface;
-use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 
 class EventController extends AbstractController
 {
     public function __construct(
-        private readonly EventRepositoryInterface $eventRepository,
         private readonly EventServiceInterface $eventService,
-        private readonly SerializerInterface $serializer
     ) {
     }
     #[Route('events', name: 'api_get_events', methods: ['GET'])]
@@ -31,11 +27,6 @@ class EventController extends AbstractController
     ): JsonResponse 
     {
         $events = $this->eventService->getEvents( $eventFiltersDTO, $outcomeFiltersDTO,$paginationDTO);
-        return new JsonResponse(
-            $this->serializer->serialize($events, 'json'),
-            Response::HTTP_OK,
-            [],
-            true
-        );
+        return $this->json($events, Response::HTTP_OK);
     }
 }
