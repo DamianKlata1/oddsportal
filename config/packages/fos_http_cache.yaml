@@ -1,6 +1,0 @@
-# config/packages/fos_http_cache.yaml
-fos_http_cache:
-    # This section enables automatic ETag generation and 304 Not Modified responses.
-    # It replaces your manual ETag and isNotModified() logic.
-    etag:
-        enabled: true

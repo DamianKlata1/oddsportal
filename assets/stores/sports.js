@@ -37,6 +37,6 @@ export const useSportsStore = defineStore('sports', () => {
     return {sports, fetchSports, selectSport, selectedSport, isLoading, errorMessage}
 }, {
     persist: {
-        paths: ['selectedSport'], // only persist the data, not loading/error
+        paths: [''], // only persist the data, not loading/error
     }
 })

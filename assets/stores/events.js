@@ -42,8 +42,8 @@ export const useEventsStore = defineStore('events', () => {
       if (nameFilter) {
         params.append('name', nameFilter);
       }
-      if (dateKeywordFilter) { // If a keyword is selected (not an empty string)
-        params.append('date', dateKeywordFilter); // Backend expects 'date' query param
+      if (dateKeywordFilter && dateKeywordFilter !== "any_date") {
+        params.append('date', dateKeywordFilter); 
       }
       const response = await apiPublic().get(`/api/events`, { params })
       const data = response.data

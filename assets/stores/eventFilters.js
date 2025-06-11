@@ -11,14 +11,6 @@ export const useEventFiltersStore = defineStore('eventFilters', () => {
   const searchName = ref('')
   const selectedDateKeyword = ref('')
   const dateKeywords = ref([])
-  
-  const dateKeywordOptions = computed(() => [
-    { value: '', label: 'Any date' },
-    ...dateKeywords.value.map(value => ({
-      value,
-      label: formatDateKeywordLabel(value),
-    }))
-  ])
 
   const clearFilters = () => {
     searchName.value = ''
@@ -27,7 +19,9 @@ export const useEventFiltersStore = defineStore('eventFilters', () => {
 
   async function fetchDateKeywords() {
     if (isLoaded.value || isLoading.value || dateKeywords.value.length > 0) return
-    dateKeywords.value = await getDateKeywords()
+    const fetchedKeywords = await getDateKeywords()
+    dateKeywords.value = ['any_date', ...fetchedKeywords]
+    selectedDateKeyword.value = 'any_date'
   }
 
   const getDateKeywords = async () => {
@@ -47,7 +41,7 @@ export const useEventFiltersStore = defineStore('eventFilters', () => {
   return {
     searchName,
     selectedDateKeyword,
-    dateKeywordOptions,
+    dateKeywords,
     fetchDateKeywords,
     clearFilters,
     isLoading,

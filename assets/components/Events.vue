@@ -140,7 +140,7 @@ watch(() => paginationStore.currentPage, (newPage, oldPage) => {
 const applyQueryToStores = async (querySource) => {
   isApplyingUrlToStores.value = true;
 
-  if (eventFiltersStore.dateKeywordOptions.length <= 1) await eventFiltersStore.fetchDateKeywords(); 
+  if (eventFiltersStore.dateKeywords?.length <= 1) await eventFiltersStore.fetchDateKeywords(); 
 
   const urlLeagueId = querySource.league ? parseInt(querySource.league, 10) : null;
   if (leaguesStore.selectedLeague?.id !== urlLeagueId) {
@@ -148,10 +148,10 @@ const applyQueryToStores = async (querySource) => {
   }
 
   eventFiltersStore.searchName = querySource.search || '';
-  const dateOption = eventFiltersStore.dateKeywordOptions.find(opt => opt.value === querySource.date);
+  const dateOption = eventFiltersStore.dateKeywords.find(opt => opt === querySource.date);
 
   
-  eventFiltersStore.selectedDateKeyword = dateOption ? querySource.date : '';
+  eventFiltersStore.selectedDateKeyword = dateOption ? querySource.date : 'any_date';
   const urlPage = querySource.page ? parseInt(querySource.page, 10) : 1;
   if (paginationStore.currentPage !== urlPage) {
       paginationStore.setPage(urlPage); 
@@ -187,8 +187,7 @@ const showLessOutcomes = (eventId) => {
 
 <template>
   <div class="container my-4">
-    <h4 class="mb-4">{{eventFiltersStore.dateKeywordOptions.find(option => option.value ===
-      eventFiltersStore.selectedDateKeyword)?.label}} {{ leaguesStore.selectedLeague?.name || '' }} Events</h4>
+    <h4 class="mb-4">{{ $t(eventFiltersStore.selectedDateKeyword || 'any_date') }} {{ leaguesStore.selectedLeague?.name || '' }} {{ $t('events') }} </h4>
     <div v-if="eventsStore.isLoading" class="text-center py-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">{{ $t('loading') }}</span>

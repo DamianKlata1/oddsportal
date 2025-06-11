@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Attribute\HttpCache;
 use App\Enum\DateFilterKeyword;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,19 +15,10 @@ class DateFilterKeywordController extends AbstractController
         private readonly RequestStack $requestStack
     ) {
     }
+    #[HttpCache(maxage: 3600, smaxage: 3600, public: true)]
     #[Route('/date-filter-keywords', name: 'api_get_date_filter_keywords', methods: ['GET'])]
     public function getDateFilterKeywords(): JsonResponse
     {
-        $response = $this->json(DateFilterKeyword::cases());
-
-        $response->setPublic();
-        $response->setSharedMaxAge(3600);
-        $response->setMaxAge(3600);
-        $response->setEtag(md5($response->getContent()));
-
-        if ($response->isNotModified($this->requestStack->getCurrentRequest())) {
-            return $response;
-        }
-        return $response;
+        return $this->json(DateFilterKeyword::cases());;
     }
 }

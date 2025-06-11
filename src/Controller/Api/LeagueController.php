@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Attribute\HttpCache;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,22 +17,13 @@ class LeagueController extends AbstractController
         private readonly RequestStack $requestStack
     ) {
     }
-
+    #[HttpCache(maxage: 3600, smaxage: 3600, public: true)]
     #[Route('/leagues', name: 'api_get_leagues', methods: ['GET'])]
     public function getLeagues(): JsonResponse
     {
         $leagues = $this->leagueRepository->findAll();
-        $response = $this->json($leagues, Response::HTTP_OK);
 
-        $response->setPublic();
-        $response->setSharedMaxAge(3600);
-        $response->setMaxAge(3600);
-        $response->setEtag(md5($response->getContent()));
-
-        if ($response->isNotModified($this->requestStack->getCurrentRequest())) {
-            return $response;
-        }
-        return $response;
+        return $this->json($leagues, Response::HTTP_OK);
     }
 
 }

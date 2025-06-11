@@ -128,7 +128,7 @@ const handleToggleFavorite = (league) => {
       </div>
     </div>
     <div v-else class="text-muted fst-italic">
-      {{ $t('no_regions_available_for_this_sport') }}
+      {{ $t('no_regions_available') }}
     </div>
   </div>
 </template>

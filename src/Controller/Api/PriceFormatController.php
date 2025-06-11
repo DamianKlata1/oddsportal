@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Enum\PriceFormat;
+use App\Attribute\HttpCache;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -14,19 +15,11 @@ class PriceFormatController extends AbstractController
         private readonly RequestStack $requestStack
     ) {
     }
+    #[HttpCache(maxage: 3600, smaxage: 3600, public: true)]
     #[Route('/price-formats', name: 'api_get_price_format', methods: ['GET'])]
     public function getPriceFormats(): JsonResponse
     {
-        $response = $this->json(PriceFormat::cases());
 
-        $response->setPublic();
-        $response->setSharedMaxAge(3600);
-        $response->setMaxAge(3600);
-        $response->setEtag(md5($response->getContent()));
-        if ($response->isNotModified($this->requestStack->getCurrentRequest())) {
-
-            return $response;
-        }
-        return $response;
+        return $this->json(PriceFormat::cases());
     }
 }

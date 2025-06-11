@@ -24,9 +24,9 @@ onMounted(() => {
         :placeholder="`${$t('search_by_team_name')}...`" />
     </div>
     <div class="col-md-5">
-      <select id="dateFilterSelect" class="form-select" v-model="filtersStore.selectedDateKeyword">
-        <option v-for="option in filtersStore.dateKeywordOptions" :key="option.value" :value="option.value">
-          {{ option.label }}
+      <select id="dateFilterSelect" class="form-select" v-model="filtersStore.selectedDateKeyword" title="dateFilterSelect">
+        <option v-for="option in filtersStore.dateKeywords" :key="option" :value="option" >
+          {{ $t(option) }}
         </option>
       </select>
     </div>

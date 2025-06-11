@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Attribute\HttpCache;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,21 +37,11 @@ class SportController extends AbstractController
         return $response;
     }
 
-
+    #[HttpCache(maxage: 3600, smaxage: 3600, public: true)]
     #[Route('/sports/{sportId}/regions', name: 'api_get_regions_for_sport', methods: ['GET'])]
     public function getRegionsForSport(int $sportId): JsonResponse
     {
         $regionDtoList = $this->regionService->getRegionsWithActiveLeagues($sportId);
-        $response = $this->json($regionDtoList, Response::HTTP_OK, []);
-
-        $response->setPublic();
-        $response->setSharedMaxAge(3600);
-        $response->setMaxAge(3600);
-        $response->setEtag(md5($response->getContent()));
-
-        if ($response->isNotModified($this->requestStack->getCurrentRequest())) {
-            return $response;
-        }
-        return $response;
+        return $this->json($regionDtoList, Response::HTTP_OK, []);;
     }
 }

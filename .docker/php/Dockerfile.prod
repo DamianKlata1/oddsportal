@@ -1,0 +1,37 @@
+# --- Etap 1: Baza z rozszerzeniami PHP ---
+FROM php:8.2-fpm-buster as base
+ARG TIMEZONE
+ENV TZ=${TIMEZONE}
+
+# Instalujemy tylko niezbędne zależności, bez deweloperskich
+RUN apt-get update && apt-get install -y \
+    zlib1g-dev libzip-dev libicu-dev libxslt1-dev acl git \
+    && docker-php-ext-install pdo pdo_mysql zip xsl intl opcache exif mbstring
+
+# --- Etap 2: Instalacja zależności Composera ---
+FROM base as vendor
+WORKDIR /var/www/symfony
+COPY ../../composer.json ../../composer.lock ./
+# Instalujemy zależności bez paczek deweloperskich i optymalizujemy autoloader
+RUN composer install --no-dev --no-scripts --optimize-autoloader
+
+# --- Etap 3: Budowanie frontendu ---
+FROM node:20-alpine as frontend
+WORKDIR /var/www/symfony
+COPY ../../package.json ../../package-lock.json ./
+RUN npm install
+COPY ../../ ./
+# Najważniejszy krok: budowanie statycznych plików JS/CSS
+RUN npm run build
+
+# --- Etap 4: Finalny, odchudzony obraz produkcyjny ---
+FROM base
+WORKDIR /var/www/symfony
+
+# Kopiujemy tylko niezbędne pliki z poprzednich etapów
+COPY --from=vendor /var/www/symfony/vendor ./vendor
+COPY --from=frontend /var/www/symfony/public/build ./public/build
+COPY ../../ ./
+
+# Ustawienie odpowiednich uprawnień
+RUN chown -R www-data:www-data var

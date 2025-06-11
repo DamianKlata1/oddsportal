@@ -33,6 +33,21 @@
 /.vscode/
 ###< vs code###
 
-###> phpstorm ###
+# ==================================================
+# IDE 
+# ==================================================
+.DS_Store
+Thumbs.db
 /.idea/
-###< phpstorm ###
+/.vscode/
+
+###login.sh###
+### ec2 ssh login script ###
+/login.sh
+
+#PEM
+/*.pem
+
+#Env in subfolders
+**/.env.local
+**/.env.*.local
