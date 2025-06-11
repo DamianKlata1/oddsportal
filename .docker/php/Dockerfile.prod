@@ -11,13 +11,13 @@ RUN apt-get update
 
 # Krok 2: Instalacja zależności systemowych
 # Jeśli to zawiedzie, któryś z pakietów ma inną nazwę lub nie istnieje w 'bookworm'
-RUN apt-get install -y --no-install-recommends \
-    zlib1g-dev \
-    libzip-dev \
-    libicu-dev \
-    libxslt1-dev \
-    acl \
-    git
+
+RUN  apt-get install -y --no-install-recommends  zlib1g-dev 
+RUN  apt-get install -y --no-install-recommends  libzip-dev 
+ RUN apt-get install -y --no-install-recommends  libicu-dev 
+RUN  apt-get install -y --no-install-recommends  libxslt1-dev 
+RUN apt-get install -y --no-install-recommends   acl 
+  RUN apt-get install -y --no-install-recommends git
 
 # Krok 3: Instalacja rozszerzeń PHP
 # Jeśli to zawiedzie, brakuje jakiejś zależności deweloperskiej do kompilacji rozszerzenia
