@@ -21,8 +21,14 @@ RUN apt-get install -y --no-install-recommends   acl
 
 # Krok 3: Instalacja rozszerzeń PHP
 # Jeśli to zawiedzie, brakuje jakiejś zależności deweloperskiej do kompilacji rozszerzenia
-RUN docker-php-ext-install pdo pdo_mysql zip xsl intl opcache exif mbstring
-
+RUN docker-php-ext-install pdo
+RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install zip     
+RUN docker-php-ext-install xsl
+RUN docker-php-ext-install intl
+RUN docker-php-ext-install opcache
+RUN docker-php-ext-install exif
+RUN docker-php-ext-install mbstring
 # Krok 4: Czyszczenie (dla mniejszego obrazu)
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
