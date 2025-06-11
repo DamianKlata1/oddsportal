@@ -1,5 +1,5 @@
 # --- Etap 1: Baza z rozszerzeniami PHP ---
-FROM php:8.2-fpm-buster as base
+FROM php:8.2-fpm-bookworm as base
 ARG TIMEZONE
 ENV TZ=${TIMEZONE}
 
