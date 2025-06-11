@@ -7,32 +7,17 @@ ENV TZ=${TIMEZONE}
 
 # Krok 1: Aktualizacja listy pakietów
 # Jeśli to zawiedzie, problem leży w sieci lub konfiguracji repozytoriów apt
-RUN apt-get update
-
-# Krok 2: Instalacja zależności systemowych
-# Jeśli to zawiedzie, któryś z pakietów ma inną nazwę lub nie istnieje w 'bookworm'
-
-RUN  apt-get install -y --no-install-recommends  zlib1g-dev 
-RUN  apt-get install -y --no-install-recommends  libzip-dev 
- RUN apt-get install -y --no-install-recommends  libicu-dev 
-RUN  apt-get install -y --no-install-recommends  libxslt1-dev 
-RUN apt-get install -y --no-install-recommends   acl 
-  RUN apt-get install -y --no-install-recommends git
-
-# Krok 3: Instalacja rozszerzeń PHP
-# Jeśli to zawiedzie, brakuje jakiejś zależności deweloperskiej do kompilacji rozszerzenia
-RUN docker-php-ext-install pdo
-RUN docker-php-ext-install pdo_mysql
-RUN docker-php-ext-install zip     
-RUN docker-php-ext-install xsl
-RUN docker-php-ext-install intl
-RUN docker-php-ext-install opcache
-RUN docker-php-ext-install exif
-RUN docker-php-ext-install mbstring
-# Krok 4: Czyszczenie (dla mniejszego obrazu)
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# --- Koniec sekcji debugowania ---
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    zlib1g-dev \
+    libzip-dev \
+    libicu-dev \
+    libxslt1-dev \
+    acl \
+    git \
+    libonig-dev \
+    && docker-php-ext-install pdo pdo_mysql zip xsl intl opcache exif mbstring \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Kopiujemy konfigurację PHP dla produkcji
 COPY .docker/php/php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
