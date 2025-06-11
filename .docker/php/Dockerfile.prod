@@ -3,25 +3,29 @@ FROM php:8.2-fpm-buster as base
 ARG TIMEZONE
 ENV TZ=${TIMEZONE}
 
-# Instalujemy tylko niezbędne zależności, bez deweloperskich
+# Instalujemy tylko niezbędne zależności
 RUN apt-get update && apt-get install -y \
     zlib1g-dev libzip-dev libicu-dev libxslt1-dev acl git \
     && docker-php-ext-install pdo pdo_mysql zip xsl intl opcache exif mbstring
 
+# Kopiujemy konfigurację PHP dla produkcji
+# Ścieżka jest teraz relatywna do kontekstu, czyli głównego katalogu projektu
+COPY .docker/php/php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
+
 # --- Etap 2: Instalacja zależności Composera ---
 FROM base as vendor
 WORKDIR /var/www/symfony
-COPY ../../composer.json ../../composer.lock ./
-# Instalujemy zależności bez paczek deweloperskich i optymalizujemy autoloader
+# Ścieżki relatywne do głównego katalogu projektu
+COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --optimize-autoloader
 
 # --- Etap 3: Budowanie frontendu ---
 FROM node:20-alpine as frontend
 WORKDIR /var/www/symfony
-COPY ../../package.json ../../package-lock.json ./
+# Ścieżki relatywne do głównego katalogu projektu
+COPY package.json package-lock.json ./
 RUN npm install
-COPY ../../ ./
-# Najważniejszy krok: budowanie statycznych plików JS/CSS
+COPY . .
 RUN npm run build
 
 # --- Etap 4: Finalny, odchudzony obraz produkcyjny ---
@@ -31,7 +35,8 @@ WORKDIR /var/www/symfony
 # Kopiujemy tylko niezbędne pliki z poprzednich etapów
 COPY --from=vendor /var/www/symfony/vendor ./vendor
 COPY --from=frontend /var/www/symfony/public/build ./public/build
-COPY ../../ ./
+# Kopiujemy resztę kodu źródłowego aplikacji
+COPY . .
 
-# Ustawienie odpowiednich uprawnień
+# Ustawienie odpowiednich uprawnień dla katalogu var, który będzie używany przez Symfony
 RUN chown -R www-data:www-data var

@@ -5,6 +5,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - "db_app:/var/lib/mysql"
+    env_file:
+      - ../.env.prod.local
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -15,12 +17,14 @@ services:
 
   php:
     build:
-      context: ./php
-      dockerfile: Dockerfile.prod # <-- Używamy nowego pliku
+      context: ../ # ✅ Zmień kontekst na główny katalog projektu
+      dockerfile: .docker/php/Dockerfile.prod # ✅ Podaj pełną ścieżkę do Dockerfile od nowego kontekstu
       args:
         TIMEZONE: ${TIMEZONE}
     networks:
       - symfony_app
+    env_file:
+      - ../.env.prod.local
 
   nginx:
     build:
@@ -34,7 +38,7 @@ services:
     networks:
       - symfony_app
     env_file:
-      - .env.nginx.local
+      - ../.env.prod.local
 
   redis:
     image: redis:7.0.0
