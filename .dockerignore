@@ -1,0 +1,25 @@
+# Plik .dockerignore
+
+# Ignoruj katalogi IDE i systemu operacyjnego
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Ignoruj repozytorium Git
+.git/
+
+# Ignoruj zależności, które będą instalowane wewnątrz kontenera
+vendor/
+node_modules/
+
+# Ignoruj pliki tymczasowe i logi Symfony
+var/
+coverage/
+
+# Ignoruj lokalne pliki środowiskowe
+.env.local
+.env.*.local
+
+# Ignoruj inne pliki, które nie są potrzebne w obrazie
+README.md

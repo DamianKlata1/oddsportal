@@ -44,4 +44,5 @@ COPY --from=vendor /var/www/symfony/vendor ./vendor
 COPY --from=frontend /var/www/symfony/public/build ./public/build
 COPY . .
 
-RUN chown -R www-data:www-data var
+RUN mkdir -p var/cache var/log && \
+    chown -R www-data:www-data var vendor
