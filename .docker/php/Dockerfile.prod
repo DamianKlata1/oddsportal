@@ -3,7 +3,7 @@ FROM php:8.2-fpm-bookworm as base
 ARG TIMEZONE
 ENV TZ=${TIMEZONE}
 
-# --- Debugowanie: Rozbijamy komendy na osobne kroki ---
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Krok 1: Aktualizacja listy pakietów
 # Jeśli to zawiedzie, problem leży w sieci lub konfiguracji repozytoriów apt
