@@ -3,26 +3,43 @@ FROM php:8.2-fpm-bookworm as base
 ARG TIMEZONE
 ENV TZ=${TIMEZONE}
 
-# Instalujemy tylko niezbędne zależności
-RUN apt-get update && apt-get install -y \
-    zlib1g-dev libzip-dev libicu-dev libxslt1-dev acl git \
-    && docker-php-ext-install pdo pdo_mysql zip xsl intl opcache exif mbstring
+# --- Debugowanie: Rozbijamy komendy na osobne kroki ---
+
+# Krok 1: Aktualizacja listy pakietów
+# Jeśli to zawiedzie, problem leży w sieci lub konfiguracji repozytoriów apt
+RUN apt-get update
+
+# Krok 2: Instalacja zależności systemowych
+# Jeśli to zawiedzie, któryś z pakietów ma inną nazwę lub nie istnieje w 'bookworm'
+RUN apt-get install -y --no-install-recommends \
+    zlib1g-dev \
+    libzip-dev \
+    libicu-dev \
+    libxslt1-dev \
+    acl \
+    git
+
+# Krok 3: Instalacja rozszerzeń PHP
+# Jeśli to zawiedzie, brakuje jakiejś zależności deweloperskiej do kompilacji rozszerzenia
+RUN docker-php-ext-install pdo pdo_mysql zip xsl intl opcache exif mbstring
+
+# Krok 4: Czyszczenie (dla mniejszego obrazu)
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# --- Koniec sekcji debugowania ---
 
 # Kopiujemy konfigurację PHP dla produkcji
-# Ścieżka jest teraz relatywna do kontekstu, czyli głównego katalogu projektu
 COPY .docker/php/php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
 
 # --- Etap 2: Instalacja zależności Composera ---
 FROM base as vendor
 WORKDIR /var/www/symfony
-# Ścieżki relatywne do głównego katalogu projektu
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --optimize-autoloader
 
 # --- Etap 3: Budowanie frontendu ---
 FROM node:20-alpine as frontend
 WORKDIR /var/www/symfony
-# Ścieżki relatywne do głównego katalogu projektu
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
@@ -32,11 +49,8 @@ RUN npm run build
 FROM base
 WORKDIR /var/www/symfony
 
-# Kopiujemy tylko niezbędne pliki z poprzednich etapów
 COPY --from=vendor /var/www/symfony/vendor ./vendor
 COPY --from=frontend /var/www/symfony/public/build ./public/build
-# Kopiujemy resztę kodu źródłowego aplikacji
 COPY . .
 
-# Ustawienie odpowiednich uprawnień dla katalogu var, który będzie używany przez Symfony
 RUN chown -R www-data:www-data var
