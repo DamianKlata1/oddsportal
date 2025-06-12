@@ -16,31 +16,34 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - symfony_app
-
-  php:
+php:
     build:
-      context: ../ # ✅ Zmień kontekst na główny katalog projektu
-      dockerfile: .docker/php/Dockerfile.prod # ✅ Podaj pełną ścieżkę do Dockerfile od nowego kontekstu
+      context: ../
+      dockerfile: .docker/php/Dockerfile.prod
       args:
         TIMEZONE: ${TIMEZONE}
-    networks:
-      - symfony_app
     env_file:
       - ../.env.prod.local
+    # ✅ Definiujemy wolumin dla kodu, który będzie współdzielony
+    volumes:
+      - ../:/var/www/symfony
+    networks:
+      - symfony_app
 
   nginx:
     build:
       context: ./nginx
-    volumes:
-      # Montujemy tylko zbudowane assety i kod, który jest już w obrazie PHP
-      # UWAGA: Ten wolumin jest potrzebny, aby Nginx widział pliki publiczne
-      - ../:/var/www/symfony:ro # Montujemy w trybie tylko do odczytu
+    # ✅ Ta dyrektywa sprawia, że Nginx "widzi" dokładnie te same pliki co PHP
+    volumes_from:
+      - service:php:ro # 'ro' oznacza tylko do odczytu (read-only), co jest bezpieczniejsze
     ports:
-      - "8080:80" # <-- Wystawiamy na porcie 8080, aby nie kolidował z Nginxem na hoście
+      - "8080:80"
+    env_file:
+      - ./.docker/.env.nginx.local
     networks:
       - symfony_app
-    env_file:
-      - ../.env.prod.local
+    depends_on:
+      - php
 
   redis:
     image: redis:7.0.0
