@@ -16,7 +16,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - symfony_app
-php:
+  php:
     build:
       context: ../
       dockerfile: .docker/php/Dockerfile.prod
@@ -29,7 +29,7 @@ php:
       - ../:/var/www/symfony
     networks:
       - symfony_app
-nginx:
+  nginx:
     build:
       context: ./nginx
     # ✅ Ta dyrektywa sprawia, że Nginx "widzi" dokładnie te same pliki co PHP
@@ -43,7 +43,7 @@ nginx:
       - symfony_app
     depends_on:
       - php
-redis:
+  redis:
     image: redis:7.0.0
     networks:
       - symfony_app
