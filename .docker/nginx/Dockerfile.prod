@@ -1,7 +1,19 @@
+# Etap 1: Zdefiniuj argument, który przyjmie nazwę gotowego obrazu PHP
+ARG PHP_IMAGE_WITH_CODE
+
+# Etap 2: Użyj tego obrazu jako źródła plików (nazwiemy go 'php_files')
+FROM ${PHP_IMAGE_WITH_CODE} as php_files
+
+# Etap 3: Finalny obraz Nginx
 FROM nginx:1.21-alpine
 
+# Kopiuj standardową konfigurację Nginx z odpowiedniego podkatalogu w kontekście
 COPY .docker/nginx/nginx.conf  /etc/nginx/
 COPY .docker/nginx/templates /etc/nginx/templates/
 RUN echo "upstream php-upstream { server php:9000; }" > /etc/nginx/conf.d/upstream.conf
+
+# ✅ Kluczowa komenda: Kopiujemy CAŁY katalog /public z gotowego obrazu PHP
+# do miejsca, gdzie Nginx będzie serwował pliki statyczne.
+COPY --from=php_files /var/www/symfony/public /var/www/symfony/public
 
 EXPOSE 80

@@ -13,15 +13,12 @@ services:
     networks:
       - symfony_app
 
-   
   php:
     build:
       context: ../
       dockerfile: .docker/php/Dockerfile.prod
-    volumes:
-      # ✅ Montujemy nazwany wolumin do katalogu z kodem.
-      # Docker najpierw wypełni ten wolumin zawartością z obrazu.
-      - app_code:/var/www/symfony
+    # ✅ Nadajemy naszemu budowanemu obrazowi stałą nazwę, aby móc się do niego odwołać
+    image: oddsportal-php:latest 
     env_file:
       - ../.env.prod.local
     networks:
@@ -29,18 +26,18 @@ services:
 
   nginx:
     build:
-      context: ../ # Zmień kontekst, aby miał dostęp do plików konfiguracyjnych
-      dockerfile: .docker/nginx/Dockerfile.prod # Użyj dedykowanego pliku
+      context: ../ 
+      dockerfile: .docker/nginx/Dockerfile.prod
+      # ✅ Przekazujemy nazwę zbudowanego obrazu PHP jako argument do Dockerfile Nginx
+      args:
+        PHP_IMAGE_WITH_CODE: oddsportal-php:latest
     ports:
       - "8080:80"
-    volumes:
-      # ✅ Montujemy TEN SAM nazwany wolumin co w PHP, w trybie tylko do odczytu.
-      # Dzięki temu Nginx widzi dokładnie te same pliki, co PHP.
-      - app_code:/var/www/symfony:ro
     env_file:
       - ../.env.prod.local
     networks:
       - symfony_app
+    # ✅ Ta dyrektywa jest teraz BARDZO ważna - Nginx musi być budowany PO PHP
     depends_on:
       - php
 
@@ -50,8 +47,4 @@ services:
       - symfony_app
 
 volumes:
-  db_app:
-  app_code:
-
-networks:
-  symfony_app:
+  db_app: # Zostaje tylko wolumin na dane bazy danych
