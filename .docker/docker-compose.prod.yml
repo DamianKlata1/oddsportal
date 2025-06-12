@@ -13,26 +13,32 @@ services:
     networks:
       - symfony_app
 
+   
   php:
     build:
       context: ../
       dockerfile: .docker/php/Dockerfile.prod
-      args:
-        TIMEZONE: ${TIMEZONE}
+    volumes:
+      # ✅ Montujemy nazwany wolumin do katalogu z kodem.
+      # Docker najpierw wypełni ten wolumin zawartością z obrazu.
+      - app_code:/var/www/symfony
     env_file:
       - ../.env.prod.local
-    # ✅ USUWAMY wolumin montujący kod z hosta! Obraz jest teraz samowystarczalny.
     networks:
       - symfony_app
 
   nginx:
     build:
-      context: ../ # Zmieniamy kontekst na główny katalog, aby miał dostęp do plików
-      dockerfile: .docker/nginx/Dockerfile.prod # Używamy nowego Dockerfile dla Nginx
+      context: ../ # Zmień kontekst, aby miał dostęp do plików konfiguracyjnych
+      dockerfile: .docker/nginx/Dockerfile.prod # Użyj dedykowanego pliku
     ports:
       - "8080:80"
+    volumes:
+      # ✅ Montujemy TEN SAM nazwany wolumin co w PHP, w trybie tylko do odczytu.
+      # Dzięki temu Nginx widzi dokładnie te same pliki, co PHP.
+      - app_code:/var/www/symfony:ro
     env_file:
-      - ../.env.prod.local # Ścieżka z głównego katalogu
+      - ../.env.prod.local
     networks:
       - symfony_app
     depends_on:
@@ -45,6 +51,7 @@ services:
 
 volumes:
   db_app:
+  app_code:
 
 networks:
   symfony_app:
