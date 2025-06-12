@@ -34,7 +34,7 @@ services:
       context: ./nginx
     # ✅ Ta dyrektywa sprawia, że Nginx "widzi" dokładnie te same pliki co PHP
     volumes_from:
-      - service:php:ro # 'ro' oznacza tylko do odczytu (read-only), co jest bezpieczniejsze
+      - php:ro
     ports:
       - "8080:80"
     env_file:
