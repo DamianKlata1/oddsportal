@@ -18,7 +18,7 @@ services:
     build:
       context: ../
       dockerfile: .docker/php/Dockerfile.prod
-    volumes:
+    #volumes:
       # ✅ Montujemy nazwany wolumin do katalogu z kodem.
       # Docker najpierw wypełni ten wolumin zawartością z obrazu.
       # - ../:/var/www/symfony
@@ -33,7 +33,7 @@ services:
       dockerfile: .docker/nginx/Dockerfile.prod # Użyj dedykowanego pliku
     ports:
       - "8080:80"
-    volumes:
+    #volumes:
       # ✅ Montujemy TEN SAM nazwany wolumin co w PHP, w trybie tylko do odczytu.
       # Dzięki temu Nginx widzi dokładnie te same pliki, co PHP.
       #- ../:/var/www/symfony:ro
