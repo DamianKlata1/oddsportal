@@ -48,3 +48,6 @@ services:
 
 volumes:
   db_app: # Zostaje tylko wolumin na dane bazy danych
+
+networks:
+  symfony_app:
