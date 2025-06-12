@@ -16,31 +16,31 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - symfony_app
+
   php:
     build:
-      context: ../
-      dockerfile: .php/Dockerfile.prod
+      context: ../ # ✅ Zmień kontekst na główny katalog projektu
+      dockerfile: .docker/php/Dockerfile.prod # ✅ Podaj pełną ścieżkę do Dockerfile od nowego kontekstu
       args:
         TIMEZONE: ${TIMEZONE}
-    env_file:
-      - ../.env.prod.local
-    # ✅ Definiujemy wolumin dla kodu, który będzie współdzielony
-    volumes:
-      - ../:/var/www/symfony
     networks:
       - symfony_app
+    env_file:
+      - ../.env.prod.local
+    volumes:
+      - ../:/var/www/symfony
+
   nginx:
     build:
       context: ./nginx
-    # ✅ Ta dyrektywa sprawia, że Nginx "widzi" dokładnie te same pliki co PHP
     volumes_from:
       - php:ro
     ports:
-      - "8080:80"
-    env_file:
-      - ./.docker/.env.nginx.local
+      - "8080:80" # <-- Wystawiamy na porcie 8080, aby nie kolidował z Nginxem na hoście
     networks:
       - symfony_app
+    env_file:
+      - ../.env.prod.local
     depends_on:
       - php
   redis:
