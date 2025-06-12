@@ -1,3 +1,4 @@
+version: '3.8'
 name: 'oddsportal-prod'
 
 services:
@@ -9,40 +10,34 @@ services:
       - "db_app:/var/lib/mysql"
     env_file:
       - ../.env.prod.local
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - symfony_app
 
   php:
     build:
-      context: ../ # ✅ Zmień kontekst na główny katalog projektu
-      dockerfile: .docker/php/Dockerfile.prod # ✅ Podaj pełną ścieżkę do Dockerfile od nowego kontekstu
+      context: ../
+      dockerfile: .docker/php/Dockerfile.prod
       args:
         TIMEZONE: ${TIMEZONE}
-    networks:
-      - symfony_app
     env_file:
       - ../.env.prod.local
-    volumes:
-      - ../:/var/www/symfony
+    # ✅ USUWAMY wolumin montujący kod z hosta! Obraz jest teraz samowystarczalny.
+    networks:
+      - symfony_app
 
   nginx:
     build:
-      context: ./nginx
-    volumes_from:
-      - php:ro
+      context: ../ # Zmieniamy kontekst na główny katalog, aby miał dostęp do plików
+      dockerfile: .docker/nginx/Dockerfile.prod # Używamy nowego Dockerfile dla Nginx
     ports:
-      - "8080:80" # <-- Wystawiamy na porcie 8080, aby nie kolidował z Nginxem na hoście
+      - "8080:80"
+    env_file:
+      - ../.env.prod.local # Ścieżka z głównego katalogu
     networks:
       - symfony_app
-    env_file:
-      - ../.env.prod.local
     depends_on:
       - php
+
   redis:
     image: redis:7.0.0
     networks:
