@@ -29,8 +29,7 @@ php:
       - ../:/var/www/symfony
     networks:
       - symfony_app
-
-  nginx:
+nginx:
     build:
       context: ./nginx
     # ✅ Ta dyrektywa sprawia, że Nginx "widzi" dokładnie te same pliki co PHP
@@ -44,8 +43,7 @@ php:
       - symfony_app
     depends_on:
       - php
-
-  redis:
+redis:
     image: redis:7.0.0
     networks:
       - symfony_app
