@@ -28,7 +28,7 @@ services:
   nginx:
     build:
       context: ../ # Zmieniamy kontekst na główny katalog, aby miał dostęp do plików
-      dockerfile: .docker/nginx/Dockerfile.prod # Używamy nowego Dockerfile dla Nginx
+      # dockerfile: .docker/nginx/Dockerfile.prod # Używamy nowego Dockerfile dla Nginx
     ports:
       - "8080:80"
     env_file:
