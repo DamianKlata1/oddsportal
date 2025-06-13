@@ -57,7 +57,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             # Przejdź do katalogu z aplikacją
-            cd /home/ec2-user/my-app
+            cd /home/ec2-user/oddsportal
 
             # Zatrzymaj stare kontenery
             docker compose -f .docker/docker-compose.prod.yml down
