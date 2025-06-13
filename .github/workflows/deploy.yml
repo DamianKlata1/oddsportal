@@ -30,7 +30,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          dockerfile: .docker/php/Dockerfile.prod
+          file: .docker/php/Dockerfile.prod
           push: true
           # Zastąp 'twoj-login-dockerhub' swoim loginem!
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/oddsportal-php:latest
@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          dockerfile: .docker/nginx/Dockerfile.prod
+          file: .docker/nginx/Dockerfile.prod
           push: true
           # Przekaż nazwę obrazu PHP jako argument do budowania Nginx
           build-args: |
