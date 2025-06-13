@@ -59,6 +59,9 @@ jobs:
             # Przejdź do katalogu z aplikacją
             cd /home/ec2-user/oddsportal
 
+            # ✅ KROK 1: Pobierz najnowszy kod, w tym zaktualizowany docker-compose.prod.yml
+            git pull origin main
+            
             # Zatrzymaj stare kontenery
             docker compose -f .docker/docker-compose.prod.yml down
 
