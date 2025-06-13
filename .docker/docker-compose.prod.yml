@@ -23,7 +23,7 @@ services:
 
   nginx:
      # ✅ Zamiast sekcji 'build:', używamy 'image:'
-    image: twoj-login-dockerhub/oddsportal-nginx:latest
+    image: temartien/oddsportal-nginx:latest
     ports:
       - "8080:80"
     env_file:
