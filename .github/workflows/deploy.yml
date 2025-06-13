@@ -66,10 +66,11 @@ jobs:
             docker compose -f .docker/docker-compose.prod.yml pull
 
             # Uruchom nowe kontenery
-            docker compose -f .docker/docker-compose.prod.yml up -d
+            docker compose -f .docker/docker-compose.prod.yml up -d --force-recreate --remove-orphans
 
             # Uruchom migracje bazy danych
-            docker compose -f .docker/docker-compose.prod.yml exec php php bin/console doctrine:migrations:migrate --env=prod --no-interaction
+            docker compose -f .docker/docker-compose.prod.yml exec --user www-data php php bin/console cache:clear --env=prod
+            docker compose -f .docker/docker-compose.prod.yml exec --user www-data php php bin/console doctrine:migrations:migrate --env=prod --no-interaction
 
             # Wyczyść stare, nieużywane obrazy, aby oszczędzać miejsce na dysku
             docker image prune -a -f
