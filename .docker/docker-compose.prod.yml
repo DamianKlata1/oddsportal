@@ -14,30 +14,22 @@ services:
       - symfony_app
 
   php:
-    build:
-      context: ../
-      dockerfile: .docker/php/Dockerfile.prod
-    # ✅ Nadajemy naszemu budowanemu obrazowi stałą nazwę, aby móc się do niego odwołać
-    image: oddsportal-php:latest 
+    # ✅ Zamiast sekcji 'build:', używamy 'image:'
+    image: temartien/oddsportal-php:latest
     env_file:
       - ../.env.prod.local
     networks:
       - symfony_app
 
   nginx:
-    build:
-      context: ../ 
-      dockerfile: .docker/nginx/Dockerfile.prod
-      # ✅ Przekazujemy nazwę zbudowanego obrazu PHP jako argument do Dockerfile Nginx
-      args:
-        PHP_IMAGE_WITH_CODE: oddsportal-php:latest
+     # ✅ Zamiast sekcji 'build:', używamy 'image:'
+    image: twoj-login-dockerhub/oddsportal-nginx:latest
     ports:
       - "8080:80"
     env_file:
       - ../.env.prod.local
     networks:
       - symfony_app
-    # ✅ Ta dyrektywa jest teraz BARDZO ważna - Nginx musi być budowany PO PHP
     depends_on:
       - php
 
