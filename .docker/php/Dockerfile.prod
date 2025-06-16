@@ -1,12 +1,11 @@
-# --- Etap 1: Baza z rozszerzeniami PHP ---
+
 FROM php:8.2-fpm-bookworm as base
 ARG TIMEZONE
 ENV TZ=${TIMEZONE}
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Krok 1: Aktualizacja listy pakietów
-# Jeśli to zawiedzie, problem leży w sieci lub konfiguracji repozytoriów apt
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g-dev \
     libzip-dev \
@@ -19,16 +18,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Kopiujemy konfigurację PHP dla produkcji
+
 COPY .docker/php/php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
 
-# --- Etap 2: Instalacja zależności Composera ---
+
 FROM base as vendor
 WORKDIR /var/www/symfony
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --optimize-autoloader
 
-# --- Etap 3: Budowanie frontendu ---
+
 FROM node:20-alpine as frontend
 WORKDIR /var/www/symfony
 COPY package.json package-lock.json ./
@@ -36,7 +35,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# --- Etap 4: Finalny, odchudzony obraz produkcyjny ---
+
 FROM base
 WORKDIR /var/www/symfony
 
