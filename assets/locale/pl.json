@@ -48,5 +48,6 @@
     "passwords_do_not_match": "Hasła się nie zgadzają",
     "create_account": "Utwórz konto",
     "edit_account": "Edytuj konto",
-    "authorization_error": "Authorization error"
+    "authorization_error": "Błąd autoryzacji",
+    "upcoming": "Nadchodzące"
 }
