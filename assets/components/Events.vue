@@ -151,7 +151,7 @@ const applyQueryToStores = async (querySource) => {
   const dateOption = eventFiltersStore.dateKeywords.find(opt => opt === querySource.date);
 
   
-  eventFiltersStore.selectedDateKeyword = dateOption ? querySource.date : 'any_date';
+  eventFiltersStore.selectedDateKeyword = dateOption ? querySource.date : 'upcoming';
   const urlPage = querySource.page ? parseInt(querySource.page, 10) : 1;
   if (paginationStore.currentPage !== urlPage) {
       paginationStore.setPage(urlPage); 
