@@ -20,8 +20,8 @@ export const useEventFiltersStore = defineStore('eventFilters', () => {
   async function fetchDateKeywords() {
     if (isLoaded.value || isLoading.value || dateKeywords.value.length > 0) return
     const fetchedKeywords = await getDateKeywords()
-    dateKeywords.value = ['any_date', ...fetchedKeywords]
-    selectedDateKeyword.value = 'any_date'
+    dateKeywords.value = ['upcoming', ...fetchedKeywords]
+    selectedDateKeyword.value = 'upcoming'
   }
 
   const getDateKeywords = async () => {

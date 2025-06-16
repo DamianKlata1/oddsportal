@@ -187,7 +187,7 @@ const showLessOutcomes = (eventId) => {
 
 <template>
   <div class="container my-4">
-    <h4 class="mb-4">{{ $t(eventFiltersStore.selectedDateKeyword || 'any_date') }} {{ leaguesStore.selectedLeague?.name || '' }} {{ $t('events') }} </h4>
+    <h4 class="mb-4">{{ $t(eventFiltersStore.selectedDateKeyword || 'upcoming') }}: {{ leaguesStore.selectedLeague?.name || '' }}</h4>
     <div v-if="eventsStore.isLoading" class="text-center py-5">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">{{ $t('loading') }}</span>
