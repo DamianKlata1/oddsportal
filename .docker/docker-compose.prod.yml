@@ -14,7 +14,6 @@ services:
       - symfony_app
 
   php:
-    # ✅ Zamiast sekcji 'build:', używamy 'image:'
     image: temartien/oddsportal-php:latest
     env_file:
       - ../.env.prod.local
@@ -22,7 +21,6 @@ services:
       - symfony_app
 
   nginx:
-     # ✅ Zamiast sekcji 'build:', używamy 'image:'
     image: temartien/oddsportal-nginx:latest
     ports:
       - "8080:80"
@@ -39,7 +37,7 @@ services:
       - symfony_app
 
 volumes:
-  db_app: # Zostaje tylko wolumin na dane bazy danych
+  db_app: 
 
 networks:
   symfony_app:

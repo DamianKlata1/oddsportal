@@ -32,11 +32,11 @@ class RegistrationController extends AbstractController
     ): JsonResponse {
         $user = $this->userService->registerUser($userDTO);
 
-        $this->emailVerifier->sendEmailConfirmation(
-            'api_verify_email',
-            $user,
-            $this->registrationEmailBuilder->buildConfirmationEmail($user)
-        );
+        // $this->emailVerifier->sendEmailConfirmation(
+        //     'api_verify_email',
+        //     $user,
+        //     $this->registrationEmailBuilder->buildConfirmationEmail($user)
+        // );
 
         return $this->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
     }
