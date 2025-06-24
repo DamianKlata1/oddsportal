@@ -82,7 +82,6 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
             $paginationDTO
         );
 
-
         $eventDTOs = $this->getEventsWithBestOutcomes(
             $paginatedEvents->getCurrentPageResults(),
             $betRegion,

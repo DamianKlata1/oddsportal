@@ -85,9 +85,7 @@ class EventTest extends ApiTestBaseCase
             'priceFormat' => PriceFormat::DECIMAL->value,
         ]);
 
-
         $responseData = json_decode($this->client->getResponse()->getContent());
-
         $this->assertResponseIsSuccessful();
         foreach ($responseData->events as $event) {
             $this->assertSame('Home', $event->homeTeam);
@@ -161,8 +159,8 @@ class EventTest extends ApiTestBaseCase
         $responseData = json_decode($this->client->getResponse()->getContent());
 
         $this->assertResponseIsSuccessful();
-        $this->assertCount(3, $responseData);
-        foreach ($responseData as $outcome) {
+        $this->assertCount(3, $responseData->outcomes);
+        foreach ($responseData->outcomes as $outcome) {
             match ($outcome->name) {
                 'Home' => $this->assertSame('1.6', $outcome->price),
                 'Draw' => $this->assertSame('2.1', $outcome->price),

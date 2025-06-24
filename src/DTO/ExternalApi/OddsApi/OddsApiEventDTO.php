@@ -12,10 +12,8 @@ class OddsApiEventDTO
         #[Assert\NotBlank()]
         #[Assert\Type('string')]
         private readonly string $commenceTime,
-        #[Assert\NotBlank()]
         #[Assert\Type('string')]
         private readonly ?string $homeTeam,
-        #[Assert\NotBlank()]
         #[Assert\Type('string')]
         private readonly ?string $awayTeam,
         /**

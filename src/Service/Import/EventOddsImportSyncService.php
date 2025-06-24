@@ -3,10 +3,11 @@
 namespace App\Service\Import;
 
 use App\Entity\Event;
+use App\Enum\MarketType;
+use App\Enum\SyncStatus;
 use App\Entity\BetRegion;
 use App\DTO\Sync\SyncStatusDTO;
 use App\Entity\EventOddsImportSync;
-use App\Enum\SyncStatus;
 use App\Exception\ImportFailedException;
 use Symfony\Component\HttpFoundation\Response;
 use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
@@ -36,7 +37,8 @@ class EventOddsImportSyncService implements EventOddsImportSyncServiceInterface
         $eventsData = $this->oddsApiClient->fetchOddsDataForEvent(
             $event->getLeague()->getApiKey(),
             $event->getApiId(),
-            $betRegion->getName()
+            $betRegion->getName(),
+            $event->getLeague()->getRegion()->getName() === 'Outrights' ? MarketType::OUTRIGHTS : MarketType::H2H
         );
         $eventDTO = $this->eventDTOFactory->createFromArray($eventsData);
         $importResult = $this->oddsDataImporter->importSingle($eventDTO, $event->getLeague(), $betRegion);
@@ -46,7 +48,9 @@ class EventOddsImportSyncService implements EventOddsImportSyncServiceInterface
                 code: Response::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
+
         $this->updateSyncStatus($event, $betRegion);
+        
         return $syncStatus;
     }
     private function checkSyncStatus(Event $event, BetRegion $betRegion): SyncStatusDTO
