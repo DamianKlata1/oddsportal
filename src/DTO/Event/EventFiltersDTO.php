@@ -9,6 +9,9 @@ class EventFiltersDTO
         #[Assert\Type('int')]
         #[Assert\Range(min: 1)]
         private readonly ?int $leagueId = null,
+        #[Assert\Type('int')]
+        #[Assert\Range(min: 1)]
+        private readonly ?int $sportId = null,
         #[Assert\Type('string')]
         #[Assert\Length(min: 1, max: 255)]
         private readonly ?string $name = null,
@@ -23,6 +26,10 @@ class EventFiltersDTO
     public function getDate(): string|null
     {
         return $this->date;
+    }
+    public function getSportId(): int|null
+    {
+        return $this->sportId;
     }
     public function getLeagueId(): int|null
     {

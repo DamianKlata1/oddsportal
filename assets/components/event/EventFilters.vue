@@ -31,7 +31,7 @@ onMounted(() => {
       </select>
     </div>
     <div class="col-md-2">
-      <button class="btn btn-outline-secondary w-100" @click="filtersStore.clearFilters">
+      <button class="btn btn-outline-success w-100" @click="filtersStore.clearFilters">
         {{ $t('clear_filters') }}
       </button>
     </div>

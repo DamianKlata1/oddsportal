@@ -7,13 +7,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Factory\Interface\DTO\SportsDataDTOFactoryInterface;
-use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
+use App\Repository\Interface\SportRepositoryInterface;
 use App\Repository\Interface\LeagueRepositoryInterface;
 use App\Repository\Interface\RegionRepositoryInterface;
-use App\Repository\Interface\SportRepositoryInterface;
-use App\Service\Interface\Import\SportsDataImporterInterface;
 use App\Service\Interface\League\LeagueServiceInterface;
+use App\Factory\Interface\DTO\OddsApiSportsDataDTOFactoryInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiSportsDataImporterInterface;
 
 #[AsCommand(
     name: 'app:synchronise-sports-data',
@@ -23,8 +23,8 @@ class SynchroniseSportsDataCommand extends Command
 {
     public function __construct(
         private readonly OddsApiClientInterface $oddsApiClient,
-        private readonly SportsDataImporterInterface $sportsDataImporter,
-        private readonly SportsDataDTOFactoryInterface $sportsDataDTOFactory,
+        private readonly OddsApiSportsDataImporterInterface $sportsDataImporter,
+        private readonly OddsApiSportsDataDTOFactoryInterface $sportsDataDTOFactory,
         private readonly SportRepositoryInterface $sportRepository,
         private readonly RegionRepositoryInterface $regionRepository,
         private readonly LeagueRepositoryInterface $leagueRepository,
@@ -45,6 +45,7 @@ class SynchroniseSportsDataCommand extends Command
 
         $io->info('Fetching data from external API');
         $data = $this->oddsApiClient->fetchSportsData();
+        
         $io->info('Validating and processing data');
         $sportDataDTOs = $this->sportsDataDTOFactory->createFromArrayList($data);
 

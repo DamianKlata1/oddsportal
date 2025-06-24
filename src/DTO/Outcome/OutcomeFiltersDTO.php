@@ -6,21 +6,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 class OutcomeFiltersDTO
 {
     public function __construct(
-        #[Assert\NotBlank()]
         #[Assert\Type('string')]
-        private readonly string $betRegion = 'eu',
-        #[Assert\NotBlank()]
+        private readonly ?string $betRegion = 'eu',
         #[Assert\Type('string')]
-        private readonly string $priceFormat = 'decimal',
+        private readonly ?string $priceFormat = 'decimal',
 
     ) {
     }
-    public function getBetRegion(): string
+    public function getBetRegion(): ?string
     {
         return $this->betRegion;
     }
 
-    public function getPriceFormat(): string
+    public function getPriceFormat(): ?string
     {
         return $this->priceFormat;
     }

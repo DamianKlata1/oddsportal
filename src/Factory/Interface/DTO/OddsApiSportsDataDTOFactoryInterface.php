@@ -2,9 +2,11 @@
 
 namespace App\Factory\Interface\DTO;
 
-use App\DTO\Interface\SportsDataDTOInterface;
+use App\DTO\ExternalApi\OddsApi\OddsApiSportsDataDTO;
 
-interface SportsDataDTOFactoryInterface
+
+
+interface OddsApiSportsDataDTOFactoryInterface
 {
     public function create(
         string $key,
@@ -13,7 +15,12 @@ interface SportsDataDTOFactoryInterface
         string $description,
         bool $active,
         bool $hasOutrights
-    ): SportsDataDTOInterface;
-    public function createFromArray(array $data): SportsDataDTOInterface;
+    ): OddsApiSportsDataDTO;
+
+    public function createFromArray(array $data): OddsApiSportsDataDTO;
+    
+    /**
+     * @return OddsApiSportsDataDTO[]
+     */
     public function createFromArrayList(array $dataList): array;
 }

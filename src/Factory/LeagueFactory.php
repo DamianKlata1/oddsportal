@@ -36,6 +36,7 @@ final class LeagueFactory extends PersistentProxyObjectFactory
             'name' => self::faker()->text(255),
             'region' => RegionFactory::new(),
             'apiKey' => self::faker()->text(255),
+            'logoPath' => self::faker()->imageUrl(640, 480, 'sports', true, 'League Logo'),
         ];
     }
 

@@ -3,20 +3,20 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\OddsDataImportSyncRepository;
-use App\Entity\Interface\OddsDataImportSyncInterface;
+use App\Repository\EventOddsImportSyncRepository;
+use App\Entity\Interface\EventOddsImportSyncInterface;
 
-#[ORM\Entity(repositoryClass: OddsDataImportSyncRepository::class)]
-class OddsDataImportSync implements OddsDataImportSyncInterface
+#[ORM\Entity(repositoryClass: EventOddsImportSyncRepository::class)]
+class EventOddsImportSync implements EventOddsImportSyncInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'eventOddsImportSyncs')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?League $league = null;
+    private ?Event $event = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -30,14 +30,14 @@ class OddsDataImportSync implements OddsDataImportSyncInterface
         return $this->id;
     }
 
-    public function getLeague(): ?League
+    public function getEvent(): ?Event
     {
-        return $this->league;
+        return $this->event;
     }
 
-    public function setLeague(?League $league): static
+    public function setEvent(?Event $event): static
     {
-        $this->league = $league;
+        $this->event = $event;
 
         return $this;
     }

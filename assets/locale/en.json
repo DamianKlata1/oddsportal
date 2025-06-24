@@ -11,8 +11,8 @@
     "search_by_team_name": "Search by team name",
     "add_to_favorites": "Add to favorites",
     "remove_from_favorites": "Remove from favorites",
-    "no_favorite_leagues_available": "No favorite leagues available",
-    "no_regions_available": "No regions available",
+    "no_favorite_leagues_available": "Add a league to your favorites for easier access",
+    "no_regions_available": "No regions available for provided parameters",
     "no_odds_available_for_this_event": "No odds available for this event",
     "no_events_found": "No events found for those filters",
     "clear_filters": "Clear filters",
@@ -49,5 +49,9 @@
     "create_account": "Create account",
     "edit_account": "Edit account",
     "authorization_error": "Authorization error",
-    "upcoming": "Upcoming"
+    "upcoming": "Upcoming",
+    "refresh": "Refresh",
+    "odds_refreshed_successfully": "Odds have been refreshed successfully.",
+    "odds_refresh_too_soon": "Odds are up to date. Next refresh is available {time}.",
+    "odds_refreshing_error": "An error occurred while refreshing odds."
 }

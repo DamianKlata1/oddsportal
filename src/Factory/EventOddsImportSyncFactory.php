@@ -2,13 +2,13 @@
 
 namespace App\Factory;
 
-use App\Entity\OddsDataImportSync;
+use App\Entity\EventOddsImportSync;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<OddsDataImportSync>
+ * @extends PersistentProxyObjectFactory<EventOddsImportSync>
  */
-final class OddsDataImportSyncFactory extends PersistentProxyObjectFactory
+final class EventOddsImportSyncFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -21,7 +21,7 @@ final class OddsDataImportSyncFactory extends PersistentProxyObjectFactory
 
     public static function class(): string
     {
-        return OddsDataImportSync::class;
+        return EventOddsImportSync::class;
     }
 
     /**
@@ -33,8 +33,8 @@ final class OddsDataImportSyncFactory extends PersistentProxyObjectFactory
     {
         return [
             'betRegion' => BetRegionFactory::new(),
+            'event' => EventFactory::new(),
             'lastImportedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'league' => LeagueFactory::new(),
         ];
     }
 
@@ -44,7 +44,7 @@ final class OddsDataImportSyncFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            // ->afterInstantiate(function(OddsDataImportSync $oddsDataImportSync): void {})
+            // ->afterInstantiate(function(EventOddsImportSync $eventOddsImportSync): void {})
         ;
     }
 }

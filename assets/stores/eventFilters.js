@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import apiPublic from '/assets/api/apiPublic.js'
-import { formatDateKeywordLabel } from '/assets/helpers/formatters.js'
 
 export const useEventFiltersStore = defineStore('eventFilters', () => {
   const isLoading = ref(false)

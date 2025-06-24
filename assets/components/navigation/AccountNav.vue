@@ -1,32 +1,40 @@
 <script setup>
-    import { RouterLink } from 'vue-router';
-    import useUserStore from '/assets/stores/user.js';
-    const store = useUserStore();
+import { RouterLink } from 'vue-router';
+import useUserStore from '/assets/stores/user.js';
+const store = useUserStore();
 </script>
 <template>
-    <!-- Navbar-->
-    <div v-show="store.isAuth" class="col-md-2 text-end">
-        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
-                   data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li><RouterLink v-if="store.isGranted('admin')" class="dropdown-item" to="/admin">admin</RouterLink></li>
-            <li><RouterLink class="dropdown-item" to="/settings">{{ $t('settings') }}</RouterLink></li>
-            <li><hr class="dropdown-divider" /></li>
-            <li><a @click="logoutAction(store)" class="dropdown-item" href="#">{{ $t('logout') }}</a></li>
-        </ul>
-        </li>
+    <div v-if="!store.isAuth" class="btn-group">
+        <RouterLink class="btn btn-outline-success" to="/login">{{ $t('login') }}</RouterLink>
+        <RouterLink class="btn btn-outline-success" to="/register">{{ $t('register') }}</RouterLink>
+        <!-- Navbar-->
+    </div>
+    <div v-else class="dropdown">
+        <button class="btn btn-outline-success dropdown-toggle d-flex align-items-center" type="button"
+            id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-2"></i>
+            <span class="d-none d-md-inline">{{ store.userData?.email }}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
+            <li>
+                <RouterLink :to="{ name: 'settings' }" class="dropdown-item">{{ $t('settings') }}</RouterLink>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <a class="dropdown-item" href="#" @click.prevent="logoutAction(store)">{{ $t('logout') }}</a>
+            </li>
         </ul>
     </div>
 </template>
 <script>
-    export default {
-        methods: {
-            logoutAction(store) {
-                store.resetState();
-                this.$router.push('/');
-            }
-        },
-    }
+export default {
+    methods: {
+        logoutAction(store) {
+            store.resetState();
+            this.$router.push('/');
+        }
+    },
+}
 </script>

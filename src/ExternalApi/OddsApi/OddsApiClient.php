@@ -33,7 +33,19 @@ class OddsApiClient implements OddsApiClientInterface
         try {
             $response = $this->client->request(
                 'GET',
-                "{$this->oddsApiUrl}/{$leagueApiKey}/odds/?apiKey={$this->oddsApiKey}&regions={$betRegion}&markets={$marketType->toString()}"
+                "{$this->oddsApiUrl}/{$leagueApiKey}/odds/?apiKey={$this->oddsApiKey}&regions={$betRegion}&markets={$marketType->value}"
+            );
+            return $response->toArray();
+        } catch (\Exception $e) {
+            throw new FetchFailedException('Error fetching data from Odds API: ' . $e->getMessage(), 502);
+        }
+    }
+    public function fetchOddsDataForEvent(string $leagueApiKey, string $eventApiKey, string $betRegion, MarketType $marketType = MarketType::H2H): array
+    {
+        try {
+            $response = $this->client->request(
+                'GET',
+                "{$this->oddsApiUrl}/{$leagueApiKey}/events/{$eventApiKey}/odds/?apiKey={$this->oddsApiKey}&regions={$betRegion}&markets={$marketType->value}"
             );
             return $response->toArray();
         } catch (\Exception $e) {

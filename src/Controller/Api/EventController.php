@@ -24,9 +24,16 @@ class EventController extends AbstractController
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] EventFiltersDTO $eventFiltersDTO,
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] OutcomeFiltersDTO $outcomeFiltersDTO,
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] PaginationDTO $paginationDTO
-    ): JsonResponse 
-    {
-        $events = $this->eventService->getEvents( $eventFiltersDTO, $outcomeFiltersDTO,$paginationDTO);
+    ): JsonResponse {
+        $events = $this->eventService->getEvents($eventFiltersDTO, $outcomeFiltersDTO, $paginationDTO);
         return $this->json($events, Response::HTTP_OK);
+    }
+    #[Route('events/{eventId}/best-outcomes', name: 'api_get_event_best_outcomes', methods: ['GET'])]
+    public function getEventBestOutcomes(
+        int $eventId,
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY, )] OutcomeFiltersDTO $outcomeFiltersDTO
+    ): JsonResponse {
+        $outcomes = $this->eventService->getEventBestOutcomes($eventId, $outcomeFiltersDTO);
+        return $this->json($outcomes, Response::HTTP_OK);
     }
 }

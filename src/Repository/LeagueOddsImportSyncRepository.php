@@ -2,29 +2,29 @@
 
 namespace App\Repository;
 
-use App\Entity\OddsDataImportSync;
+use App\Entity\LeagueOddsImportSync;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Trait\PersistenceTrait;
 use App\Repository\Trait\TransactionManagement;
-use App\Repository\Interface\OddsDataImportSyncRepositoryInterface;
+use App\Repository\Interface\LeagueOddsImportSyncRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
- * @extends ServiceEntityRepository<OddsDataImportSync>
+ * @extends ServiceEntityRepository<LeagueOddsImportSync>
  *
- * @method OddsDataImportSync|null find($id, $lockMode = null, $lockVersion = null)
- * @method OddsDataImportSync|null findOneBy(array $criteria, array $orderBy = null)
- * @method OddsDataImportSync[]    findAll()
- * @method OddsDataImportSync[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method LeagueOddsImportSync|null find($id, $lockMode = null, $lockVersion = null)
+ * @method LeagueOddsImportSync|null findOneBy(array $criteria, array $orderBy = null)
+ * @method LeagueOddsImportSync[]    findAll()
+ * @method LeagueOddsImportSync[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class OddsDataImportSyncRepository extends ServiceEntityRepository implements OddsDataImportSyncRepositoryInterface
+class LeagueOddsImportSyncRepository extends ServiceEntityRepository implements LeagueOddsImportSyncRepositoryInterface
 {
 
     use TransactionManagement;
     use PersistenceTrait;
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, OddsDataImportSync::class);
+        parent::__construct($registry, LeagueOddsImportSync::class);
     }
 
     //    /**

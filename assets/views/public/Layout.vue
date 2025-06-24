@@ -8,7 +8,7 @@ import SportNav from "../../components/navigation/SportNav.vue";
 </script>
 
 <template>
-  <div class="container">
+  <div class="container w-75">
     <PublicNav/>
     <SportNav/>
     <div class="d-flex">

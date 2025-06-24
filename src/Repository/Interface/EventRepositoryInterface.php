@@ -13,6 +13,7 @@ interface EventRepositoryInterface extends RepositoryInterface, TransactionalRep
 {
     public function findByLeague(int $leagueId, EventFiltersDTO $eventFiltersDTO): array;
     public function findByFiltersQueryBuilder(
+        ?int $sportId,
         ?int $leagueId,
         ?string $name,
         ?DateTimeImmutable $from,

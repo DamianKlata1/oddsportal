@@ -43,7 +43,7 @@ class OutcomeService extends AbstractEntityService implements OutcomeServiceInte
     {
         return $outcomes->filter(function ($outcome) use ($markets, $region) {
             return $outcome instanceof Outcome
-                && in_array(MarketType::fromString($outcome->getMarket()), $markets, true)
+                && in_array(MarketType::from($outcome->getMarket()), $markets, true)
                 && $outcome->getBookmaker()->getBetRegions()->contains($region);
         });
     }

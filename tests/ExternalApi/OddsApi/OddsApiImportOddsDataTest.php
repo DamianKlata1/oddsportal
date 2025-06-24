@@ -11,6 +11,7 @@ use App\Repository\Interface\OutcomeRepositoryInterface;
 use App\Tests\Base\KernelTest\DatabaseDependantTestCase;
 use App\Repository\Interface\BookmakerRepositoryInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiOddsDataImporterInterface;
+use App\Factory\Interface\DTO\OddsApiEventDTOFactoryInterface;
 use App\Factory\SportFactory;
 use App\Repository\Interface\BetRegionRepositoryInterface;
 use App\Repository\Interface\LeagueRepositoryInterface;
@@ -25,6 +26,7 @@ class OddsApiImportOddsDataTest extends DatabaseDependantTestCase
     protected BookmakerRepositoryInterface $bookmakerRepository;
     protected LeagueRepositoryInterface $leagueRepository;
     protected BetRegionRepositoryInterface $betRegionRepository;
+    protected OddsApiEventDTOFactoryInterface $oddsApiEventDTOFactory;
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,10 +39,11 @@ class OddsApiImportOddsDataTest extends DatabaseDependantTestCase
         $this->bookmakerRepository = $container->get(BookmakerRepositoryInterface::class);
         $this->betRegionFactory = $container->get(BetRegionFactory::class);
         $this->betRegionRepository = $container->get(BetRegionRepositoryInterface::class);
+        $this->oddsApiEventDTOFactory = $container->get(OddsApiEventDTOFactoryInterface::class);
 
 
     }
-    public function testOddsDataIsImportedCorrectly(): void
+    public function testOddsDataIsImportedCorrectlyForEventList(): void
     {
         $league = $this->leagueFactory->createOne()->_real();
         $betRegion = $this->betRegionFactory->createOne()->_real();
@@ -56,10 +59,10 @@ class OddsApiImportOddsDataTest extends DatabaseDependantTestCase
                 'bookmakers' => [
                     [
                         'title' => 'bookmaker1',
-                        'last_update' => '2023-10-01T11:00:00Z',
                         'markets' => [
                             [
                                 'key' => 'h2h',
+                                'last_update' => '2023-10-01T11:00:00Z',
                                 'outcomes' => [
                                     ['name' => 'Team A', 'price' => 1.5],
                                     ['name' => 'Team B', 'price' => 2.5],
@@ -68,21 +71,39 @@ class OddsApiImportOddsDataTest extends DatabaseDependantTestCase
                             ],
                         ],
                     ],
+                    [
+                        'title' => 'bookmaker2',
+                        'markets' => [
+                            [
+                                'key' => 'h2h',
+                                'last_update' => '2023-10-01T11:00:00Z',
+                                'outcomes' => [
+                                    ['name' => 'Team A', 'price' => 1.6],
+                                    ['name' => 'Team B', 'price' => 2.6],
+                                    ['name' => 'Draw', 'price' => 2.8],
+                                ],
+                            ],
+                        ],
+                    ]
                 ],
             ],
         ];
+        $eventDTOs = $this->oddsApiEventDTOFactory->createFromArrayList($eventsData);
 
         $importStatus = $this->oddsApiOddsDataImporter->
-            import($eventsData, $leagueFromRepository, $betRegionFromRepository);
-
+            importFromList($eventDTOs, $leagueFromRepository, $betRegionFromRepository);
         $this->assertTrue($importStatus->isSuccess());
         $event = $this->eventRepository->findOneBy(['apiId' => '12345']);
         $bookmaker = $this->bookmakerRepository->findOneBy(['name' => 'bookmaker1']);
+        $bookmaker2 = $this->bookmakerRepository->findOneBy(['name' => 'bookmaker2']);
 
         $outcome1 = $this->outcomeRepository->findOneBy(['name' => 'Team A', 'event' => $event, 'bookmaker' => $bookmaker]);
         $outcome2 = $this->outcomeRepository->findOneBy(['name' => 'Team B', 'event' => $event, 'bookmaker' => $bookmaker]);
         $outcome3 = $this->outcomeRepository->findOneBy(['name' => 'Draw', 'event' => $event, 'bookmaker' => $bookmaker]);
 
+        $outcome4 = $this->outcomeRepository->findOneBy(['name' => 'Team A', 'event' => $event, 'bookmaker' => $bookmaker2]);
+        $outcome5 = $this->outcomeRepository->findOneBy(['name' => 'Team B', 'event' => $event, 'bookmaker' => $bookmaker2]);
+        $outcome6 = $this->outcomeRepository->findOneBy(['name' => 'Draw', 'event' => $event, 'bookmaker' => $bookmaker2]);
         $this->assertNotNull($event);
         $this->assertNotNull($bookmaker);
 
@@ -110,7 +131,139 @@ class OddsApiImportOddsDataTest extends DatabaseDependantTestCase
         $this->assertEquals($bookmaker, $outcome3->getBookmaker());
         $this->assertEquals('2023-10-01T11:00:00Z', $outcome3->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
 
+        $this->assertNotNull($outcome4);
+        $this->assertEquals('Team A', $outcome4->getName());
+        $this->assertEquals(1.6, $outcome4->getPrice());
+        $this->assertEquals('h2h', $outcome4->getMarket());
+        $this->assertEquals($event, $outcome4->getEvent());
+        $this->assertEquals($bookmaker2, $outcome4->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome4->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
 
+        $this->assertNotNull($outcome5);
+        $this->assertEquals('Team B', $outcome5->getName());
+        $this->assertEquals(2.6, $outcome5->getPrice());
+        $this->assertEquals('h2h', $outcome5->getMarket());
+        $this->assertEquals($event, $outcome5->getEvent());
+        $this->assertEquals($bookmaker2, $outcome5->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome5->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
+
+        $this->assertNotNull($outcome6);
+        $this->assertEquals('Draw', $outcome6->getName());
+        $this->assertEquals(2.8, $outcome6->getPrice());
+        $this->assertEquals('h2h', $outcome6->getMarket());
+        $this->assertEquals($event, $outcome6->getEvent());
+        $this->assertEquals($bookmaker2, $outcome6->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome6->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
     }
+    public function testOddsDataIsImportedCorrectlyForSingleEvent(): void
+    {
+        $league = $this->leagueFactory->createOne()->_real();
+        $betRegion = $this->betRegionFactory->createOne()->_real();
+        $leagueFromRepository = $this->leagueRepository->findOneBy(['id' => $league->getId()]);
+        $betRegionFromRepository = $this->betRegionRepository->findOneBy(['id' => $betRegion->getId()]);
 
+        $eventData =
+            [
+                'id' => '12345',
+                'home_team' => 'Team A',
+                'away_team' => 'Team B',
+                'commence_time' => '2023-10-01T12:00:00Z',
+                'bookmakers' => [
+                    [
+                        'title' => 'bookmaker1',
+                        'markets' => [
+                            [
+                                'key' => 'h2h',
+                                'last_update' => '2023-10-01T11:00:00Z',
+                                'outcomes' => [
+                                    ['name' => 'Team A', 'price' => 1.5],
+                                    ['name' => 'Team B', 'price' => 2.5],
+                                    ['name' => 'Draw', 'price' => 2.7],
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'title' => 'bookmaker2',
+                        'markets' => [
+                            [
+                                'key' => 'h2h',
+                                'last_update' => '2023-10-01T11:00:00Z',
+                                'outcomes' => [
+                                    ['name' => 'Team A', 'price' => 1.6],
+                                    ['name' => 'Team B', 'price' => 2.6],
+                                    ['name' => 'Draw', 'price' => 2.8],
+                                ],
+                            ],
+                        ],
+                    ]
+                ],
+            ];
+        $eventDTO = $this->oddsApiEventDTOFactory->createFromArray($eventData);
+
+        $importStatus = $this->oddsApiOddsDataImporter->
+            importSingle($eventDTO, $leagueFromRepository, $betRegionFromRepository);
+        $this->assertTrue($importStatus->isSuccess());
+        $event = $this->eventRepository->findOneBy(['apiId' => '12345']);
+        $bookmaker = $this->bookmakerRepository->findOneBy(['name' => 'bookmaker1']);
+        $bookmaker2 = $this->bookmakerRepository->findOneBy(['name' => 'bookmaker2']);
+
+        $outcome1 = $this->outcomeRepository->findOneBy(['name' => 'Team A', 'event' => $event, 'bookmaker' => $bookmaker]);
+        $outcome2 = $this->outcomeRepository->findOneBy(['name' => 'Team B', 'event' => $event, 'bookmaker' => $bookmaker]);
+        $outcome3 = $this->outcomeRepository->findOneBy(['name' => 'Draw', 'event' => $event, 'bookmaker' => $bookmaker]);
+
+        $outcome4 = $this->outcomeRepository->findOneBy(['name' => 'Team A', 'event' => $event, 'bookmaker' => $bookmaker2]);
+        $outcome5 = $this->outcomeRepository->findOneBy(['name' => 'Team B', 'event' => $event, 'bookmaker' => $bookmaker2]);
+        $outcome6 = $this->outcomeRepository->findOneBy(['name' => 'Draw', 'event' => $event, 'bookmaker' => $bookmaker2]);
+        $this->assertNotNull($event);
+        $this->assertNotNull($bookmaker);
+
+        $this->assertNotNull($outcome1);
+        $this->assertEquals('Team A', $outcome1->getName());
+        $this->assertEquals(1.5, $outcome1->getPrice());
+        $this->assertEquals('h2h', $outcome1->getMarket());
+        $this->assertEquals($event, $outcome1->getEvent());
+        $this->assertEquals($bookmaker, $outcome1->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome1->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
+
+        $this->assertNotNull($outcome2);
+        $this->assertEquals('Team B', $outcome2->getName());
+        $this->assertEquals(2.5, $outcome2->getPrice());
+        $this->assertEquals('h2h', $outcome2->getMarket());
+        $this->assertEquals($event, $outcome2->getEvent());
+        $this->assertEquals($bookmaker, $outcome2->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome2->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
+
+        $this->assertNotNull($outcome3);
+        $this->assertEquals('Draw', $outcome3->getName());
+        $this->assertEquals(2.7, $outcome3->getPrice());
+        $this->assertEquals('h2h', $outcome3->getMarket());
+        $this->assertEquals($event, $outcome3->getEvent());
+        $this->assertEquals($bookmaker, $outcome3->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome3->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
+
+        $this->assertNotNull($outcome4);
+        $this->assertEquals('Team A', $outcome4->getName());
+        $this->assertEquals(1.6, $outcome4->getPrice());
+        $this->assertEquals('h2h', $outcome4->getMarket());
+        $this->assertEquals($event, $outcome4->getEvent());
+        $this->assertEquals($bookmaker2, $outcome4->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome4->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
+
+        $this->assertNotNull($outcome5);
+        $this->assertEquals('Team B', $outcome5->getName());
+        $this->assertEquals(2.6, $outcome5->getPrice());
+        $this->assertEquals('h2h', $outcome5->getMarket());
+        $this->assertEquals($event, $outcome5->getEvent());
+        $this->assertEquals($bookmaker2, $outcome5->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome5->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
+
+        $this->assertNotNull($outcome6);
+        $this->assertEquals('Draw', $outcome6->getName());
+        $this->assertEquals(2.8, $outcome6->getPrice());
+        $this->assertEquals('h2h', $outcome6->getMarket());
+        $this->assertEquals($event, $outcome6->getEvent());
+        $this->assertEquals($bookmaker2, $outcome6->getBookmaker());
+        $this->assertEquals('2023-10-01T11:00:00Z', $outcome6->getLastUpdate()->format('Y-m-d\TH:i:s\Z'));
+    }
 }

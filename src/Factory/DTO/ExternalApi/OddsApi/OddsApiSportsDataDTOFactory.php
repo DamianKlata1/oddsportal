@@ -4,10 +4,10 @@ namespace App\Factory\DTO\ExternalApi\OddsApi;
 
 use App\Exception\InvalidSportsDataException;
 use App\DTO\ExternalApi\OddsApi\OddsApiSportsDataDTO;
-use App\Factory\Interface\DTO\SportsDataDTOFactoryInterface;
+use App\Factory\Interface\DTO\OddsApiSportsDataDTOFactoryInterface;
 use App\Service\Interface\Validation\ValidationServiceInterface;
 
-class OddsApiSportsDataDTOFactory implements SportsDataDTOFactoryInterface
+class OddsApiSportsDataDTOFactory implements OddsApiSportsDataDTOFactoryInterface
 {
     public function __construct(
         private readonly ValidationServiceInterface $validationService,
@@ -36,7 +36,7 @@ class OddsApiSportsDataDTOFactory implements SportsDataDTOFactoryInterface
     }
     public function createFromArray(array $data): OddsApiSportsDataDTO
     {
-        $dto = new OddsApiSportsDataDTO(
+        $dto = $this->create(
             $data['key'],
             $data['group'],
             $data['title'],
@@ -44,14 +44,8 @@ class OddsApiSportsDataDTOFactory implements SportsDataDTOFactoryInterface
             (bool) $data['active'],
             (bool) $data['has_outrights']
         );
-        $this->validationService->validate($dto);
         return $dto;
     }
-
-    /**
-     * @return OddsApiSportsDataDTO[]
-     * @throws InvalidSportsDataException
-     */
     public function createFromArrayList(array $dataList): array
     {
         $dtos = [];
