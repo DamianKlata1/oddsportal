@@ -49,6 +49,7 @@ Thumbs.db
 /*.pem
 
 #Env in subfolders
+**/.env
 **/.env.local
 **/.env.*.local
 
