@@ -3,10 +3,9 @@
 namespace App\DTO\ExternalApi\OddsApi;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use App\DTO\Interface\ExternalApi\OddsApi\OddsApiSportsDataDTOInterface;
 
 
-class OddsApiSportsDataDTO implements OddsApiSportsDataDTOInterface
+class OddsApiSportsDataDTO
 {
     public function __construct(
         #[Assert\NotBlank()]

@@ -39,9 +39,13 @@ class League implements LeagueInterface
     #[ORM\Column(length: 255)]
     private ?string $logoPath = null;
 
+    #[ORM\OneToMany(mappedBy: 'league', targetEntity: LeagueOddsImportSync::class, orphanRemoval: true)]
+    private Collection $leagueOddsImportSyncs;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
+        $this->leagueOddsImportSyncs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -135,6 +139,35 @@ class League implements LeagueInterface
     public function setLogoPath(string $logoPath): static
     {
         $this->logoPath = $logoPath;
+
+        return $this;
+    }
+        /**
+     * @return Collection<int, LeagueOddsImportSync>
+     */
+    public function getLeagueOddsImportSyncs(): Collection
+    {
+        return $this->leagueOddsImportSyncs;
+    }
+
+    public function addLeagueOddsImportSync(LeagueOddsImportSync $leagueOddsImportSync): static
+    {
+        if (!$this->leagueOddsImportSyncs->contains($leagueOddsImportSync)) {
+            $this->leagueOddsImportSyncs->add($leagueOddsImportSync);
+            $leagueOddsImportSync->setLeague($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLeagueOddsImportSync(LeagueOddsImportSync $leagueOddsImportSync): static
+    {
+        if ($this->leagueOddsImportSyncs->removeElement($leagueOddsImportSync)) {
+            // set the owning side to null (unless already changed)
+            if ($leagueOddsImportSync->getLeague() === $this) {
+                $leagueOddsImportSync->setLeague(null);
+            }
+        }
 
         return $this;
     }

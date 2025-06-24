@@ -8,8 +8,12 @@ onMounted(() => {
   store.fetchSports()
 })
 
-function selectSport(sport) {
-  store.selectSport(sport)
+function toggleSelectSport(sport) {
+  if (store.selectedSport?.id === sport.id) {
+    store.selectedSport = null
+  } else {
+    store.selectedSport = sport
+  }
 }
 </script>
 
@@ -19,7 +23,7 @@ function selectSport(sport) {
     <div
         v-for="sport in store.sports"
         :key="sport.id"
-        @click="selectSport(sport)"
+        @click="toggleSelectSport(sport)"
         class="card text-center p-2"
         :class="{ 'border-success': store.selectedSport?.id === sport.id }"
         style="cursor: pointer; width: 120px;"

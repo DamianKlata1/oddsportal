@@ -8,28 +8,32 @@ import FormatSelector from '../FormatSelector.vue';
 const store = useUserStore();
 </script>
 <template>
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom align-items-center">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-2 link-body-emphasis text-decoration-none text-success">
-            <span class="fs-4">{{ $t('name') }}</span>
-        </a>
+  <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+    
+    <div class="col-md-3 mb-2 mb-md-0">
+      <RouterLink to="/" class="d-inline-flex link-body-emphasis text-decoration-none text-success">
+        <span class="fs-4">{{ $t('name') }}</span>
+      </RouterLink>
+    </div>
 
-        <!-- <ul class="nav nav-pills me-auto">
-            <li class="nav-item">
-                <RouterLink linkActiveClass="active" class="nav-link" to="/">Home</RouterLink>
-            </li>
-            <li class="nav-item">
-                <RouterLink class="nav-link" to="/about">About</RouterLink>
-            </li>
-        </ul> -->
-        <FormatSelector class ="me-2" />
+    <div class="col-md-auto text-end d-flex justify-content-end align-items-end gap-3">
 
+      <div>
+        <span class="d-block small text-muted text-start">Format</span>
+        <FormatSelector />
+      </div>
+
+      <div>
+        <span class="d-block small text-muted text-start">Region</span>
         <RegionSelector />
-
-        <div class="col-md-2 text-end" v-show="!store.isAuth">
-            <RouterLink class="btn btn-outline-success me-2" to="/login">{{ $t('login') }}</RouterLink>
-            <RouterLink class="btn btn-outline-success me-2" to="/register">{{ $t('register' )}}</RouterLink>
-        </div>
-        <AccountNav />
+      </div>
+      
+      <AccountNav />
+      <div>
+        <span class="d-block small text-muted text-start">Language</span>
         <LocaleNav />
-    </header>
+      </div>
+
+    </div>
+  </header>
 </template>

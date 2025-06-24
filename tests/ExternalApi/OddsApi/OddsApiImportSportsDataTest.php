@@ -8,15 +8,15 @@ use App\Repository\Interface\SportRepositoryInterface;
 use App\Repository\Interface\LeagueRepositoryInterface;
 use App\Repository\Interface\RegionRepositoryInterface;
 use App\Tests\Base\KernelTest\DatabaseDependantTestCase;
-use App\Factory\Interface\DTO\SportsDataDTOFactoryInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
-use App\Service\Interface\Import\SportsDataImporterInterface;
+use App\Factory\Interface\DTO\OddsApiSportsDataDTOFactoryInterface;
+use App\ExternalApi\Interface\OddsApi\OddsApiSportsDataImporterInterface;
 
 class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
 {
-    protected SportsDataImporterInterface $sportsDataImporter;
+    protected OddsApiSportsDataImporterInterface $sportsDataImporter;
     protected OddsApiClientInterface $oddsApiClient;
-    protected SportsDataDTOFactoryInterface $sportsDataDTOFactory;
+    protected OddsApiSportsDataDTOFactoryInterface $sportsDataDTOFactory;
     protected SportRepositoryInterface $sportRepository;
     protected RegionRepositoryInterface $regionRepository;
     protected LeagueRepositoryInterface $leagueRepository;
@@ -24,9 +24,9 @@ class OddsApiImportSportsDataTest extends DatabaseDependantTestCase
     {
         parent::setUp();
         $container = static::getContainer();
-        $this->sportsDataImporter = $container->get(SportsDataImporterInterface::class);
+        $this->sportsDataImporter = $container->get(OddsApiSportsDataImporterInterface::class);
         $this->oddsApiClient = $container->get(OddsApiClientInterface::class);
-        $this->sportsDataDTOFactory = $container->get(SportsDataDTOFactoryInterface::class);
+        $this->sportsDataDTOFactory = $container->get(OddsApiSportsDataDTOFactoryInterface::class);
         $this->sportRepository = $container->get(SportRepositoryInterface::class);
         $this->regionRepository = $container->get(RegionRepositoryInterface::class);
         $this->leagueRepository = $container->get(LeagueRepositoryInterface::class);

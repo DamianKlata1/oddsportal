@@ -16,12 +16,12 @@ use App\Factory\BookmakerFactory;
 use App\DTO\Pagination\PaginationDTO;
 use App\DTO\Outcome\OutcomeFiltersDTO;
 use Zenstruck\Foundry\Persistence\Proxy;
-use App\Factory\OddsDataImportSyncFactory;
+use App\Factory\LeagueOddsImportSyncFactory;
 use App\Repository\Interface\EventRepositoryInterface;
 use App\Service\Interface\Event\EventServiceInterface;
 use App\Repository\Interface\OutcomeRepositoryInterface;
 use App\Tests\Base\KernelTest\DatabaseDependantTestCase;
-use App\Repository\Interface\OddsDataImportSyncRepositoryInterface;
+use App\Repository\Interface\LeagueOddsImportSyncRepositoryInterface;
 
 class EventServiceTest extends DatabaseDependantTestCase
 {
@@ -40,7 +40,7 @@ class EventServiceTest extends DatabaseDependantTestCase
         $league = LeagueFactory::createOne();
         $betRegion = BetRegionFactory::createOne();
 
-        $oddsDataImportSync = OddsDataImportSyncFactory::createOne([
+        $oddsDataImportSync = LeagueOddsImportSyncFactory::createOne([
             'league' => $league,
             'betRegion' => $betRegion,
             'lastImportedAt' => (new \DateTimeImmutable())->modify('-4 minutes'),
@@ -71,7 +71,7 @@ class EventServiceTest extends DatabaseDependantTestCase
                 'name' => $name,
                 'price' => $price,
                 'bookmaker' => $bookmaker,
-                'market' => MarketType::H2H->toString(),
+                'market' => MarketType::H2H->value,
                 'event' => $event,
                 'lastUpdate' => $lastUpdate,
             ]);
@@ -79,7 +79,7 @@ class EventServiceTest extends DatabaseDependantTestCase
 
         $outcomeFiltersDTO = new OutcomeFiltersDTO(
             $betRegion->getName(),
-            PriceFormat::DECIMAL->toString()
+            PriceFormat::DECIMAL->value
         );
 
         $eventListDTO = $this->eventService->getEvents(

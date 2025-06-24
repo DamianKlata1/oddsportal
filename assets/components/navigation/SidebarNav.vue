@@ -27,9 +27,8 @@ onMounted(async () => {
 watch(
   () => sportsStore.selectedSport,
   async (sport) => {
-    if (sport) {
-      await regionsStore.fetchRegionsForSport(sport.id)
-    }
+    await regionsStore.fetchRegionsForSport(sport?.id)
+
   },
   { immediate: true }
 )
@@ -110,9 +109,13 @@ const handleToggleFavorite = (league) => {
           data-bs-parent="#countryAccordion">
           <div class="accordion-body">
             <ul class="list-unstyled mb-0">
-              <li v-for="league in region.leagues" :key="league">
-                <span class="me-2"><img :src="league.logoPath" alt="league logo"></span>
+              <li v-for="league in region.leagues" :key="league"
+                class="d-flex justify-content-between align-items-center mb-1" :class="{
+                  'bg-success bg-opacity-75 bg-gradient px-2 py-1 rounded fw-bold shadow-sm': leaguesStore.selectedLeague?.id === league.id
+                }">
+                <span class="me-2"><img :src="league.logoPath" style="max-height: 16px;" alt="league logo"></span>
                 <a href="#" class="text-decoration-none text-success me-2"
+                  :class="{ 'fw-bold text-white': leaguesStore.selectedLeague?.id === league.id }"
                   @click.prevent="leaguesStore.selectLeague(league)">
                   {{
                     league.name

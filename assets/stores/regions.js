@@ -13,8 +13,12 @@ export const useRegionsStore = defineStore('regions', () => {
     }
 
     async function fetchRegionsForSport(sportId) {
-        regions.value = await getRegionsForSport(sportId)
-       
+        if (!sportId) {
+            regions.value = []
+        }
+        else {
+            regions.value = await getRegionsForSport(sportId)
+        }
     }
 
     async function getRegionsForSport(sportId) {

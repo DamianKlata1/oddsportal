@@ -2,15 +2,16 @@
 
 namespace App\Service\Event;
 
-use App\DTO\Sport\SportDTO;
+use App\DTO\Outcome\OutcomeListResponseDTO;
+use App\Entity\Event;
 use App\Entity\League;
-use App\Service\Entity\AbstractEntityService;
 use DateTimeImmutable;
 use App\Enum\MarketType;
 use App\Entity\BetRegion;
 use App\Enum\PriceFormat;
 use Pagerfanta\Pagerfanta;
 use App\DTO\Event\EventDTO;
+use App\DTO\Sport\SportDTO;
 use App\DTO\League\LeagueDTO;
 use App\DTO\Region\RegionDTO;
 use App\Enum\DateFilterKeyword;
@@ -22,18 +23,19 @@ use App\DTO\Event\EventListResponseDTO;
 use App\Exception\ImportFailedException;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use App\DTO\Pagination\PaginationResponseDTO;
-use Symfony\Component\HttpFoundation\Response;
+use App\Service\Entity\AbstractEntityService;
+use App\Service\Import\EventOddsImportSyncService;
 use App\Repository\Interface\EventRepositoryInterface;
 use App\Service\Interface\Event\EventServiceInterface;
 use Pagerfanta\Exception\NotValidCurrentPageException;
 use App\Service\Interface\Helper\DeleteResultInterface;
-use App\Service\Interface\Outcome\OutcomeServiceInterface;
-use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Service\Interface\Import\OddsDataImportSyncManagerInterface;
-use App\ExternalApi\Interface\OddsApi\OddsApiOddsDataImporterInterface;
-use App\Service\Interface\BetRegion\BetRegionServiceInterface;
 use App\Service\Interface\League\LeagueServiceInterface;
+use App\Service\Interface\Outcome\OutcomeServiceInterface;
+use App\Service\Interface\DateService\DateServiceInterface;
+use App\Service\Interface\BetRegion\BetRegionServiceInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Service\Interface\Import\EventOddsImportSyncServiceInterface;
+use App\Service\Interface\Import\LeagueOddsImportSyncServiceInterface;
 
 class EventService extends AbstractEntityService implements EventServiceInterface
 {
@@ -43,20 +45,15 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
         private readonly BetRegionServiceInterface $betRegionService,
         private readonly LeagueServiceInterface $leagueService,
         private readonly OutcomeServiceInterface $outcomeService,
-        private readonly OddsDataImportSyncManagerInterface $oddsDataImportSyncManager,
-        private readonly OddsApiOddsDataImporterInterface $oddsDataImporter,
-        private readonly OddsApiClientInterface $oddsApiClient,
+        private readonly LeagueOddsImportSyncServiceInterface $leagueOddsImportSyncService,
+        private readonly EventOddsImportSyncServiceInterface $eventOddsImportSyncService,
+        private readonly DateServiceInterface $dateService
+
     ) {
         parent::__construct($eventRepository);
     }
 
     /**
-     * Retrieves paginated events for a specific league, applying outcome filters.
-     *
-     * @param int $leagueId 
-     * @param OutcomeFiltersDTO $outcomeFiltersDTO Filters for outcomes (market, region, price format).
-     * @param PaginationDTO $paginationDTO Pagination parameters (page, limit).
-     * @return EventListResponseDTO An object containing the list of event DTOs and pagination information.
      * @throws NotFoundHttpException If the league or bet region is not found.
      * @throws ImportFailedException If the odds data import fails during synchronization.
      */
@@ -66,17 +63,18 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
 
         $betRegion = $this->betRegionService->findOrFailBy(['name' => $outcomeFiltersDTO->getBetRegion()]);
 
-        $priceFormat = PriceFormat::fromString($outcomeFiltersDTO->getPriceFormat());
+        $priceFormat = PriceFormat::from($outcomeFiltersDTO->getPriceFormat());
 
-        $this->synchronizeLeagueOddsData($league, $betRegion);
+        $this->leagueOddsImportSyncService->synchronizeLeagueOddsData($league, $betRegion);
 
-        $dateWindow = $this->calculateDateWindow(
+        $dateWindow = $this->dateService->calculateDateWindow(
             $eventFiltersDTO->getDate() !== null
-            ? DateFilterKeyword::fromString($eventFiltersDTO->getDate())
+            ? DateFilterKeyword::from($eventFiltersDTO->getDate())
             : null
         );
-        
+
         $paginatedEvents = $this->getPaginatedEvents(
+            $eventFiltersDTO->getSportId(),
             $eventFiltersDTO->getLeagueId(),
             $eventFiltersDTO->getName(),
             $dateWindow['start'],
@@ -93,7 +91,38 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
 
         return $this->buildEventListResponse($paginatedEvents, $eventDTOs);
     }
+    /**
+     * @throws NotFoundHttpException If the bet region is not found.
+     * @throws ImportFailedException If the odds data import fails during synchronization.
+     */
+    public function getEventBestOutcomes(int $eventId, OutcomeFiltersDTO $outcomeFiltersDTO): OutcomeListResponseDTO
+    {
+        /** @var Event $event */
+        $event = $this->findOrFail($eventId);
 
+        $betRegion = $this->betRegionService->findOrFailBy(['name' => $outcomeFiltersDTO->getBetRegion()]);
+        $priceFormat = PriceFormat::from($outcomeFiltersDTO->getPriceFormat());
+
+        $syncStatus = $this->eventOddsImportSyncService->synchronizeEventOddsData($event, $betRegion);
+
+        $outcomes = $this->outcomeService->filterOutcomesByMarketsAndRegion(
+            $event->getOutcomes(),
+            [
+                MarketType::H2H,
+                MarketType::OUTRIGHTS
+            ],
+            $betRegion
+        );
+
+        $bestOutcomes = $this->outcomeService->getBestOutcomes(
+            $outcomes,
+            $priceFormat
+        );
+        return new OutcomeListResponseDTO(
+            $bestOutcomes,
+            $syncStatus
+        );
+    }
     public function deletePastEvents(): DeleteResultInterface
     {
         try {
@@ -125,29 +154,10 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
         }
     }
 
-    private function synchronizeLeagueOddsData(?League $league, BetRegion $betRegion): void
-    {
-        if(!$league) {
-            //TODO : Handle case where league is not provided
-            return;
-        }
-        if ($this->oddsDataImportSyncManager->isSyncRequired($league, $betRegion)) {
-            $eventsData = $this->oddsApiClient->fetchOddsDataForLeague(
-                $league->getApiKey(),
-                $betRegion->getName(),
-                $league->getRegion()->getName() === 'Outrights' ? MarketType::OUTRIGHTS : MarketType::H2H
-            );
-            $importResult = $this->oddsDataImporter->import($eventsData, $league, $betRegion);
-            if (!$importResult->isSuccess()) {
-                throw new ImportFailedException(
-                    message: $importResult->getErrorMessage() ?? 'Unknown import error.',
-                    code: Response::HTTP_INTERNAL_SERVER_ERROR,
-                );
-            }
-            $this->oddsDataImportSyncManager->updateSyncStatus($league, $betRegion);
-        }
-    }
+
+
     private function getPaginatedEvents(
+        ?int $sportId,
         ?int $leagueId,
         ?string $nameFilter,
         ?DateTimeImmutable $filterStartDate,
@@ -155,6 +165,7 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
         PaginationDTO $paginationDTO
     ): Pagerfanta {
         $qb = $this->eventRepository->findByFiltersQueryBuilder(
+            $sportId,
             $leagueId,
             $nameFilter,
             $filterStartDate,
@@ -231,37 +242,4 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
         );
     }
 
-    private function calculateDateWindow(?DateFilterKeyword $dateKeyword): array
-    {
-        $windowStart = null;
-        $windowEnd = null;
-        $now = new DateTimeImmutable();
-
-        if ($dateKeyword === null) {
-            return ['start' => null, 'end' => null];
-        }
-
-        switch ($dateKeyword) {
-            case DateFilterKeyword::TODAY:
-                $windowStart = $now;
-                $windowEnd = $now->setTime(23, 59, 59, 999999);
-                break;
-            case DateFilterKeyword::TOMORROW:
-                $windowStart = $now->modify('+1 day')->setTime(0, 0, 0);
-                $windowEnd = $now->modify('+1 day')->setTime(23, 59, 59, 999999);
-                break;
-            case DateFilterKeyword::THIS_WEEK:
-
-                $windowStart = $now;
-                $windowEnd = $now->modify('sunday this week')->setTime(23, 59, 59, 999999);
-                break;
-            case DateFilterKeyword::NEXT_7_DAYS:
-                $windowStart = $now;
-                $windowEnd = $now->modify('+6 days')->setTime(23, 59, 59, 999999);
-                break;
-
-        }
-
-        return ['start' => $windowStart, 'end' => $windowEnd];
-    }
 }

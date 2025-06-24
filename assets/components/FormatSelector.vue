@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted} from 'vue'
+import { onMounted } from 'vue'
 
 import { useOddsFormatStore } from '../stores/oddsFormat';
 
@@ -10,24 +10,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="dropdown">
-    <button
-      class="btn btn-outline-success dropdown-toggle d-flex align-items-center"
-      type="button"
-      id="oddsFormatDropdown"
-      data-bs-toggle="dropdown"
-      aria-expanded="false"
-    >
-     {{ store.selectedFormat || $t('select_format') }}
+  <div class="dropdown me-2">
+    <button class="btn btn-outline-success dropdown-toggle d-flex align-items-center" type="button"
+      id="oddsFormatDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-reception-4 me-2"></i>
+
+      {{ store.selectedFormat || $t('select_format') }}
     </button>
     <ul class="dropdown-menu" aria-labelledby="oddsFormatDropdown">
-      <li
-        v-for="format in store.formats"
-        :key="format.id"
-        @click="store.selectedFormat = format"
-      >
+      <li v-for="format in store.formats" :key="format.id" @click="store.selectedFormat = format">
         <button class="dropdown-item">
-          {{ format }} 
+          {{ format }}
         </button>
       </li>
     </ul>

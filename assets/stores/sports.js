@@ -19,6 +19,9 @@ export const useSportsStore = defineStore('sports', () => {
     function selectSport(sport) {
         selectedSport.value = sport
     }
+    function selectById(sportId) {
+        selectedSport.value = sports.value.find(sport => sport.id === sportId) || null
+    }
 
     async function getSportsFromApi() {
         isLoading.value = true
@@ -34,7 +37,7 @@ export const useSportsStore = defineStore('sports', () => {
         }
     }
 
-    return {sports, fetchSports, selectSport, selectedSport, isLoading, errorMessage}
+    return {sports, fetchSports, selectSport, selectById, selectedSport, isLoading, errorMessage}
 }, {
     persist: {
         paths: ['selectedSport'], // only persist the data, not loading/error

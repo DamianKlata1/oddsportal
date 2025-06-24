@@ -40,6 +40,7 @@ class EventRepository extends ServiceEntityRepository implements EventRepository
             ->getResult();
     }
     public function findByFiltersQueryBuilder(
+        ?int $sportId,
         ?int $leagueId,
         ?string $nameFilter,
         ?DateTimeImmutable $filterStartDate,
@@ -49,6 +50,14 @@ class EventRepository extends ServiceEntityRepository implements EventRepository
             ->leftJoin('e.outcomes', 'o')
             ->addSelect('o');
 
+
+        if ($sportId !== null) {
+            $qb->join('e.league', 'l')
+                ->join('l.region', 'r')
+                ->andWhere('r.sport = :sportId')
+                ->setParameter('sportId', $sportId);
+
+        }
         if ($leagueId !== null) {
             $qb->andWhere('e.league = :leagueId')
                 ->setParameter('leagueId', $leagueId);

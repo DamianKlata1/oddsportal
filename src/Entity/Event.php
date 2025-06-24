@@ -37,9 +37,13 @@ class Event implements EventInterface
     #[ORM\Column(length: 255)]
     private ?string $apiId = null;
 
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventOddsImportSync::class, orphanRemoval: true)]
+    private Collection $eventOddsImportSyncs;
+
     public function __construct()
     {
         $this->outcomes = new ArrayCollection();
+        $this->eventOddsImportSyncs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -133,6 +137,36 @@ class Event implements EventInterface
     public function setApiId(string $apiId): static
     {
         $this->apiId = $apiId;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventOddsImportSync>
+     */
+    public function getEventOddsImportSyncs(): Collection
+    {
+        return $this->eventOddsImportSyncs;
+    }
+
+    public function addEventOddsImportSync(EventOddsImportSync $eventOddsImportSync): static
+    {
+        if (!$this->eventOddsImportSyncs->contains($eventOddsImportSync)) {
+            $this->eventOddsImportSyncs->add($eventOddsImportSync);
+            $eventOddsImportSync->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventOddsImportSync(EventOddsImportSync $eventOddsImportSync): static
+    {
+        if ($this->eventOddsImportSyncs->removeElement($eventOddsImportSync)) {
+            // set the owning side to null (unless already changed)
+            if ($eventOddsImportSync->getEvent() === $this) {
+                $eventOddsImportSync->setEvent(null);
+            }
+        }
 
         return $this;
     }

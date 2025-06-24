@@ -11,8 +11,8 @@
     "search_by_team_name": "Szukaj po nazwie klubu",
     "add_to_favorites": "Dodaj do ulubionych",
     "remove_from_favorites": "Usuń z polubionych",
-    "no_favorite_leagues_available": "Brak ulubionych lig",
-    "no_regions_available": "Brak regionów dla",
+    "no_favorite_leagues_available": "Dodaj ligę do ulubionych dla łatwiejszego dostępu",
+    "no_regions_available": "Brak regionów dla podanych parametrów",
     "no_odds_available_for_this_event": "Brak zakładów dla tego wydarzenia",
     "no_events_found": "Nie znaleziono wydarzeń dla tych parametrów",
     "clear_filters": "Wyczyść filtry",
@@ -49,5 +49,9 @@
     "create_account": "Utwórz konto",
     "edit_account": "Edytuj konto",
     "authorization_error": "Błąd autoryzacji",
-    "upcoming": "Nadchodzące"
+    "upcoming": "Nadchodzące",
+    "refresh": "Odśwież",
+    "odds_refreshed_successfully": "Kursy zostały pomyślnie zaktualizowane.",
+    "odds_refresh_too_soon": "Kursy są aktualne. Następne odświeżenie możliwe {time}.",
+    "odds_refreshing_error": "Wystąpił błąd podczas odświeżania kursów."
 }
