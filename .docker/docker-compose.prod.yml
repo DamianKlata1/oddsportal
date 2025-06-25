@@ -17,6 +17,8 @@ services:
     image: temartien/oddsportal-php:latest
     env_file:
       - ../.env.prod.local
+    volumes:
+      - jwt_keys:/var/www/symfony/config/jwt
     networks:
       - symfony_app
 
@@ -38,6 +40,7 @@ services:
 
 volumes:
   db_app: 
+  jwt_keys:
 
 networks:
   symfony_app:
