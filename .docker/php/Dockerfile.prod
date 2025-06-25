@@ -1,5 +1,5 @@
 
-FROM php:8.2-fpm-bookworm as base
+FROM php:8.2-fpm-bookworm AS base
 ARG TIMEZONE
 ENV TZ=${TIMEZONE}
 
@@ -22,13 +22,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY .docker/php/php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
 
 
-FROM base as vendor
+FROM base AS vendor
 WORKDIR /var/www/symfony
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --optimize-autoloader
 
 
-FROM node:20-alpine as frontend
+FROM node:20-alpine AS frontend
 WORKDIR /var/www/symfony
 COPY package.json package-lock.json ./
 RUN npm install
@@ -43,5 +43,5 @@ COPY --from=vendor /var/www/symfony/vendor ./vendor
 COPY --from=frontend /var/www/symfony/public/build ./public/build
 COPY . .
 
-RUN mkdir -p var/cache var/log && \
-    chown -R www-data:www-data var vendor
+RUN mkdir -p var/cache var/log config/jwt && \
+    chown -R www-data:www-data var vendor config/jwt
