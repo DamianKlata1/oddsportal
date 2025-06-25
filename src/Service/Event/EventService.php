@@ -62,7 +62,7 @@ class EventService extends AbstractEntityService implements EventServiceInterfac
         $league = $eventFiltersDTO->getLeagueId() ? $this->leagueService->findOrFail($eventFiltersDTO->getLeagueId()) : null;
 
         $betRegion = $this->betRegionService->findOrFailBy(['name' => $outcomeFiltersDTO->getBetRegion()]);
-
+        
         $priceFormat = PriceFormat::from($outcomeFiltersDTO->getPriceFormat());
 
         $this->leagueOddsImportSyncService->synchronizeLeagueOddsData($league, $betRegion);
