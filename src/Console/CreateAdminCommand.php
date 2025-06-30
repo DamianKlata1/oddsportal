@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Console;
 
 use App\Entity\User;
 use App\Repository\Interface\UserRepositoryInterface;
