@@ -53,5 +53,7 @@
     "refresh": "Refresh",
     "odds_refreshed_successfully": "Odds have been refreshed successfully.",
     "odds_refresh_too_soon": "Odds are up to date. Next refresh is available {time}.",
-    "odds_refreshing_error": "An error occurred while refreshing odds."
+    "odds_refreshing_error": "An error occurred while refreshing odds.",
+    "admin": "Admin",
+    "dashboard": "Dashboard"
 }

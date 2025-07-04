@@ -16,6 +16,9 @@ const store = useUserStore();
             <span class="d-none d-md-inline">{{ store.userData?.email }}</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuDropdown">
+            <li v-if="store.isGranted('ROLE_ADMIN')">
+                <RouterLink :to="{ name: 'admin_layout' }" class="dropdown-item">{{ $t('admin') }}</RouterLink>
+            </li>
             <li>
                 <RouterLink :to="{ name: 'settings' }" class="dropdown-item">{{ $t('settings') }}</RouterLink>
             </li>

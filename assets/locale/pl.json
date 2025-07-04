@@ -53,5 +53,7 @@
     "refresh": "Odśwież",
     "odds_refreshed_successfully": "Kursy zostały pomyślnie zaktualizowane.",
     "odds_refresh_too_soon": "Kursy są aktualne. Następne odświeżenie możliwe {time}.",
-    "odds_refreshing_error": "Wystąpił błąd podczas odświeżania kursów."
+    "odds_refreshing_error": "Wystąpił błąd podczas odświeżania kursów.",
+    "admin": "Admin",
+    "dashboard": "Panel"
 }
