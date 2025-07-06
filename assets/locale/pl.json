@@ -55,5 +55,18 @@
     "odds_refresh_too_soon": "Kursy są aktualne. Następne odświeżenie możliwe {time}.",
     "odds_refreshing_error": "Wystąpił błąd podczas odświeżania kursów.",
     "admin": "Admin",
-    "dashboard": "Panel"
+    "dashboard": "Panel",
+    "users": "Użytkownicy",
+    "registered_users": "Zarejestrowani użytkownicy",
+    "events_in_database": "Wydarzenia w bazie",
+    "active_leagues": "Aktywne ligi",
+    "new_users_last_7_days": "Nowi użytkownicy (ostatnie 7 dni)",
+    "recently_registered": "Ostatnio zarejestrowani",
+    "quick_actions": "Szybkie Akcje",
+    "run_full_sync": "Uruchom Pełną Synchronizację",
+    "manage_users": "Zarządzaj Użytkownikami",
+    "go_to_sentry": "Przejdź do Sentry.io",
+    "command_statuses": "Status Zadań Systemowych",
+    "main_app_info": "Główne informacje o stanie aplikacji",
+    "dashboard_loading_error": "Wystąpił błąd podczas ładowania danych panelu"
 }

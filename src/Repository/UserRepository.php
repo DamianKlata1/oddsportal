@@ -59,6 +59,16 @@ class UserRepository extends ServiceEntityRepository implements UserRepositoryIn
             ->getQuery()
             ->getSingleScalarResult();
     }
+    public function countRegisteredInLast7Days(): int
+    {
+        $date = new \DateTimeImmutable('-7 days');
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.registeredAt >= :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
     //    /**
 //     * @return User[] Returns an array of User objects

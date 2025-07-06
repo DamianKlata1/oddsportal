@@ -2,12 +2,14 @@
 
 namespace App\Console;
 
+use App\Console\Trait\CommandExecutionTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Service\Interface\BetRegion\BetRegionServiceInterface;
+use App\Service\Interface\CommandLog\CommandLoggerServiceInterface;
 
 #[AsCommand(
     name: 'app:load-bet-regions',
@@ -15,21 +17,21 @@ use App\Service\Interface\BetRegion\BetRegionServiceInterface;
 )]
 class LoadBetRegionsCommand extends Command
 {
+    use CommandExecutionTrait;
     public function __construct(
         private readonly BetRegionServiceInterface $betRegionService,
-    )
-    {
+        private readonly CommandLoggerServiceInterface $logger
+
+    ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $commandName = $this->getName();
+
+        $this->logger->logStart($commandName);
         $io->title('Importing bet regions');
 
         $data = [
@@ -41,8 +43,7 @@ class LoadBetRegionsCommand extends Command
         ];
         $loadResult = $this->betRegionService->loadBetRegions($data);
         if (!$loadResult->isSuccess()) {
-            $io->error('Failed to load bet regions: ' . $loadResult->getErrorMessage());
-            return Command::FAILURE;
+            return $this->handleFailure($io, $commandName, 'Failed to load bet regions: ' . $loadResult->getErrorMessage());
         }
         foreach ($loadResult->getImported() as $typeOfData => $data) {
             $io->section(ucfirst($typeOfData) . ' imported:');
@@ -50,8 +51,6 @@ class LoadBetRegionsCommand extends Command
                 $io->writeln('- ' . $item);
             }
         }
-
-        $io->success('Bet regions successfully imported.');
-        return Command::SUCCESS;
+        return $this->handleSuccess($io, $commandName, 'Bet regions successfully imported.');
     }
 }

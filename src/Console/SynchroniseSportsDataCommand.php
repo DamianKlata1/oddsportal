@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Trait\CommandExecutionTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -11,8 +12,9 @@ use App\Repository\Interface\SportRepositoryInterface;
 use App\Repository\Interface\LeagueRepositoryInterface;
 use App\Repository\Interface\RegionRepositoryInterface;
 use App\Service\Interface\League\LeagueServiceInterface;
-use App\Factory\Interface\DTO\OddsApiSportsDataDTOFactoryInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiClientInterface;
+use App\Factory\Interface\DTO\OddsApiSportsDataDTOFactoryInterface;
+use App\Service\Interface\CommandLog\CommandLoggerServiceInterface;
 use App\ExternalApi\Interface\OddsApi\OddsApiSportsDataImporterInterface;
 
 #[AsCommand(
@@ -21,6 +23,7 @@ use App\ExternalApi\Interface\OddsApi\OddsApiSportsDataImporterInterface;
 )]
 class SynchroniseSportsDataCommand extends Command
 {
+    use CommandExecutionTrait;
     public function __construct(
         private readonly OddsApiClientInterface $oddsApiClient,
         private readonly OddsApiSportsDataImporterInterface $sportsDataImporter,
@@ -28,7 +31,9 @@ class SynchroniseSportsDataCommand extends Command
         private readonly SportRepositoryInterface $sportRepository,
         private readonly RegionRepositoryInterface $regionRepository,
         private readonly LeagueRepositoryInterface $leagueRepository,
-        private readonly LeagueServiceInterface $leagueService
+        private readonly LeagueServiceInterface $leagueService,
+        private readonly CommandLoggerServiceInterface $logger
+
     ) {
         parent::__construct();
     }
@@ -41,23 +46,24 @@ class SynchroniseSportsDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $commandName = $this->getName();
+        $this->logger->logStart($commandName);
+
         $io->title('Importing sports data');
 
         $io->info('Fetching data from external API');
         $data = $this->oddsApiClient->fetchSportsData();
-        
+
         $io->info('Validating and processing data');
         $sportDataDTOs = $this->sportsDataDTOFactory->createFromArrayList($data);
 
         $importResult = $this->sportsDataImporter->import($sportDataDTOs);
         $deleteResult = $this->leagueService->removeOutdatedLeagues($sportDataDTOs);
         if (!$importResult->isSuccess()) {
-            $io->error('Failed to import sports data: ' . $importResult->getErrorMessage());
-            return Command::FAILURE;
+            return $this->handleFailure($io, $commandName, 'Failed to import sports data: ' . $importResult->getErrorMessage());
         }
         if (!$deleteResult->isSuccess()) {
-            $io->error('Failed to delete outdated leagues: ' . $deleteResult->getErrorMessage());
-            return Command::FAILURE;
+            return $this->handleFailure($io, $commandName, 'Failed to delete outdated leagues: ' . $deleteResult->getErrorMessage());
         }
         if (
             empty($importResult->getImported()['sports']) &&
@@ -65,8 +71,7 @@ class SynchroniseSportsDataCommand extends Command
             empty($importResult->getImported()['leagues']) &&
             empty($deleteResult->getDeleted()['leagues'])
         ) {
-            $io->info('No sports data to synchronise.');
-            return Command::SUCCESS;
+            $this->handleSuccess($io, $commandName, 'No new sports data to import or delete.');
         }
         foreach ($importResult->getImported() as $typeOfData => $data) {
             $io->section(ucfirst($typeOfData) . ' imported:');
@@ -82,7 +87,6 @@ class SynchroniseSportsDataCommand extends Command
         }
 
 
-        $io->success('Sports data successfully synchronised.');
-        return Command::SUCCESS;
+        return $this->handleSuccess($io, $commandName, 'Sports data successfully synchronised.');
     }
 }

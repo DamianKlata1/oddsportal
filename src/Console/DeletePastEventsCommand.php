@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Console\Trait\CommandExecutionTrait;
+use App\Service\Interface\CommandLog\CommandLoggerServiceInterface;
 use App\Service\Interface\Event\EventServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -15,41 +17,50 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class DeletePastEventsCommand extends Command
 {
+    use CommandExecutionTrait;
     public function __construct(
         private readonly EventServiceInterface $eventService,
+        private readonly CommandLoggerServiceInterface $logger
     ) {
         parent::__construct();
     }
-
-    protected function configure(): void
-    {
-
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $deleteResult = $this->eventService->deletePastEvents();
+        $commandName = $this->getName();
 
-        if (!$deleteResult->isSuccess()) {
-            $io->error('Failed to delete past events: ' . $deleteResult->getErrorMessage());
-            return Command::FAILURE;
+        $this->logger->logStart($commandName);
+
+        try {
+            $result = $this->eventService->deletePastEvents();
+
+            if (!$result->isSuccess()) {
+                return $this->handleFailure($io, $commandName, $result->getErrorMessage());
+            }
+
+            $deletedEvents = $result->getDeleted()['events'] ?? [];
+
+            if (empty($deletedEvents)) {
+                return $this->handleSuccess($io, $commandName, 'No past events to delete');
+            }
+
+            $this->displayDeletedEvents($io, $deletedEvents);
+            return $this->handleSuccess($io, $commandName, 'Past events deleted');
+
+        } catch (\Throwable $e) {
+            return $this->handleFailure($io, $commandName, $e->getMessage());
         }
-        if (count($deleteResult->getDeleted()['events']) === 0) {
-            $io->success('No past events to delete');
-            return Command::SUCCESS;
-        }
-        foreach ($deleteResult->getDeleted()['events'] as $deletedEvent) {
+    }
+
+    private function displayDeletedEvents(SymfonyStyle $io, array $events): void
+    {
+        foreach ($events as $event) {
             $io->section(sprintf(
                 'Deleted event: %s vs %s on %s',
-                $deletedEvent['homeTeam'],
-                $deletedEvent['awayTeam'],
-                $deletedEvent['commenceTime']->format('Y-m-d H:i')
+                $event['homeTeam'],
+                $event['awayTeam'],
+                $event['commenceTime']->format('Y-m-d H:i')
             ));
         }
-
-        $io->success('Past events deleted');
-
-        return Command::SUCCESS;
     }
 }

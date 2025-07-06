@@ -41,8 +41,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AppEnti
     #[ORM\ManyToMany(targetEntity: League::class)]
     private Collection $favoriteLeagues;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $registeredAt = null;
+
     public function __construct()
     {
+        $this->registeredAt = new \DateTimeImmutable();
         $this->favoriteLeagues = new ArrayCollection();
     }
 
@@ -137,6 +141,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, AppEnti
     public function removeFavoriteLeague(League $favoriteLeague): static
     {
         $this->favoriteLeagues->removeElement($favoriteLeague);
+
+        return $this;
+    }
+
+    public function getRegisteredAt(): ?\DateTimeImmutable
+    {
+        return $this->registeredAt;
+    }
+
+    public function setRegisteredAt(\DateTimeImmutable $registeredAt): static
+    {
+        $this->registeredAt = $registeredAt;
 
         return $this;
     }
