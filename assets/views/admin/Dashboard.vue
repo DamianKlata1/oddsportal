@@ -75,7 +75,7 @@ onMounted(async () => {
                 <span class="text-muted small" style="min-width: 120px; text-align: right;">
                   {{ formatRelativeTime(job.lastRunAt, locale) }}
                 </span>
-                <span class="badge" :class="job.status === 'SUCCESS' ? 'bg-success' : 'bg-danger'" style="width: 80px;">
+                <span class="badge" :class="job.status === 'success' ? 'bg-success' : 'bg-danger'" style="width: 80px;">
                   {{ job.status }}
                 </span>
               </div>
