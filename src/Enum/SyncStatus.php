@@ -2,15 +2,11 @@
 
 namespace App\Enum;
 
+use App\Enum\Trait\Enumerable;
+
 enum SyncStatus: string
 {
+    use Enumerable;
     case REQUIRED = "required";
     case SKIPPED = "skipped";
-
-    public static function values(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
-
-
 }

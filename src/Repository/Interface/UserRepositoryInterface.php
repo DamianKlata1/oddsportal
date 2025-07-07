@@ -11,5 +11,6 @@ interface UserRepositoryInterface extends RepositoryInterface, TransactionalRepo
 {
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void;
     public function isEmailExists(string $email): bool;
+    public function countRegisteredInLast7Days(): int;
 
 }

@@ -10,7 +10,7 @@ const routes = [
         path: '/',
         name: 'public_layout',
         component: Public.Layout,
-        redirect: {name: 'events'},
+        redirect: { name: 'events' },
         children: [
             {
                 path: '/events',
@@ -49,15 +49,26 @@ const routes = [
         path: '/admin',
         name: 'admin_layout',
         component: Admin.Layout,
+        redirect: { name: 'admin_dashboard' },
+        meta: {
+            requiresAuth: true,
+            isGranted: 'ROLE_ADMIN'
+        },
         children: [
             {
-                path: '',
-                name: 'admin',
+                path: 'dashboard',
+                name: 'admin_dashboard',
                 component: Admin.Dashboard,
-                meta: {
-                    requiresAuth: true,
-                    isGranted: 'ROLE_ADMIN'
-                }
+            },
+            {
+                path: '/users',
+                name: 'admin_users',
+                component: Admin.Users,
+            },
+            {
+                path: '/events',
+                name: 'admin_events',
+                component: Admin.Events,
             }
         ]
     },
@@ -82,7 +93,7 @@ const routes = [
         path: "/:pathMatch(.*)*",
         redirect: () => {
             // catch all redirect to 404
-            return {name: "error_404"};
+            return { name: "error_404" };
         }
     }
 ];
@@ -90,7 +101,7 @@ const routes = [
 // create
 const router = createRouter({
     history: createWebHistory(),
-//    linkActiveClass: "active",
+    //    linkActiveClass: "active",
     linkExactActiveClass: "active",
     routes: routes
 });
@@ -100,9 +111,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const store = useUserStore()
     if (to.meta.requiresAuth && !store.isAuth) {
-        next({name: 'login'});
+        next({ name: 'login' });
     } else if (to.meta.isGranted && !store.isGranted(to.meta.isGranted)) {
-        next({name: 'error_401'});
+        next({ name: 'error_401' });
     } else {
         next();
     }

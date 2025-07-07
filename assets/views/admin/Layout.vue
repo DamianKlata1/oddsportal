@@ -1,7 +1,7 @@
 <script setup>
-    import { RouterView } from 'vue-router'
-    import AdminNav from '../../components/navigation/AdminNav.vue'
-    import AdminSidenav from '../../components/navigation/AdminSidenav.vue'
+import { RouterView } from 'vue-router'
+import AdminNav from '../../components/admin/AdminNav.vue'
+import AdminSidenav from '../../components/admin/AdminSidenav.vue'
 </script>
 
 <template>
@@ -17,7 +17,7 @@
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                        <div class="text-muted">Copyright &copy; {{ $t('name') }} 2025 </div>
                         <div>
                             <a href="#">Privacy Policy</a>
                             &middot;
@@ -31,18 +31,17 @@
 </template>
 
 <script>
-    export default{
-        mounted() {
-            let body = document.getElementsByTagName("body")[0];
-            body.classList.add("sb-nav-fixed");
-        },
-        unmounted() {
-            let body = document.getElementsByTagName("body")[0];
-            body.classList.remove("sb-nav-fixed");
-        }
-
+export default {
+    mounted() {
+        let body = document.getElementsByTagName("body")[0];
+        body.classList.add("sb-nav-fixed");
+    },
+    unmounted() {
+        let body = document.getElementsByTagName("body")[0];
+        body.classList.remove("sb-nav-fixed");
     }
+
+}
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

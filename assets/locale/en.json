@@ -53,5 +53,20 @@
     "refresh": "Refresh",
     "odds_refreshed_successfully": "Odds have been refreshed successfully.",
     "odds_refresh_too_soon": "Odds are up to date. Next refresh is available {time}.",
-    "odds_refreshing_error": "An error occurred while refreshing odds."
+    "odds_refreshing_error": "An error occurred while refreshing odds.",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "registered_users": "Registered users",
+    "events_in_database": "Events in database",
+    "active_leagues": "Active leagues",
+    "new_users_last_7_days": "New users (last 7 days)",
+    "recently_registered": "Recently registered",
+    "quick_actions": "Quick Actions",
+    "run_full_sync": "Run Full Sync",
+    "manage_users": "Manage Users",
+    "go_to_sentry": "Go to Sentry.io",
+    "command_statuses": "Command Statuses",
+    "main_app_info": "Main application info",
+    "dashboard_loading_error": "An error occurred while loading dashboard data"
 }
