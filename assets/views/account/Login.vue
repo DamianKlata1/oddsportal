@@ -10,13 +10,7 @@ const { t } = useI18n();
 const schema = yup.object({
     email: yup
         .string(t('email_must_be_a_string'))
-        .required(t('email_required'))
         .email(t('email_invalid')),
-    password: yup
-        .string(t('password_must_be_string'))
-        .required(t('password_required'))
-        .min(PASSWORD_MIN_LENGTH, t('password_too_short', { min: PASSWORD_MIN_LENGTH }))
-        .max(PASSWORD_MAX_LENGTH, t('password_too_long', { max: PASSWORD_MAX_LENGTH })),
 });
 </script>
 <template>
@@ -43,12 +37,14 @@ const schema = yup.object({
                                 <input v-model="rememberPassword" class="form-check-input" id="inputRememberPassword"
                                     type="checkbox" value="" />
                                 <label class="form-check-label" for="inputRememberPassword">{{ $t('remember_password')
-                                    }}</label>
+                                }}</label>
                             </div>
                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                <a class="small" href="password.html">{{ $t('forgot_password') }}</a>
+                                <RouterLink class="small" to="/change-password-request">
+                                    {{ $t('forgot_password') }}
+                                </RouterLink>
                                 <button v-show="!loader" class="btn btn-primary" type="submit">{{ $t('login')
-                                    }}</button>
+                                }}</button>
                                 <button v-show="loader" class="btn btn-primary" type="submit" disabled>
                                     <span class="spinner-border spinner-border-sm" role="status"
                                         aria-hidden="true"></span>

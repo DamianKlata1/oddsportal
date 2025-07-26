@@ -24,8 +24,8 @@
     "register": "Register",
     "email_address": "Email address",
     "password": "Password",
-    "current_password": "Current password",
     "confirm_password": "Confirm password",
+    "current_password": "Current password",
     "remember_password": "Remember password",
     "forgot_password": "Forgot password ?",
     "loading": "Loading...",
@@ -68,5 +68,10 @@
     "go_to_sentry": "Go to Sentry.io",
     "command_statuses": "Command Statuses",
     "main_app_info": "Main application info",
-    "dashboard_loading_error": "An error occurred while loading dashboard data"
+    "dashboard_loading_error": "An error occurred while loading dashboard data",
+    "change_password": "Change Password",
+    "send_password_reset_link": "Send password reset link",
+    "password_must_be_a_string": "Password must be a string",
+    "password_confirmation_must_be_a_string": "Password confirmation must be a string",
+    "password_confirmation_required": "Password confirmation is required"
 }
