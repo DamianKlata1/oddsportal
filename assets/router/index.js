@@ -13,10 +13,11 @@ const routes = [
         redirect: { name: 'events' },
         children: [
             {
-                path: '/events',
+                path: 'events',
                 name: 'events',
                 component: Public.EventView
             },
+
         ]
     },
     {
@@ -35,6 +36,16 @@ const routes = [
                 component: Account.Login
             },
             {
+                path: 'change-password-request',
+                name: 'change_password_request',
+                component: Account.ChangePasswordRequestView
+            },
+            {
+                path: 'change-password',
+                name: 'change_password',
+                component: Account.ChangePasswordView
+            },
+            {
                 path: 'settings',
                 name: 'settings',
                 component: Account.Settings,
@@ -42,7 +53,7 @@ const routes = [
                     requiresAuth: true,
                     isGranted: 'ROLE_USER'
                 }
-            }
+            },
         ]
     },
     {

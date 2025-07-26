@@ -33,4 +33,5 @@ class ProfileController extends AbstractController
 
         return $this->json(['message' => 'User edited successfully.'], status: Response::HTTP_OK);
     }
+    
 }

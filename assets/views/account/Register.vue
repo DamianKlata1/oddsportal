@@ -50,7 +50,7 @@ const schema = yup.object({
                                     <div class="form-floating mb-3 mb-md-0">
                                         <Field class="form-control" id="passwordConfirmation"
                                             name="passwordConfirmation" type="password" />
-                                        <label for="passwordConfirmation">{{ $t('confirm password') }}</label>
+                                        <label for="passwordConfirmation">{{ $t('confirm_password') }}</label>
                                         <ErrorMessage name="passwordConfirmation" class="text-danger" />
                                     </div>
                                 </div>
