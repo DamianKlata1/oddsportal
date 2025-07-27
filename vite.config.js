@@ -11,6 +11,7 @@ export default defineConfig({
         symfonyPlugin(),
         vue(),
     ],
+    base: '/',
     build: {
         rollupOptions: {
             input: {
