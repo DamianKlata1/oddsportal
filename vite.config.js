@@ -20,15 +20,16 @@ export default defineConfig({
         }
     },
     server: {
-        host: "0.0.0.0", // Umożliwia dostęp z zewnątrz
-        port: 5173, // Upewnij się, że ten port jest przekierowany w Dockerze
+        host: "0.0.0.0", 
+        port: 5173,
+        base: "./",
         strictPort: true,
         hmr: {
-            host: "localhost", // Przeglądarka łączy się z hostem
-            clientPort: 5173, // Port używany przez przeglądarkę
+            host: "localhost",
+            clientPort: 5173,
         },
         watch: {
-            usePolling: true, // Pomaga w wykrywaniu zmian w Dockerze
+            usePolling: true,
         },
     },
 });
