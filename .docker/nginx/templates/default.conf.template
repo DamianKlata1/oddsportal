@@ -3,6 +3,16 @@ server {
     server_name ${NGINX_BACKEND_DOMAIN};
     root /var/www/symfony/public;
 
+    index index.php index.html;
+
+    # 🚀 Obsługa statyków wygenerowanych przez Vite (JS, CSS itd.)
+    location /build/ {
+        root /var/www/symfony/public;
+        try_files $uri =404;
+        access_log off;
+        log_not_found off;
+    }
+    
     location / {
         try_files $uri /index.php$is_args$args;
     }
