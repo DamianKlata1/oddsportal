@@ -17,7 +17,6 @@ const routes = [
                 name: 'events',
                 component: Public.EventView
             },
-
         ]
     },
     {
