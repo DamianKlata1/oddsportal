@@ -39,9 +39,9 @@ RUN npm run build
 FROM base
 WORKDIR /var/www/symfony
 
+COPY . .
 COPY --from=vendor /var/www/symfony/vendor ./vendor
 COPY --from=frontend /var/www/symfony/public/build ./public/build
-COPY . .
 
 RUN mkdir -p var/cache var/log config/jwt && \
     chown -R www-data:www-data var vendor config/jwt
