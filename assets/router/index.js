@@ -111,7 +111,6 @@ const routes = [
 // create
 const router = createRouter({
     history: createWebHistory(),
-    //    linkActiveClass: "active",
     linkExactActiveClass: "active",
     routes: routes
 });
