@@ -32,8 +32,8 @@ FROM node:20-alpine AS frontend
 WORKDIR /var/www/symfony
 COPY package.json package-lock.json ./
 RUN npm install
-COPY . .
 RUN npm run build
+COPY . .
 
 
 FROM base
