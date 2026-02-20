@@ -6,7 +6,8 @@ server {
     index index.php index.html;
 
     # 🚀 Obsługa statyków wygenerowanych przez Vite (JS, CSS itd.)
-    location /build/ {
+    location /assets/ {
+        alias /var/www/symfony/public/build/assets/;
         try_files $uri =404;
         access_log off;
         log_not_found off;
