@@ -7,7 +7,6 @@ server {
 
     # 🚀 Obsługa statyków wygenerowanych przez Vite (JS, CSS itd.)
     location /build/ {
-        root /var/www/symfony/public;
         try_files $uri =404;
         access_log off;
         log_not_found off;
