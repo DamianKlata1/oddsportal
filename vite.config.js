@@ -11,9 +11,8 @@ export default defineConfig({
         symfonyPlugin(),
         vue(),
     ],
-    base: '/build',
+    base: '',
     build: {
-        outDir: 'public/build',
         rollupOptions: {
             input: {
                 app: "./assets/app.js",
